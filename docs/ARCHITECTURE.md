@@ -30,6 +30,9 @@ Gunakan **satu aplikasi web monolitik Laravel** dengan pemisahan MVC sesuai konv
 
 ## 3.1 Frontend dan arah visual
 - Aplikasi Laravel berada di `backend/`; tampilan Blade dan aset sumber (CSS, JavaScript, gambar) berada di `frontend/`.
+- Layout utama: `frontend/views/layouts/app.blade.php`. Partial bersama berada di `frontend/views/partials/`, halaman di `frontend/views/pages/`.
+- Token desain (`--tt-*`) dan gaya komponen berada di `frontend/css/app.css`. Bootstrap 5.3 dimuat melalui Vite.
+- Tautan navigasi memakai named route dan hanya ditampilkan jika rutenya sudah tersedia.
 - Gunakan Blade untuk halaman yang dirender server dan Bootstrap untuk tata letak/komponen responsif.
 - Terapkan estetika produk startup modern: hierarki jelas, ruang kosong cukup, jarak konsisten, tipografi masa kini, warna tidak berlebihan, kartu/formulir rapi, dan ikon yang fungsional.
 - Buat komponen/layout Blade yang dapat digunakan kembali untuk elemen berulang (navigasi, tombol, notifikasi, input formulir, kartu, badge, pagination, tampilan kosong).
@@ -65,9 +68,10 @@ Alur utama yang diharapkan:
 - Batas unggahan dan format gambar yang diperbolehkan harus mengikuti kebutuhan yang telah dikonfirmasi. Nilai draf belum final sebelum disetujui.
 ## 8. Arsip 30 hari
 - Gunakan scheduler atau perintah terjadwal yang sesuai dengan deployment, bukan proses manual saja.
-- Catat timestamp resmi ketika Admin menyetujui pengembalian.
-- Hitung masa kedaluwarsa menggunakan definisi yang telah disepakati (30 hari kalender atau 30×24 jam; zona waktu masih perlu diputuskan).
-- Arsipkan/sembunyikan barang yang telah dikembalikan setelah masa tampil publik; secara default pertahankan riwayat basis data.
+- Catat timestamp resmi saat Admin menyetujui pengembalian dan laporan dipublikasikan pada Barang Ditemukan.
+- Hitung batas arsip dari timestamp tersebut ditambah 30 hari. Zona waktu aplikasi: Asia/Makassar (WITA).
+- Setelah batas lewat, ubah status menjadi `Archived` dan sembunyikan laporan dari daftar publik Barang Ditemukan.
+- Pertahankan data laporan dan foto bukti pengembalian di database; arsip bukan penghapusan permanen.
 - Pastikan proses pengarsipan aman dijalankan berulang (idempotent) dan kegagalannya dicatat.
 ## 9. Dasar keamanan
 - Hash kata sandi menggunakan mekanisme hashing aman bawaan Laravel.
@@ -88,6 +92,16 @@ Alur utama yang diharapkan:
 - Detail lingkungan lokal (versi PHP, Composer, Node, basis data, container opsional) harus didokumentasikan setelah dikonfirmasi tim.
 - Perbarui `.env.example` dengan nama variabel dan nilai contoh yang aman saja.
 - Sediakan migration dan seeder agar setup dapat diulang; jangan membutuhkan data produksi untuk pengembangan.
+
+## 11.1 Konvensi migration dan seeder
+- Migration memakai timestamp Laravel dan satu perubahan skema yang fokus per file.
+- Migration wajib memiliki `up()` dan `down()` yang dapat dibalik tanpa menghapus data di luar objek yang dikelolanya.
+- Gunakan `snake_case`, foreign key, indeks, nullability, dan constraint sesuai kebutuhan relasi.
+- Jangan mengubah migration yang sudah berjalan pada environment bersama. Buat migration baru untuk perubahan berikutnya.
+- Seeder hanya berisi data fiktif untuk pengembangan dan harus aman dijalankan ulang.
+- Gunakan `updateOrCreate` atau kunci deterministik untuk mencegah data demo berulang.
+- Seeder tidak boleh memuat data produksi, rahasia, password nyata, atau foto pribadi.
+- Role dan data domain baru ditambahkan bersama task yang menetapkan skema serta perilakunya.
 ## 12. Keputusan yang menunggu konfirmasi
 - Versi Laravel dan starter kit autentikasi.
 - Apakah pendaftaran memerlukan verifikasi email/identitas kampus.
@@ -95,5 +109,5 @@ Alur utama yang diharapkan:
 - Field laporan, jumlah/ukuran/format foto, dan tingkat detail lokasi yang ditampilkan publik.
 - Cara komunikasi antara penemu dan pelapor.
 - Aturan edit/batal/revisi dan penolakan/pengiriman ulang konfirmasi pengembalian.
-- Perhitungan 30 hari, zona waktu, serta kebijakan retensi/penghapusan data.
+- Kebijakan retensi/penghapusan permanen data.
 - Apakah notifikasi termasuk MVP.

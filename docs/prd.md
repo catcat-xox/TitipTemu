@@ -111,7 +111,7 @@ Guest dapat melihat informasi tanpa login. Pengguna harus memiliki akun dan logi
 5. Admin memeriksa informasi dan bukti.
 6. Admin menyetujui atau menolak.
 7. Jika disetujui, laporan tidak lagi muncul pada Barang Hilang dan masuk Barang Ditemukan.
-8. Barang Ditemukan ditampilkan selama 30 hari, lalu diarsipkan/tidak ditampilkan kepada publik secara otomatis. Kebijakan penghapusan permanen data belum ditetapkan.
+8. Barang Ditemukan ditampilkan selama 30 hari sejak Admin menyetujui pengembalian dan mempublikasikannya, lalu diarsipkan/tidak ditampilkan kepada publik secara otomatis. Data tetap disimpan dan foto bukti pengembalian tetap privat.
 ## 8. Fitur MVP
 ### Must Have
 - Halaman publik/Guest.
@@ -158,8 +158,8 @@ Data awal yang disarankan untuk form:
 - BR-07: Konfirmasi pengembalian wajib memiliki foto bukti dan persetujuan pernyataan.
 - BR-08: Konfirmasi pengembalian menunggu pemeriksaan Admin.
 - BR-09: Setelah konfirmasi disetujui, laporan berpindah dari Barang Hilang ke Barang Ditemukan.
-- BR-10: Barang Ditemukan ditampilkan selama 30 hari sejak waktu yang ditentukan (**awal hitungan 30 hari perlu dikonfirmasi**), kemudian tidak tampil di daftar publik.
-- BR-11: Pengarsipan 30 hari tidak sama dengan penghapusan permanen database. Kebijakan retensi data perlu diputuskan.
+- BR-10: Barang Ditemukan ditampilkan selama 30 hari sejak laporan disetujui Admin dan dipublikasikan pada daftar tersebut, menggunakan zona waktu Asia/Makassar (WITA). Setelah batas itu, laporan tidak tampil di daftar publik dan berstatus `Archived`.
+- BR-11: Pengarsipan 30 hari tidak menghapus data secara permanen. Data laporan tetap disimpan di database dan foto bukti pengembalian tetap privat.
 - BR-12: Bukti foto konfirmasi dan data pribadi tidak ditampilkan kepada Guest kecuali kelompok menyetujui bagian tertentu sebagai informasi publik.
 - BR-13: Admin dapat menolak konfirmasi pengembalian dengan alasan/catatan.
 ## 12. Status dan transisi
@@ -260,8 +260,8 @@ Daftar ini adalah pertanyaan terbuka, bukan aturan final. Lihat bagian “Pertan
 8. Pada konfirmasi barang kembali, foto bukti harus memperlihatkan barang, pemilik, proses penyerahan, atau cukup barang saja? (Pertimbangkan privasi.)
 9. Apakah User boleh membatalkan laporan atau mengubahnya setelah disetujui?
 10. Jika Admin menolak bukti pengembalian, apakah laporan tetap berada di Barang Hilang dan User boleh mengirim ulang bukti?
-11. Hitungan 30 hari pada Barang Ditemukan dimulai dari waktu Admin menyetujui pengembalian, atau dari tanggal user menyatakan barang kembali?
-12. Setelah 30 hari, apakah postingan hanya disembunyikan/diarsipkan atau benar-benar dihapus dari database?
+11. Hitungan 30 hari pada Barang Ditemukan dimulai dari waktu Admin menyetujui pengembalian, atau dari tanggal user menyatakan barang kembali? **Sudah diputuskan: sejak Admin menyetujui dan mempublikasikan, zona waktu Asia/Makassar.**
+12. Setelah 30 hari, apakah postingan hanya disembunyikan/diarsipkan atau benar-benar dihapus dari database? **Sudah diputuskan: diarsipkan dan disembunyikan dari publik; data tetap disimpan, foto bukti tetap privat.**
 13. Apakah Admin boleh menghapus laporan, atau hanya menolak/arsipkan?
 14. Lingkup final TitipTemu: fakultas tertentu, program studi, atau seluruh kampus?
 15. Apakah barang ditemukan baru boleh dikembalikan setelah Admin menyetujui bukti, atau user mengonfirmasi dahulu lalu Admin mengesahkan status?

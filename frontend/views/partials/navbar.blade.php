@@ -1,0 +1,51 @@
+@php
+    $navigation = [
+        ['route' => 'home', 'label' => 'Beranda'],
+        ['route' => 'lost.index', 'label' => 'Barang Hilang'],
+        ['route' => 'found.index', 'label' => 'Barang Ditemukan'],
+        ['route' => 'guide', 'label' => 'Panduan'],
+    ];
+@endphp
+
+<header class="site-header">
+    <nav class="navbar navbar-expand-lg" aria-label="Navigasi utama">
+        <div class="container">
+            @include('partials.brand')
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navigasiUtama" aria-controls="navigasiUtama"
+                aria-expanded="false" aria-label="Buka navigasi">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navigasiUtama">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    @foreach ($navigation as $item)
+                        @if (Route::has($item['route']))
+                            @php($isActive = request()->routeIs($item['route']))
+                            <li class="nav-item">
+                                <a class="nav-link {{ $isActive ? 'active' : '' }}"
+                                    href="{{ route($item['route']) }}"
+                                    @if ($isActive) aria-current="page" @endif>
+                                    {{ $item['label'] }}
+                                </a>
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+
+                @if (Route::has('login') || Route::has('register'))
+                    <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2">
+                        @if (Route::has('login'))
+                            <a href="{{ route('login') }}" class="btn btn-outline-secondary">Masuk</a>
+                        @endif
+
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="btn btn-primary">Daftar</a>
+                        @endif
+                    </div>
+                @endif
+            </div>
+        </div>
+    </nav>
+</header>

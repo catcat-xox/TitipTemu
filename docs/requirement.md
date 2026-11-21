@@ -18,8 +18,8 @@
 | ASM-05 | Admin memoderasi laporan dan konfirmasi pengembalian | Ditetapkan dari konsep |
 | ASM-06 | MVP berfokus pada laporan barang hilang; laporan penemuan terpisah tidak termasuk alur inti | Interpretasi konsep; perlu konfirmasi |
 | ASM-07 | Dua menu publik: Barang Hilang dan Barang Ditemukan | Ditetapkan dari konsep, arti Barang Ditemukan perlu dikonfirmasi |
-| ASM-08 | Barang yang pengembaliannya disetujui masuk Barang Ditemukan selama 30 hari | Ditetapkan dari konsep; titik awal 30 hari perlu dikonfirmasi |
-| ASM-09 | Barang yang lewat 30 hari disembunyikan dari publik, bukan otomatis dihapus permanen dari database | Rekomendasi untuk menjaga histori; perlu konfirmasi |
+| ASM-08 | Barang yang pengembaliannya disetujui masuk Barang Ditemukan selama 30 hari, dihitung sejak Admin menyetujui dan mempublikasikannya | Ditetapkan; zona waktu Asia/Makassar |
+| ASM-09 | Barang yang lewat 30 hari disembunyikan dari publik dan berstatus `Archived`, bukan dihapus permanen dari database | Ditetapkan |
 | ASM-10 | Sistem memiliki peran Guest, User, dan Admin; Guest bukan akun terdaftar | Mengikuti baseline sebelumnya |
 | ASM-11 | Satu laporan minimal memiliki satu foto | Mengikuti baseline sebelumnya; konfirmasi batas foto |
 | ASM-12 | Belum ada integrasi SSO akademik | Mengikuti baseline sebelumnya |
@@ -138,7 +138,7 @@
 5. Sistem memvalidasi dan menyimpan konfirmasi berstatus `Return Pending`.
 6. Admin meninjau bukti.
 7. Admin menyetujui atau menolak.
-8. Jika disetujui: status laporan `Returned`, daftar publik berpindah dari Barang Hilang ke Barang Ditemukan, dan tanggal mulai periode 30 hari dicatat (tanggal acuan masih perlu keputusan).
+8. Jika disetujui: status laporan `Returned`, daftar publik berpindah dari Barang Hilang ke Barang Ditemukan, dan timestamp persetujuan Admin dicatat sebagai awal periode 30 hari.
 9. Jika ditolak: laporan tetap aktif di Barang Hilang; User dapat mengirim ulang konfirmasi jika kebijakan mengizinkan (rekomendasi).
 10. Setelah 30 hari dari tanggal acuan, sistem mengubah visibilitas menjadi Archived/Expired dan menghilangkan item dari daftar Barang Ditemukan.
 ### 5.3 Admin memoderasi laporan
@@ -188,8 +188,8 @@
 | BR-09 | Konfirmasi pengembalian wajib menyertakan foto bukti dan persetujuan pernyataan. |
 | BR-10 | Konfirmasi pengembalian harus disetujui Admin sebelum perpindahan daftar. |
 | BR-11 | Setelah disetujui, laporan berpindah dari Barang Hilang ke Barang Ditemukan. |
-| BR-12 | Barang Ditemukan tampil 30 hari, kemudian tidak tampil publik. |
-| BR-13 | Pengarsipan 30 hari tidak otomatis berarti penghapusan permanen data. |
+| BR-12 | Barang Ditemukan tampil 30 hari sejak Admin menyetujui dan mempublikasikannya, menggunakan zona waktu Asia/Makassar (WITA), kemudian tidak tampil publik dan berstatus `Archived`. |
+| BR-13 | Pengarsipan 30 hari tidak menghapus data secara permanen; data tetap disimpan dan foto bukti pengembalian tetap privat. |
 | BR-14 | Bukti foto konfirmasi dan data pribadi bersifat terbatas, bukan konten publik. |
 | BR-15 | Admin dapat menolak laporan/konfirmasi; alasan penolakan dan mekanisme revisi perlu diputuskan. |
 ## 9. Status laporan dan transisi
@@ -208,11 +208,13 @@
 **Penolakan konfirmasi:** rekomendasi `Return Pending → Approved/Lost Active`, sehingga item tetap di Barang Hilang dan dapat dikonfirmasi ulang; keputusan final perlu persetujuan kelompok.
 ## 10. Aturan 30 hari
 - Masa tampil 30 hari hanya berlaku untuk daftar Barang Ditemukan.
-- Sistem harus menyimpan timestamp tanggal/waktu Admin menyetujui pengembalian.
-- Sistem menjalankan proses terjadwal untuk memeriksa masa tampil dan mengarsipkan item yang sudah melewati periode.
-- Item yang sudah Archived tidak ditampilkan pada halaman publik Barang Ditemukan.
-- Data historis tetap disimpan sampai kebijakan retensi/penghapusan disepakati.
-- **Belum final:** titik awal hitungan 30 hari (tanggal pengembalian yang diisi User atau waktu persetujuan Admin), zona waktu, dan apakah tepat pada hari ke-30 atau setelah 30×24 jam.
+- Awal hitungan adalah timestamp saat Admin menyetujui konfirmasi pengembalian dan laporan dipublikasikan pada Barang Ditemukan.
+- Zona waktu yang digunakan adalah Asia/Makassar (WITA).
+- Batas arsip dihitung dari timestamp persetujuan Admin ditambah 30 hari.
+- Sistem menyimpan timestamp persetujuan Admin dan menjalankan proses terjadwal untuk memeriksa masa tampil.
+- Setelah batas lewat, laporan berstatus `Archived` dan tidak ditampilkan pada halaman publik Barang Ditemukan.
+- Data laporan tetap disimpan di database, tidak dihapus permanen.
+- Foto bukti pengembalian tetap privat dan tidak ditampilkan kepada publik.
 ## 11. Informasi publik vs privat
 ### Publik (draft)
 - Nama barang.
@@ -300,8 +302,8 @@
 8. Bukti pengembalian: foto seperti apa yang wajib diunggah dan apakah foto tersebut hanya dilihat Admin?
 9. Apakah laporan boleh diedit/dibatalkan oleh User? Pada status apa?
 10. Jika konfirmasi pengembalian ditolak, apakah laporan tetap Barang Hilang dan User boleh mengajukan ulang?
-11. 30 hari dihitung sejak User mengisi tanggal kembali atau sejak Admin menyetujui?
-12. Setelah 30 hari apakah diarsipkan (data tetap ada) atau dihapus permanen?
+11. 30 hari dihitung sejak User mengisi tanggal kembali atau sejak Admin menyetujui? **Sudah diputuskan: sejak Admin menyetujui dan mempublikasikan, zona waktu Asia/Makassar.**
+12. Setelah 30 hari apakah diarsipkan (data tetap ada) atau dihapus permanen? **Sudah diputuskan: diarsipkan dan disembunyikan; data tetap disimpan, foto bukti tetap privat.**
 13. Apakah Admin dapat menghapus laporan atau hanya menolak/arsip?
 14. Unit penerapan yang pasti: fakultas, prodi, atau seluruh kampus?
 15. Apakah diperlukan fitur tambahan seperti lokasi titik/gedung, kontak melalui Admin, atau notifikasi status? (MVP dapat menunda notifikasi otomatis.)
@@ -310,3 +312,4 @@
 |---|---|
 | 1.1 | Baseline lama berisi laporan barang hilang dan ditemukan terpisah, klaim digital, serta proses pertemuan langsung. |
 | 2.0 | Disederhanakan sesuai konsep TitipTemu: laporan kehilangan, moderasi Admin, konfirmasi pengembalian oleh pemilik laporan dengan foto, perpindahan ke Barang Ditemukan, dan pengarsipan publik 30 hari. |
+| 2.1 | P0.6 ditetapkan: 30 hari sejak persetujuan dan publikasi Admin, zona waktu Asia/Makassar, lalu `Archived` tanpa penghapusan permanen; foto bukti tetap privat. |
