@@ -5,3 +5,9 @@ untuk p0.6: Tetapkan masa 30 hari sejak laporan Barang Ditemukan disetujui Admin
 lanjut selesaikan P1.4
 selesaikan task P1.5
 selesaikan task P1.6
+lanjutkan tahap 2 pada `docs/TASKS.md` sesuai seluruh aturan dan dokumentasi proyek. Selesaikan sampai tuntas, lakukan testing, perbaiki error, lalu berhenti dan tunggu instruksi saya untuk task berikutnya.
+lanjut selesaikan task P2.1
+selesaikan task P2.2
+selesaikan task P2.3
+selesaikan task P2.4
+selesaikan task P2.5

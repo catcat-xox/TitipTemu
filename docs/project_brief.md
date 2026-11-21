@@ -33,13 +33,13 @@ Tujuan pengembangan TitipTemu adalah:
 
 ## 3. Ruang Lingkup Proyek
 
-Pengembangan TitipTemu pada tahap awal difokuskan pada satu fakultas atau program studi yang akan ditentukan oleh kelompok.
+Pengembangan TitipTemu ditujukan untuk seluruh lingkungan kampus, bukan hanya satu fakultas atau program studi.
 
 ### A. Fitur utama
 
 1. **Halaman Beranda:** menampilkan informasi umum dan navigasi utama website.
 2. **Barang Hilang:** menampilkan laporan kehilangan yang telah disetujui Admin dan masih aktif.
-3. **Barang Ditemukan:** berdasarkan konsep sementara, menampilkan riwayat laporan yang barangnya telah dikonfirmasi kembali dan disetujui Admin.
+3. **Barang Ditemukan:** menampilkan riwayat laporan kehilangan yang berhasil dikembalikan kepada pemilik setelah konfirmasi pengembalian disetujui Admin. Laporan barang temuan baru tidak termasuk.
 4. **Pencarian Barang:** membantu pengunjung mencari informasi berdasarkan kata kunci.
 5. **Registrasi dan Login:** menyediakan akses akun User dan Admin.
 6. **Laporan Kehilangan:** memungkinkan User membuat laporan dengan data dan foto barang.
@@ -53,7 +53,7 @@ Pengembangan TitipTemu pada tahap awal difokuskan pada satu fakultas atau progra
 | Pengguna | Hak akses |
 |---|---|
 | Guest | Melihat beranda, daftar barang, detail publik, dan melakukan pencarian tanpa login |
-| User | Membuat laporan kehilangan, mengunggah foto, melihat laporan miliknya, dan mengirim konfirmasi barang telah kembali |
+| User (mahasiswa, dosen, atau staf aktif) | Membuat laporan kehilangan, mengunggah foto, melihat laporan miliknya, dan mengirim konfirmasi barang telah kembali |
 | Admin | Memeriksa, menyetujui, menolak, mengelola laporan, memeriksa konfirmasi pengembalian, dan mengelola publikasi |
 
 Guest merupakan pengunjung tanpa login, bukan jenis akun terdaftar. Sistem memiliki dua jenis akun, yaitu User dan Admin.
@@ -72,7 +72,7 @@ Pada tahap MVP, proyek berfokus pada website. Pengembangan aplikasi mobile nativ
 4. User mengunggah foto barang dan menyetujui ketentuan laporan.
 5. Sistem memvalidasi data dan menyimpan laporan dengan status `Pending`.
 6. Admin memeriksa laporan.
-7. Admin menyetujui atau menolak laporan.
+7. Admin menyetujui atau menolak laporan dengan alasan wajib saat menolak; User dapat memperbaiki dan mengirim ulang.
 8. Jika disetujui, laporan ditampilkan pada halaman Barang Hilang.
 
 ### B. Proses konfirmasi barang telah kembali
@@ -82,9 +82,9 @@ Pada tahap MVP, proyek berfokus pada website. Pengembangan aplikasi mobile nativ
 3. User mengisi informasi konfirmasi, mengunggah foto bukti, dan menyetujui pernyataan pengembalian.
 4. Sistem menyimpan konfirmasi dengan status `Return Pending`.
 5. Admin memeriksa konfirmasi dan bukti foto.
-6. Admin menyetujui atau menolak konfirmasi.
-7. Jika disetujui, status laporan berubah menjadi `Returned` dan laporan berpindah ke halaman Barang Ditemukan.
-8. Setelah masa tampil 30 hari berakhir, sistem mengarsipkan laporan sehingga tidak lagi tampil kepada publik.
+6. Admin menyetujui atau menolak konfirmasi dengan alasan wajib saat menolak.
+7. Jika disetujui, status laporan berubah menjadi `Returned` dan laporan berpindah ke halaman Barang Ditemukan. Jika ditolak, laporan tetap di Barang Hilang dan User dapat memperbaiki serta mengirim ulang maksimal 3 kali, lalu penyelesaian melalui Admin.
+8. Setelah masa tampil 30 hari sejak persetujuan konfirmasi pengembalian dan publikasi Admin, sistem mengarsipkan laporan sehingga tidak lagi tampil kepada publik; data tetap disimpan.
 
 ## 5. Teknologi yang Digunakan
 

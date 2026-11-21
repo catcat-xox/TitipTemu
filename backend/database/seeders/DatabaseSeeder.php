@@ -18,6 +18,11 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Demo User',
                 'email_verified_at' => now(),
+                'role' => User::ROLE_USER,
+                'nim_nip' => 'DEMO-0001',
+                'user_type' => User::TYPE_STUDENT,
+                'faculty' => 'Fakultas Demo',
+                'study_program' => 'Program Studi Demo',
                 'password' => Hash::make('password'),
             ],
         );

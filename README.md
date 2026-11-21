@@ -5,7 +5,7 @@ Website Informasi Barang Hilang dan Konfirmasi Pengembalian Barang.
 
 ## Tentang Proyek
 
-TitipTemu merupakan website yang dikembangkan untuk membantu pengelolaan informasi barang hilang di lingkungan institusi pendidikan. Pengguna dapat membuat laporan kehilangan, melihat informasi publik, serta mengirim konfirmasi apabila barang telah kembali.
+TitipTemu merupakan website untuk seluruh lingkungan kampus. Mahasiswa, dosen, dan staf aktif dapat membuat laporan kehilangan, melihat informasi publik, serta mengirim konfirmasi apabila barang telah kembali.
 
 Laporan dan konfirmasi akan diperiksa oleh Admin sebelum status dan publikasinya diperbarui.
 
@@ -204,7 +204,7 @@ Pengujian memakai SQLite in-memory dan tidak mengubah database pengembangan MySQ
 ## Peran Pengguna
 
 - Guest: melihat informasi publik.
-- User: membuat laporan dan konfirmasi pengembalian.
+- User (mahasiswa, dosen, atau staf aktif): membuat laporan dan konfirmasi pengembalian.
 - Admin: memoderasi laporan dan konfirmasi.
 
 ## Struktur Repository
