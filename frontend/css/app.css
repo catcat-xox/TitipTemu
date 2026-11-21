@@ -706,6 +706,55 @@ a:hover {
     padding-top: 1.25rem;
 }
 
+/* Auth */
+.auth-section {
+    padding: 4.5rem 0;
+}
+
+.auth-card {
+    background: var(--tt-surface);
+    border: 1px solid var(--tt-line);
+    border-radius: var(--tt-radius-lg);
+    box-shadow: var(--tt-shadow);
+    padding: clamp(1.5rem, 5vw, 2.5rem);
+}
+
+.auth-title {
+    font-size: clamp(1.7rem, 4vw, 2.2rem);
+}
+
+.auth-card .form-label {
+    color: var(--tt-ink);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.auth-card .form-control {
+    border-color: #cfd8e5;
+    border-radius: 0.75rem;
+    padding: 0.7rem 0.85rem;
+}
+
+.auth-card .form-control:focus {
+    border-color: var(--tt-brand);
+    box-shadow: 0 0 0 0.25rem rgba(31, 79, 216, 0.14);
+}
+
+.auth-switch {
+    border-top: 1px solid var(--tt-line);
+    font-size: 0.92rem;
+    margin: 1.5rem 0 0;
+    padding-top: 1.25rem;
+    text-align: center;
+}
+
+.nav-user {
+    color: var(--tt-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.45rem 0.2rem;
+}
+
 @media (max-width: 991.98px) {
     .site-header .navbar-collapse {
         background: #fff;
