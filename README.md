@@ -160,6 +160,20 @@ php artisan config:clear
 php artisan view:clear
 ```
 
+Pengarsipan otomatis Barang Ditemukan dijalankan oleh scheduler Laravel pada `00:05`
+zona waktu Asia/Makassar (WITA). Aktifkan scheduler deployment dengan entri cron:
+
+```bash
+* * * * * cd /path/ke/backend && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Untuk menjalankan atau menguji proses tanpa menunggu jadwal:
+
+```bash
+php artisan reports:archive-returned
+php artisan schedule:list
+```
+
 Perintah Composer:
 
 ```bash

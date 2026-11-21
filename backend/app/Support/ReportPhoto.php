@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Support;
+
+use App\Models\LostReport;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+
+final class ReportPhoto
+{
+    public const DIRECTORY = 'lost-reports';
+
+    public const PRIVATE_DISK = 'local';
+
+    public static function store(UploadedFile $file): string
+    {
+        return $file->store(self::DIRECTORY, self::PRIVATE_DISK);
+    }
+
+    public static function response(LostReport $report)
+    {
+        $path = $report->photo_path;
+
+        abort_unless(
+            is_string($path)
+                && str_starts_with($path, self::DIRECTORY.'/')
+                && ! str_contains($path, '..')
+                && ! str_contains($path, '\\'),
+            404
+        );
+
+        foreach ([self::PRIVATE_DISK, 'public'] as $disk) {
+            if (! Storage::disk($disk)->exists($path)) {
+                continue;
+            }
+
+            return response()->file(
+                Storage::disk($disk)->path($path),
+                ['Content-Type' => Storage::disk($disk)->mimeType($path) ?: 'application/octet-stream'],
+            );
+        }
+
+        abort(404);
+    }
+}
