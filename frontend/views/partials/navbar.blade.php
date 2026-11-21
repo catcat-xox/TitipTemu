@@ -1,8 +1,8 @@
 @php
     $navigation = [
         ['route' => 'home', 'label' => 'Beranda'],
-        ['route' => 'lost.index', 'label' => 'Barang Hilang'],
-        ['route' => 'found.index', 'label' => 'Barang Ditemukan'],
+        ['route' => 'reports.index', 'params' => ['lost'], 'label' => 'Barang Hilang'],
+        ['route' => 'reports.index', 'params' => ['found'], 'label' => 'Barang Ditemukan'],
         ['route' => 'guide', 'label' => 'Panduan'],
     ];
 @endphp
@@ -25,7 +25,7 @@
                             @php($isActive = request()->routeIs($item['route']))
                             <li class="nav-item">
                                 <a class="nav-link {{ $isActive ? 'active' : '' }}"
-                                    href="{{ route($item['route']) }}"
+                                    href="{{ route($item['route'], $item['params'] ?? []) }}"
                                     @if ($isActive) aria-current="page" @endif>
                                     {{ $item['label'] }}
                                 </a>
@@ -58,6 +58,9 @@
                         @endif
                     </div>
                 @endif
+                @auth
+                    <a href="{{ route('reports.create') }}" class="btn btn-primary">Buat laporan</a>
+                @endauth
             </div>
         </div>
     </nav>
