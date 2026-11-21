@@ -10,14 +10,14 @@
 - `[!]` Terhambat / membutuhkan keputusan
 
 ## Tahap 0 — Keputusan produk dan persiapan proyek
-- [ ] P0.1 Pastikan makna Barang Ditemukan (hanya barang yang dikembalikan atau laporan barang temuan terpisah).
-- [ ] P0.2 Pastikan kampus/fakultas/program sasaran dan pengguna akun yang diperbolehkan.
-- [ ] P0.3 Pastikan field pendaftaran dan verifikasi email/identitas kampus.
-- [ ] P0.4 Pastikan field formulir laporan, kategori, batas foto, format, dan ukuran.
-- [ ] P0.5 Pastikan cara kontak/privasi, edit/batal, penolakan/revisi, dan aturan pengiriman ulang konfirmasi pengembalian.
-- [x] P0.6 Pastikan cara menghitung 30 hari, zona waktu, serta kebijakan arsip/retensi data. Ditetapkan: 30 hari sejak Admin menyetujui dan mempublikasikan laporan, zona waktu Asia/Makassar (WITA); setelah batas, status `Archived` dan disembunyikan dari publik; data tetap disimpan; foto bukti tetap privat.
+- [x] P0.1 Pastikan makna Barang Ditemukan. Ditetapkan: hanya laporan barang hilang yang berhasil dikembalikan kepada pemilik; masuk setelah konfirmasi pengembalian disetujui Admin; bukan laporan barang temuan baru.
+- [x] P0.2 Pastikan kampus/fakultas/program sasaran dan pengguna akun yang diperbolehkan. Ditetapkan: seluruh lingkungan kampus; akun dapat didaftarkan oleh mahasiswa, dosen, dan staf aktif; Guest tetap dapat melihat informasi publik tanpa akun; pelaporan memerlukan akun User.
+- [x] P0.3 Pastikan field pendaftaran dan verifikasi email/identitas kampus. Ditetapkan: nama lengkap, NIM/NIP, email, password, fakultas, dan program studi untuk mahasiswa; email wajib diverifikasi sebelum akun dapat melaporkan; identitas dicatat tanpa verifikasi database resmi kampus.
+- [x] P0.4 Pastikan field formulir laporan, kategori, batas foto, format, dan ukuran. Ditetapkan: nama barang, kategori tetap, deskripsi, tanggal hilang, lokasi hilang, dan foto wajib; maksimal 3 foto; JPG/JPEG/PNG/WebP; maksimal 2 MB per foto; foto disimpan di storage lokal Laravel dan baru publik setelah laporan disetujui Admin.
+- [x] P0.5 Pastikan cara kontak/privasi, edit/batal, penolakan/revisi, dan aturan pengiriman ulang konfirmasi pengembalian. Kontak pribadi tidak publik; Pending dapat diedit/dibatalkan pemilik; Approved tidak dapat diedit langsung; penolakan wajib beralasan dan dapat diperbaiki/kirim ulang; konfirmasi pengembalian maksimal 3 kali, lalu melalui Admin; data dan riwayat tidak dihapus permanen.
+- [x] P0.6 Pastikan cara menghitung 30 hari, zona waktu, serta kebijakan arsip/retensi data. Ditetapkan: 30 hari sejak Admin menyetujui konfirmasi pengembalian dan mempublikasikannya, zona waktu Asia/Makassar (WITA); setelah batas, status `Archived` dan disembunyikan dari publik; data tetap disimpan; foto bukti tetap privat.
 - [x] P0.7 Arah stack frontend dikonfirmasi: Laravel Blade + Bootstrap; tampilan modern bergaya startup. Versi Laravel dan implementasi autentikasi dipilih pada tugas setup yang sesuai berdasarkan kompatibilitas dan kemudahan pemeliharaan, tanpa mengganti stack yang disetujui.
-- [~] P0.8 Tinjau/persetujuan PRD, Requirement, ARCHITECTURE, RULES, dan peta jalan ini; dasar teknis telah disetujui, pertanyaan produk yang tersisa masih terbuka.
+- [x] P0.8 Tinjau/persetujuan PRD, Requirement, ARCHITECTURE, RULES, dan peta jalan ini. Ditinjau dan diselaraskan dengan seluruh keputusan P0 yang telah disetujui: versi/status dokumen, aturan edit/batal/penolakan/pengiriman ulang, privasi kontak dan bukti, retensi data, serta daftar pertanyaan terbuka non-P0. Tidak ada konflik tersisa antar dokumen; pertanyaan non-P0 tetap terbuka.
 - [x] P0.9 Periksa keadaan repositori; pertahankan riwayat Git dan dokumentasi yang ada.
 - [x] P0.10 Akun Admin: beberapa Admin dapat mengelola website secara terpisah.
 - [x] P0.11 Alur OpenCode: satu tugas per instruksi; agent menyelesaikan, menguji, memperbaiki tugas aktif, melaporkan, lalu berhenti dan menunggu persetujuan eksplisit pemilik sebelum tugas selanjutnya.
@@ -30,29 +30,29 @@
 - [x] P1.5 Tetapkan konvensi migration/seeder dan data awal pengembangan. Konvensi reversibel dan idempotent didokumentasikan; `DatabaseSeeder` membuat satu User demo fiktif secara aman dan dapat dijalankan ulang.
 - [x] P1.6 Dokumentasikan setup dan perintah pengembang yang umum di README. README mencakup prasyarat, MySQL, setup backend/frontend, seeder, dev server, build, perintah Laravel, Composer, npm, dan testing.
 ## Tahap 2 — Autentikasi dan otorisasi
-- [ ] P2.1 Implementasikan registrasi/login/logout dengan metode autentikasi yang disetujui.
-- [ ] P2.2 Implementasikan otorisasi User/Admin dengan aman.
-- [ ] P2.3 Lindungi rute Admin dan tindakan khusus User.
-- [ ] P2.4 Implementasikan validasi/verifikasi akun sesuai keputusan.
-- [ ] P2.5 Tambahkan tes untuk Guest, User, Admin, dan akses tanpa izin.
+- [x] P2.1 Implementasikan registrasi/login/logout dengan metode autentikasi yang disetujui. Registrasi manual Laravel berbasis session + Bootstrap memakai field identitas P0.3; event verifikasi email, route signed, resend, CSRF, hashing, dan regenerasi session diterapkan.
+- [x] P2.2 Implementasikan otorisasi User/Admin dengan aman. Kolom role, helper model, Gate server-side, factory state Admin, migration reversibel, dan tes beberapa akun Admin diterapkan.
+- [x] P2.3 Lindungi rute Admin dan tindakan khusus User. Middleware alias role diterapkan pada dashboard User/Admin; Guest mendapat redirect login dan role salah mendapat `403`.
+- [x] P2.4 Implementasikan validasi/verifikasi akun sesuai keputusan. Validasi field identitas, program studi kondisional mahasiswa, verifikasi email, dan notifikasi verifikasi diterapkan; identitas kampus dicatat tanpa pencocokan database resmi.
+- [x] P2.5 Tambahkan tes untuk Guest, User, Admin, dan akses tanpa izin. Matriks akses publik, autentikasi, dashboard User/Admin, logout Guest, dan akses silang role diuji.
 ## Tahap 3 — Penjelajahan publik
 - [ ] P3.1 Implementasikan halaman beranda publik.
 - [ ] P3.2 Implementasikan daftar Barang Hilang dengan pagination dan tampilan saat data kosong.
-- [ ] P3.3 Implementasikan daftar Barang Ditemukan dengan aturan tampil 30 hari (setelah kebijakan dikonfirmasi).
+- [ ] P3.3 Implementasikan daftar Barang Ditemukan dengan aturan tampil 30 hari sejak persetujuan konfirmasi pengembalian dan publikasi Admin.
 - [ ] P3.4 Implementasikan halaman detail laporan publik dengan field yang aman bagi privasi.
 - [ ] P3.5 Tambahkan pencarian kata kunci dan filter yang disetujui.
 - [ ] P3.6 Tambahkan tes rute publik dan privasi.
 ## Tahap 4 — Pelaporan barang hilang
-- [ ] P4.1 Rancang dan implementasikan skema/migration laporan serta pengelolaan kategori.
+- [ ] P4.1 Rancang dan implementasikan skema/migration laporan serta data kategori tetap; pengelolaan kategori oleh Admin menunggu keputusan.
 - [ ] P4.2 Implementasikan formulir laporan dengan validasi, persetujuan ketentuan, dan unggahan gambar yang aman.
 - [ ] P4.3 Pastikan laporan terkirim dengan status Pending dan tidak tampil ke publik sebelum waktunya.
 - [ ] P4.4 Implementasikan daftar laporan milik User dan detail statusnya.
-- [ ] P4.5 Implementasikan edit/batal/revisi yang diizinkan (setelah keputusan ditetapkan).
+- [ ] P4.5 Implementasikan edit/batal/revisi: pemilik dapat mengedit/membatalkan Pending; Approved tidak dapat diedit langsung; penolakan dapat diperbaiki dan dikirim ulang.
 - [ ] P4.6 Tambahkan feature test untuk validasi, unggahan, kepemilikan, dan visibilitas.
 ## Tahap 5 — Moderasi laporan oleh Admin
 - [ ] P5.1 Implementasikan dashboard/antrean moderasi Admin.
 - [ ] P5.2 Implementasikan detail laporan dan pratinjau foto yang aman.
-- [ ] P5.3 Implementasikan persetujuan/penolakan (dan permintaan revisi jika disetujui produk).
+- [ ] P5.3 Implementasikan persetujuan/penolakan dengan alasan wajib dan alur perbaikan/pengiriman ulang.
 - [ ] P5.4 Catat Admin, waktu, keputusan, dan catatan/riwayat moderasi.
 - [ ] P5.5 Tambahkan tes otorisasi moderasi dan perubahan status.
 ## Tahap 6 — Konfirmasi pengembalian
@@ -61,13 +61,13 @@
 - [ ] P6.3 Terapkan status Return Pending tanpa memindahkan laporan ke daftar publik lain sebelum waktunya.
 - [ ] P6.4 Implementasikan peninjauan bukti pengembalian privat oleh Admin.
 - [ ] P6.5 Setujui pengembalian: ubah laporan menjadi Returned dan pindahkan ke Barang Ditemukan.
-- [ ] P6.6 Tolak pengembalian: implementasikan kebijakan penolakan/pengiriman ulang yang telah disetujui dan tampilkan umpan balik.
+- [ ] P6.6 Tolak pengembalian: alasan wajib, perbaikan/pengiriman ulang maksimal 3 kali, lalu penyelesaian melalui Admin.
 - [ ] P6.7 Tambahkan tes privasi, kepemilikan, unggahan, dan perubahan status.
 ## Tahap 7 — Siklus arsip dan audit
 - [ ] P7.1 Implementasikan perhitungan kedaluwarsa 30 hari berdasarkan kebijakan yang disetujui.
 - [ ] P7.2 Implementasikan job/perintah pengarsipan terjadwal dan konfigurasi scheduler.
 - [ ] P7.3 Pastikan operasi arsip aman dijalankan berulang dan tercatat.
-- [ ] P7.4 Pastikan data yang diarsipkan tidak tampil untuk publik, tetapi tetap disimpan sesuai kebijakan.
+- [ ] P7.4 Pastikan data yang diarsipkan tidak tampil untuk publik, tetapi tetap disimpan.
 - [ ] P7.5 Tambahkan tes tanggal batas, zona waktu, eksekusi berulang, dan visibilitas publik.
 ## Tahap 8 — Penguatan dan kesiapan rilis
 - [ ] P8.1 Tinjau keamanan, otorisasi, CSRF, validasi, rate limit, dan penanganan unggahan.
@@ -82,17 +82,27 @@
 - Repositori berisi dokumentasi perencanaan, README, lisensi, dan metadata Git; kerangka aplikasi Laravel 13 sudah diinisialisasi pada P1.1 tanpa menimpa dokumentasi atau lisensi.
 - Arah teknis yang disetujui: Laravel monolith + MySQL + Blade + Bootstrap; UI responsif bergaya startup modern; beberapa akun Admin.
 - OpenCode boleh mengimplementasikan, menguji, dan memperbaiki masalah dalam tugas aktif secara mandiri, tetapi tidak boleh memulai tugas berikutnya. Pada setiap penyelesaian tugas, agent harus melapor lalu BERHENTI menunggu persetujuan pemilik.
-- Keputusan produk pada Tahap 0 masih terbuka sampai pemilik mengonfirmasi. Keputusan stack/desain/Admin/alur kerja yang sudah dikonfirmasi telah ditandai selesai di atas.
+- Keputusan produk P0 yang telah disetujui diterapkan pada PRD, Requirement, ARCHITECTURE, RULES, serta TASKS. P0.8 selesai; pertanyaan non-P0 yang tersisa dicatat terbuka di dokumen terkait.
 ## Catatan keputusan / hambatan
 | Tanggal | Tugas | Keputusan atau hambatan | Penanggung jawab | Status |
 |---|---|---|---|
-| Belum ditentukan | P0 | Pilihan produk/teknis menunggu konfirmasi tim | Tim | Terbuka |
+| 2026-11-21 | P0.1–P0.8 | Seluruh keputusan produk P0.1–P0.7 disetujui dan diterapkan; P0.8 meninjau serta menyelaraskan PRD, Requirement, ARCHITECTURE, RULES, dan TASKS. | Pemilik/Agent | Selesai |
 | 2026-11-21 | P1.1 | Pemilik menetapkan dua folder utama: `backend/` untuk aplikasi Laravel dan `frontend/` untuk view Blade serta aset sumber; Vite membangun aset ke `backend/public/build`. | Pemilik | Disetujui |
 | 2026-11-21 | P1.2 | Database dan user MySQL lokal dibuat; ekstensi `pdo_mysql` dipasang; seluruh migrasi bawaan berhasil dijalankan dan koneksi aplikasi ke MySQL diverifikasi. | Agent | Selesai |
 | 2026-11-21 | P0.6 | Pemilik menetapkan 30 hari sejak persetujuan dan publikasi Admin, zona waktu Asia/Makassar; setelahnya status `Archived`, disembunyikan dari publik, data tetap disimpan, dan foto bukti tetap privat. | Pemilik | Disetujui |
+| 2026-11-21 | P0.1 | Pemilik menetapkan Barang Ditemukan hanya berisi laporan barang hilang yang berhasil dikembalikan; laporan masuk setelah konfirmasi pengembalian disetujui Admin, tanpa alur laporan barang temuan baru. | Pemilik | Disetujui |
+| 2026-11-21 | P0.2 | Pemilik menetapkan cakupan seluruh kampus dan pendaftar mahasiswa, dosen, serta staf aktif; Guest hanya membaca publik, pelaporan memerlukan akun. | Pemilik | Disetujui |
+| 2026-11-21 | P0.3 | Pemilik menetapkan field nama lengkap, NIM/NIP, email, password, fakultas, program studi khusus mahasiswa; email wajib diverifikasi sebelum pelaporan; identitas dicatat tanpa verifikasi database resmi kampus. | Pemilik | Disetujui |
+| 2026-11-21 | P0.5 | Pemilik menetapkan privasi kontak, edit/batal Pending, larangan edit langsung Approved, alasan penolakan wajib, pengiriman ulang, batas 3 kali konfirmasi pengembalian, dan retensi data/riwayat permanen. | Pemilik | Disetujui |
 | 2026-11-21 | P1.3 | Layout dasar, token desain, navigasi responsif, dan beranda Blade + Bootstrap 5.3 diterapkan; tautan navigasi hanya tampil jika rute terkait sudah tersedia. | Agent | Selesai |
 | 2026-11-21 | P1.5 | Konvensi migration/seeder didokumentasikan; seeder demo memakai data fiktif, kunci deterministik, dan `updateOrCreate`; idempotensi diuji. | Agent | Selesai |
 | 2026-11-21 | P1.6 | README dilengkapi panduan setup, konfigurasi MySQL, seeder, backend/frontend dev server, build, perintah pengembang umum, dan testing. | Agent | Selesai |
+| 2026-11-21 | P2.1 | Implementasi awal registrasi, login, logout, validasi Form Request, CSRF, hashing password, regenerasi session, halaman Bootstrap, dan tes autentikasi diterapkan; kemudian disesuaikan dengan P0.3. | Agent | Selesai |
+| 2026-11-21 | P2.2 | Role `user/admin`, Gate server-side, helper model, migration role, factory Admin, dan tes otorisasi beberapa Admin diterapkan. | Agent | Selesai |
+| 2026-11-21 | P2.3 | Middleware `role:user` dan `role:admin`, dashboard terlindungi, redirect Guest, respons `403`, dan tes akses silang diterapkan. | Agent | Selesai |
+| 2026-11-21 | P2.4 | Implementasi awal validasi akun tanpa verifikasi email dibuat sebelum keputusan P0.3; kemudian diganti dengan verifikasi email dan field identitas P0.3. | Pemilik/Agent | Selesai |
+| 2026-11-21 | P2.5 | Matriks feature test Guest/User/Admin dan akses tanpa izin diterapkan; akses publik, redirect login, `403`, dan logout Guest diuji. | Agent | Selesai |
+| 2026-11-21 | P2.4 | Migration identitas kampus, validasi registrasi, verifikasi email signed URL, resend notification, dan tes verifikasi diterapkan. | Agent | Selesai |
 ## Riwayat perubahan
 | Versi | Catatan |
 |---|---|
@@ -106,3 +116,10 @@
 | 0.8 | P1.4 selesai: framework PHPUnit, konfigurasi testing, dan tes dasar aplikasi diterapkan serta lulus. |
 | 0.9 | P1.5 selesai: konvensi migration/seeder dan data awal pengembangan diterapkan serta diuji. |
 | 1.0 | P1.6 selesai: setup dan perintah pengembang umum didokumentasikan di README. |
+| 1.1 | P2.1 implementasi awal autentikasi manual Laravel diterapkan serta diuji; kemudian disesuaikan dengan P0.3. |
+| 1.2 | P2.2 selesai: otorisasi role User/Admin diterapkan dengan Gate server-side dan diuji. |
+| 1.3 | P2.3 selesai: middleware role dan perlindungan route User/Admin diterapkan serta diuji. |
+| 1.4 | P2.4 implementasi awal tanpa verifikasi email diuji; kebijakan ini kemudian superseded oleh keputusan P0.3. |
+| 1.5 | P2.5 selesai: matriks akses Guest/User/Admin dan akses tanpa izin diuji. |
+| 1.6 | P0.3 ditetapkan: field pendaftaran dan verifikasi email wajib sebelum pelaporan; implementasi P2.1/P2.4 perlu disesuaikan. |
+| 1.7 | P0.8 selesai: PRD, Requirement, ARCHITECTURE, RULES, dan TASKS diselaraskan dengan seluruh keputusan P0; versi/status, aturan status, privasi, retensi, dan daftar pertanyaan terbuka non-P0 disamakan. |

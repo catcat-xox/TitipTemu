@@ -34,7 +34,20 @@
                     @endforeach
                 </ul>
 
-                @if (Route::has('login') || Route::has('register'))
+                @if (auth()->check())
+                    <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2">
+                        @if (auth()->user()->isAdmin())
+                            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">Dashboard Admin</a>
+                        @elseif (auth()->user()->isUser())
+                            <a href="{{ route('user.dashboard') }}" class="btn btn-outline-secondary">Dashboard User</a>
+                        @endif
+                        <span class="nav-user">Halo, {{ auth()->user()->name }}</span>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-secondary w-100">Keluar</button>
+                        </form>
+                    </div>
+                @elseif (Route::has('login') || Route::has('register'))
                     <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2">
                         @if (Route::has('login'))
                             <a href="{{ route('login') }}" class="btn btn-outline-secondary">Masuk</a>

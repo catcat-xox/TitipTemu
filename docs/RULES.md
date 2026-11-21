@@ -47,8 +47,9 @@ Aturan ini berlaku untuk semua tugas implementasi. Ikuti `AGENTS.md`, `ARCHITECT
 - Validasi perubahan status di logika aplikasi/server; tolak perubahan yang tidak sah.
 - Satu laporan tidak boleh muncul di kedua daftar publik sekaligus.
 - Visibilitas publik harus ditentukan oleh status yang disetujui dan tanggal siklus, bukan kondisi template yang tersebar.
-- Arsipkan/sembunyikan barang yang telah dikembalikan pada batas 30 hari yang telah disetujui; arsip bukan penghapusan permanen kecuali disetujui.
-- Catat keputusan Admin dan perubahan status penting (peninjau, waktu, catatan jika diperlukan).
+- Arsipkan/sembunyikan barang yang telah dikembalikan pada batas 30 hari; arsip bukan penghapusan permanen. Data laporan, konfirmasi, dan riwayat status tidak boleh dihapus permanen.
+- Pemilik dapat mengedit atau membatalkan laporan `Pending`; laporan `Approved` tidak dapat diedit langsung. Penolakan laporan atau konfirmasi wajib beralasan; pengiriman ulang konfirmasi maksimal 3 kali, lalu penyelesaian melalui Admin.
+- Catat keputusan Admin dan perubahan status penting (peninjau, waktu, alasan penolakan wajib, catatan lain jika diperlukan).
 ## 8. Pengujian dan kualitas
 - Tambahkan/perbarui tes untuk setiap perubahan perilaku, khususnya akses peran, kepemilikan laporan, unggahan, moderasi, perubahan status, privasi, dan waktu pengarsipan.
 - Jalankan tes terkait serta pemeriksaan format, lint, atau build yang tersedia. Laporkan hasil nyata; jangan mengaku pemeriksaan berhasil jika tidak dijalankan.

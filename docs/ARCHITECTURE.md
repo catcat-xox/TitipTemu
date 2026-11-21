@@ -1,6 +1,6 @@
 # ARCHITECTURE.md — TitipTemu
 
-**Status:** Dasar teknis MVP telah disetujui; rincian produk yang belum diputuskan tetap terbuka.
+**Status:** Dasar teknis MVP dan keputusan produk P0 telah disetujui; pertanyaan non-P0 yang tersisa tetap terbuka.
 
 ## 1. Tujuan arsitektur
 - Menjaga MVP tetap mudah dipahami dan realistis untuk tim mahasiswa pengembang open source.
@@ -23,9 +23,9 @@ Gunakan **satu aplikasi web monolitik Laravel** dengan pemisahan MVC sesuai konv
 1. **Penjelajahan publik** — beranda, Barang Hilang, Barang Ditemukan, pencarian/filter, detail publik, panduan.
 2. **Autentikasi dan akun** — registrasi, login/logout, dasar profil, perlindungan akun.
 3. **Laporan kehilangan** — membuat dan memvalidasi laporan, unggah foto, daftar/detail laporan milik pengguna, status laporan.
-4. **Moderasi Admin** — antrean laporan, persetujuan/penolakan (permintaan revisi hanya jika telah disetujui), catatan moderasi, riwayat.
+4. **Moderasi Admin** — antrean laporan, persetujuan/penolakan dengan alasan wajib, catatan moderasi, riwayat.
 5. **Konfirmasi pengembalian** — pengiriman hanya oleh pemilik, unggah bukti privat, tinjauan Admin, persetujuan/penolakan.
-6. **Siklus arsip publik** — barang yang dikembalikan tampil selama 30 hari, lalu dijadwalkan untuk diarsipkan/disembunyikan; data tetap disimpan kecuali kebijakan retensi menetapkan lain.
+6. **Siklus arsip publik** — laporan kehilangan yang berhasil dikembalikan setelah konfirmasi disetujui Admin tampil di Barang Ditemukan selama 30 hari, lalu dijadwalkan untuk diarsipkan/disembunyikan; data tetap disimpan.
 7. **Jejak audit** — catat keputusan penting Admin dan perubahan status.
 
 ## 3.1 Frontend dan arah visual
@@ -46,26 +46,30 @@ Gunakan **satu aplikasi web monolitik Laravel** dengan pemisahan MVC sesuai konv
 - Otorisasi wajib ditegakkan di server; menyembunyikan tombol di UI saja tidak cukup.
 ## 5. Entitas inti domain (usulan awal)
 ERD dan field final harus divalidasi dalam tugas tersendiri. Entitas yang mungkin diperlukan:
-- `users`: data akun dan peran (atau implementasi peran jika disetujui tim).
-- `lost_reports`: pemilik, judul barang, kategori, deskripsi publik, tanggal kehilangan, lokasi, foto publik, status, timestamp.
-- `return_confirmations`: referensi laporan, pemilik pengirim, tanggal/waktu pengembalian jika diperlukan, catatan jika diperlukan, file bukti privat, status peninjauan, Admin peninjau, catatan keputusan, timestamp.
-- `categories`: kategori yang dapat diatur jika pengelolaan kategori oleh Admin tetap masuk MVP.
+- `users`: data akun dan peran (`user` atau `admin`).
+- `lost_reports`: pemilik, nama barang, kategori tetap, deskripsi publik, tanggal kehilangan, lokasi, foto, status, timestamp.
+- `return_confirmations`: referensi laporan, pemilik pengirim, tanggal/waktu pengembalian jika diperlukan, catatan jika diperlukan, file bukti privat, status peninjauan, Admin peninjau, alasan penolakan wajib jika ditolak, timestamp.
+- Kategori laporan bersifat tetap: Elektronik, Dompet & Uang, Dokumen & Kartu Identitas, Kunci, Tas, Pakaian & Aksesoris, Buku & Alat Tulis, dan Lainnya.
 - `report_status_histories` atau catatan audit: status sebelumnya/baru, pelaku, alasan/catatan, waktu.
 
-Hindari menyimpan data sensitif yang tidak diperlukan. Jangan tampilkan identitas pemilik laporan, detail kontak pribadi, nomor mahasiswa, atau bukti pengembalian pada halaman/endpoint publik.
-## 6. Siklus status (draf)
+Hindari menyimpan data sensitif yang tidak diperlukan. NIM/NIP, email, dan data fakultas/program studi bersifat privat. Jangan tampilkan identitas pemilik laporan, detail kontak pribadi, nomor mahasiswa, atau bukti pengembalian pada halaman/endpoint publik.
+## 6. Siklus status
 Alur utama yang diharapkan:
 `Pending → Approved/Active (Barang Hilang) → Return Pending → Returned (Barang Ditemukan) → Archived`
-- Penolakan Admin atas laporan baru: `Pending → Rejected`.
-- Jika konfirmasi pengembalian ditolak, laporan harus tetap aktif di Barang Hilang dan dapat dikirim ulang **hanya setelah aturan ini dikonfirmasi**.
-- Aturan pembatalan/edit dan status tambahan belum ditentukan; jangan mengarang perilakunya.
+- Barang Ditemukan bukan alur laporan barang temuan baru. Hanya laporan kehilangan yang status pengembaliannya disetujui Admin yang masuk daftar tersebut.
+- Penolakan Admin atas laporan baru: `Pending → Rejected`, dengan alasan wajib dan kesempatan perbaikan/pengiriman ulang.
+- Pembatalan oleh pemilik: `Pending → Cancelled`.
+- Jika konfirmasi pengembalian ditolak, laporan tetap aktif di Barang Hilang; alasan wajib dicatat dan pemilik dapat memperbaiki serta mengirim ulang maksimal 3 kali, lalu penyelesaian melalui Admin.
+- Pemilik dapat mengedit atau membatalkan laporan berstatus `Pending`; laporan `Approved` tidak dapat diedit langsung. Data dan riwayat status tidak dihapus permanen.
 - Perubahan status harus dilakukan melalui operasi aplikasi yang eksplisit, divalidasi berdasarkan status saat ini, dan dicatat.
 - Jangan pernah menampilkan laporan yang sama secara bersamaan pada kedua daftar publik.
 ## 7. Penyimpanan berkas
 - Validasi berkas yang diunggah berdasarkan MIME/jenis yang diizinkan, ekstensi, ukuran, dan nama penyimpanan yang aman.
-- Foto laporan publik dan bukti pengembalian privat harus disimpan/diakses dengan kebijakan visibilitas terpisah.
+- Foto laporan dan bukti pengembalian disimpan pada storage lokal Laravel dengan kebijakan visibilitas terpisah.
+- Foto laporan wajib 1–3 file, format JPG/JPEG/PNG/WebP, maksimal 2 MB per file.
+- Foto laporan tidak boleh ditampilkan publik sebelum laporan disetujui Admin.
 - Jangan simpan bukti privat di direktori yang dapat diakses publik atau membuat URL publik untuknya.
-- Batas unggahan dan format gambar yang diperbolehkan harus mengikuti kebutuhan yang telah dikonfirmasi. Nilai draf belum final sebelum disetujui.
+- Batas unggahan dan format foto laporan mengikuti keputusan P0.4; batas foto bukti pengembalian masih terbuka.
 ## 8. Arsip 30 hari
 - Gunakan scheduler atau perintah terjadwal yang sesuai dengan deployment, bukan proses manual saja.
 - Catat timestamp resmi saat Admin menyetujui pengembalian dan laporan dipublikasikan pada Barang Ditemukan.
@@ -89,7 +93,7 @@ Alur utama yang diharapkan:
 - Pengujian otorisasi untuk percobaan URL/API langsung oleh pengguna yang salah atau Guest.
 - Uji proses arsip terjadwal menggunakan timestamp yang dikendalikan, tanpa menunggu 30 hari nyata.
 ## 11. Lingkungan dan persiapan pengembang
-- Detail lingkungan lokal (versi PHP, Composer, Node, basis data, container opsional) harus didokumentasikan setelah dikonfirmasi tim.
+- Detail lingkungan lokal (versi PHP, Composer, Node, basis data) didokumentasikan di README; jangan menambahkan container atau infrastruktur lain tanpa persetujuan.
 - Perbarui `.env.example` dengan nama variabel dan nilai contoh yang aman saja.
 - Sediakan migration dan seeder agar setup dapat diulang; jangan membutuhkan data produksi untuk pengembangan.
 
@@ -102,12 +106,24 @@ Alur utama yang diharapkan:
 - Gunakan `updateOrCreate` atau kunci deterministik untuk mencegah data demo berulang.
 - Seeder tidak boleh memuat data produksi, rahasia, password nyata, atau foto pribadi.
 - Role dan data domain baru ditambahkan bersama task yang menetapkan skema serta perilakunya.
-## 12. Keputusan yang menunggu konfirmasi
-- Versi Laravel dan starter kit autentikasi.
-- Apakah pendaftaran memerlukan verifikasi email/identitas kampus.
-- Cakupan fakultas/kampus dan pengelolaan kategori.
-- Field laporan, jumlah/ukuran/format foto, dan tingkat detail lokasi yang ditampilkan publik.
-- Cara komunikasi antara penemu dan pelapor.
-- Aturan edit/batal/revisi dan penolakan/pengiriman ulang konfirmasi pengembalian.
-- Kebijakan retensi/penghapusan permanen data.
-- Apakah notifikasi termasuk MVP.
+## 12. Pertanyaan non-P0 yang terbuka
+Keputusan P0 yang telah disetujui berlaku. Pertanyaan non-P0 yang masih terbuka:
+- Pengelolaan kategori oleh Admin, atau kategori tetap saja.
+- Tingkat detail lokasi yang ditampilkan publik.
+- Tanggal pengembalian wajib diisi atau dicatat otomatis, serta catatan pengembalian wajib atau opsional.
+- Batas format dan ukuran foto bukti pengembalian.
+- Teks ketentuan pelaporan yang wajib disetujui User.
+- Apakah notifikasi status termasuk MVP.
+
+## 13. Autentikasi yang disetujui
+- P2.1 memakai autentikasi manual Laravel berbasis session guard `web`.
+- Registrasi, login, dan logout menggunakan controller, Form Request, middleware bawaan, CSRF, dan hashing bawaan Laravel.
+- Tidak ada starter kit atau dependensi autentikasi tambahan.
+- P2.1 awalnya memakai field registrasi nama, email, password, dan konfirmasi password.
+- P0.3 menetapkan field registrasi nama lengkap, NIM/NIP, email, password, fakultas, dan program studi khusus mahasiswa; implementasi P2.4 menggantikan field awal tersebut.
+- Email wajib diverifikasi sebelum User dapat membuat laporan. Identitas kampus dicatat, tetapi tidak diverifikasi melalui database resmi kampus.
+- P2.2 memakai kolom `users.role` dengan nilai `user` atau `admin`; nilai default adalah `user`.
+- Gate `user` dan `admin` memeriksa role di server melalui `User::isUser()` dan `User::isAdmin()`.
+- Setiap akun Admin berdiri sendiri. Sistem tidak memakai asumsi satu akun Admin.
+- P2.3 memakai middleware alias `role:user` dan `role:admin` pada route group.
+- Guest diarahkan ke login oleh middleware `auth`; akun dengan role yang salah menerima `403`.
