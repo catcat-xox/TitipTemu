@@ -56,7 +56,7 @@ class LostReportsTest extends TestCase
 
     public function test_authenticated_user_can_submit_a_lost_report(): void
     {
-        Storage::fake('public');
+        Storage::fake('local');
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->post(route('reports.store'), [
@@ -75,7 +75,7 @@ class LostReportsTest extends TestCase
             'item_name' => 'Kartu mahasiswa',
             'status' => 'pending',
         ]);
-        Storage::disk('public')->assertExists(LostReport::first()->photo_path);
+        Storage::disk('local')->assertExists(LostReport::first()->photo_path);
     }
 
     public function test_report_form_requires_photo_and_terms(): void

@@ -457,6 +457,28 @@ a:hover {
     color: #856404;
 }
 
+.status-rejected,
+.status-cancelled {
+    background: #fde8e8;
+    color: #9b2c2c;
+}
+
+.status-return_pending {
+    background: #e8efff;
+    color: #1e40af;
+}
+
+.status-approved,
+.status-returned {
+    background: var(--tt-accent-soft);
+    color: #0a6156;
+}
+
+.status-archived {
+    background: #e9edf3;
+    color: #475569;
+}
+
 .empty-state {
     background: var(--tt-surface);
     border: 1px dashed #cbd5e1;
@@ -480,6 +502,38 @@ a:hover {
     border-radius: var(--tt-radius-lg);
     height: min(30rem, 70vw);
     overflow: hidden;
+}
+
+.detail-image-admin {
+    height: min(24rem, 60vw);
+}
+
+.moderation-entry {
+    border-bottom: 1px solid var(--tt-line);
+    padding: 0.85rem 0;
+}
+
+.moderation-entry:first-of-type {
+    padding-top: 0;
+}
+
+.moderation-entry:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.proof-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+}
+
+.proof-grid img {
+    border: 1px solid var(--tt-line);
+    border-radius: var(--tt-radius-sm);
+    height: 7rem;
+    object-fit: cover;
+    width: 100%;
 }
 
 .detail-list {

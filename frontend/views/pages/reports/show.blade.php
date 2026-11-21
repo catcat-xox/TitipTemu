@@ -9,7 +9,7 @@
             <div class="row g-5 mt-2 align-items-start">
                 <div class="col-lg-6">
                     <div class="detail-image">
-                        <img src="{{ asset('storage/' . $report->photo_path) }}" alt="Foto {{ $report->item_name }}">
+                        <img src="{{ route('reports.photo', $report) }}" alt="Foto {{ $report->item_name }}">
                     </div>
                 </div>
                 <div class="col-lg-6">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LostReport;
+use App\Support\ReportPhoto;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -32,7 +33,7 @@ class PublicReportController extends Controller
 
         $reports = $query->paginate(12)->withQueryString();
         $categories = LostReport::query()
-            ->whereIn('status', $type === 'lost' ? ['approved'] : ['returned'])
+            ->whereIn('status', $type === 'lost' ? ['approved', 'return_pending'] : ['returned'])
             ->distinct()
             ->orderBy('category')
             ->pluck('category');
@@ -44,11 +45,18 @@ class PublicReportController extends Controller
     {
         abort_unless(
             in_array($type, ['lost', 'found'], true)
-            && (($type === 'lost' && $report->status === 'approved')
+            && (($type === 'lost' && in_array($report->status, ['approved', 'return_pending'], true))
                 || ($type === 'found' && $report->isPublic() && $report->status === 'returned')),
             404,
         );
 
         return view('pages.reports.show', compact('report', 'type'));
+    }
+
+    public function photo(LostReport $report)
+    {
+        abort_unless($report->isPublic(), 404);
+
+        return ReportPhoto::response($report);
     }
 }

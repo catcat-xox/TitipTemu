@@ -63,7 +63,7 @@
                         <div class="col-md-6 col-xl-4">
                             <article class="report-card">
                                 <div class="report-image">
-                                    <img src="{{ asset('storage/' . $report->photo_path) }}"
+                                    <img src="{{ route('reports.photo', $report) }}"
                                         alt="Foto {{ $report->item_name }}" loading="lazy">
                                 </div>
                                 <div class="report-card-body">

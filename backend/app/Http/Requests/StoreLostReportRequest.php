@@ -19,7 +19,7 @@ class StoreLostReportRequest extends FormRequest
             'description' => ['required', 'string', 'min:10', 'max:1000'],
             'lost_at' => ['required', 'date', 'before_or_equal:today'],
             'location' => ['required', 'string', 'min:3', 'max:150'],
-            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
+            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'terms_accepted' => ['accepted'],
         ];
     }

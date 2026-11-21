@@ -41,34 +41,34 @@
 - [x] P3.3 Implementasikan daftar Barang Ditemukan dengan aturan tampil 30 hari berdasarkan `returned_at`.
 - [x] P3.4 Implementasikan halaman detail laporan publik dengan field yang aman bagi privasi.
 - [x] P3.5 Tambahkan pencarian kata kunci dan filter yang disetujui.
-- [ ] P3.6 Tambahkan tes rute publik dan privasi.
+- [x] P3.6 Tambahkan tes rute publik dan privasi. Daftar/detail publik, tipe tidak valid, status nonpublik, batas 30 hari, pencarian/filter, dan kerahasiaan identitas pemilik diuji.
 ## Tahap 4 — Pelaporan barang hilang
 - [x] P4.1 Rancang dan implementasikan skema/migration laporan serta pengelolaan kategori. Kategori MVP disediakan sebagai pilihan form.
 - [x] P4.2 Implementasikan formulir laporan dengan validasi, persetujuan ketentuan, dan unggahan gambar yang aman.
 - [x] P4.3 Pastikan laporan terkirim dengan status Pending dan tidak tampil ke publik sebelum waktunya.
 - [x] P4.4 Implementasikan daftar laporan milik User dan detail statusnya.
-- [ ] P4.5 Implementasikan edit/batal/revisi: pemilik dapat mengedit/membatalkan Pending; Approved tidak dapat diedit langsung; penolakan dapat diperbaiki dan dikirim ulang.
-- [ ] P4.6 Tambahkan feature test untuk validasi, unggahan, kepemilikan, dan visibilitas.
+- [x] P4.5 Implementasikan edit/batal/revisi: pemilik dapat mengedit/membatalkan Pending; Approved tidak dapat diedit langsung; penolakan dapat diperbaiki dan dikirim ulang. Route, controller, Form Request, form Blade, dan aksi pada daftar laporan diterapkan dengan pemeriksaan kepemilikan di server.
+- [x] P4.6 Tambahkan feature test untuk validasi, unggahan, kepemilikan, dan visibilitas. `LostReportManagementTest` dan `LostReportFactory` ditambahkan; seluruh suite mencapai 48 tes.
 ## Tahap 5 — Moderasi laporan oleh Admin
-- [ ] P5.1 Implementasikan dashboard/antrean moderasi Admin.
-- [ ] P5.2 Implementasikan detail laporan dan pratinjau foto yang aman.
-- [ ] P5.3 Implementasikan persetujuan/penolakan dengan alasan wajib dan alur perbaikan/pengiriman ulang.
-- [ ] P5.4 Catat Admin, waktu, keputusan, dan catatan/riwayat moderasi.
-- [ ] P5.5 Tambahkan tes otorisasi moderasi dan perubahan status.
+- [x] P5.1 Implementasikan dashboard/antrean moderasi Admin. Dashboard Admin menampilkan antrean laporan dengan filter status, ringkasan jumlah, pagination, dan field privat yang dibatasi.
+- [x] P5.2 Implementasikan detail laporan dan pratinjau foto yang aman. Halaman detail Admin, rute foto privat, dan validasi path foto diterapkan; unggahan baru kini memakai disk privat Laravel.
+- [x] P5.3 Implementasikan persetujuan/penolakan dengan alasan wajib dan alur perbaikan/pengiriman ulang. Form Request, service, transisi `Pending → Approved/Rejected`, alasan wajib penolakan, dan tampilan alasan pada pemilik diterapkan.
+- [x] P5.4 Catat Admin, waktu, keputusan, dan catatan/riwayat moderasi. Migration `report_status_histories`, model, relasi, dan tampilan riwayat pada detail Admin diterapkan.
+- [x] P5.5 Tambahkan tes otorisasi moderasi dan perubahan status. `AdminReportModerationTest` menguji Guest/User/Admin, foto privat, persetujuan, penolakan, validasi alasan, riwayat, dan alur perbaikan.
 ## Tahap 6 — Konfirmasi pengembalian
-- [ ] P6.1 Rancang model data konfirmasi pengembalian dan penyimpanan bukti privat.
-- [ ] P6.2 Implementasikan formulir konfirmasi pengembalian khusus pemilik dan unggah bukti yang diwajibkan.
-- [ ] P6.3 Terapkan status Return Pending tanpa memindahkan laporan ke daftar publik lain sebelum waktunya.
-- [ ] P6.4 Implementasikan peninjauan bukti pengembalian privat oleh Admin.
-- [ ] P6.5 Setujui pengembalian: ubah laporan menjadi Returned dan pindahkan ke Barang Ditemukan.
-- [ ] P6.6 Tolak pengembalian: alasan wajib, perbaikan/pengiriman ulang maksimal 3 kali, lalu penyelesaian melalui Admin.
-- [ ] P6.7 Tambahkan tes privasi, kepemilikan, unggahan, dan perubahan status.
+- [x] P6.1 Rancang model data konfirmasi pengembalian dan penyimpanan bukti privat. Migration `return_confirmations`, model/factory, `ReturnProof`, dan `ReturnConfirmationService` ditambahkan.
+- [x] P6.2 Implementasikan formulir konfirmasi pengembalian khusus pemilik dan unggah bukti yang diwajibkan. Bukti 1–3 file JPG/JPEG/PNG/WebP maksimal 2 MB/file disimpan pada disk privat `local`.
+- [x] P6.3 Terapkan status Return Pending tanpa memindahkan laporan ke daftar publik lain sebelum waktunya. Laporan tetap di Barang Hilang, bukan Barang Ditemukan.
+- [x] P6.4 Implementasikan peninjauan bukti pengembalian privat oleh Admin. Detail Admin menampilkan galeri bukti melalui rute privat khusus Admin.
+- [x] P6.5 Setujui pengembalian: ubah laporan menjadi Returned dan pindahkan ke Barang Ditemukan. `returned_at` dicatat otomatis saat persetujuan.
+- [x] P6.6 Tolak pengembalian: alasan wajib, perbaikan/pengiriman ulang maksimal 3 kali, lalu penyelesaian melalui Admin. Setelah 3 penolakan, Admin menyetujui dengan catatan wajib tanpa bukti baru.
+- [x] P6.7 Tambahkan tes privasi, kepemilikan, unggahan, dan perubahan status. `ReturnConfirmationTest` menambahkan 7 tes fitur.
 ## Tahap 7 — Siklus arsip dan audit
-- [ ] P7.1 Implementasikan perhitungan kedaluwarsa 30 hari berdasarkan kebijakan yang disetujui.
-- [ ] P7.2 Implementasikan job/perintah pengarsipan terjadwal dan konfigurasi scheduler.
-- [ ] P7.3 Pastikan operasi arsip aman dijalankan berulang dan tercatat.
-- [ ] P7.4 Pastikan data yang diarsipkan tidak tampil untuk publik, tetapi tetap disimpan.
-- [ ] P7.5 Tambahkan tes tanggal batas, zona waktu, eksekusi berulang, dan visibilitas publik.
+- [x] P7.1 Implementasikan perhitungan kedaluwarsa 30 hari berdasarkan kebijakan yang disetujui. Batas dihitung dari `returned_at + 30 hari` pada zona waktu Asia/Makassar; tepat pada batas sudah memenuhi syarat arsip.
+- [x] P7.2 Implementasikan job/perintah pengarsipan terjadwal dan konfigurasi scheduler. Command `reports:archive-returned` dijalankan harian pukul `00:05` WITA melalui scheduler Laravel.
+- [x] P7.3 Pastikan operasi arsip aman dijalankan berulang dan tercatat. Proses memakai lock/status filter, mencatat riwayat `archive` sebagai Sistem, dan mencatat kegagalan ke log.
+- [x] P7.4 Pastikan data yang diarsipkan tidak tampil untuk publik, tetapi tetap disimpan. Status `archived` tersembunyi dari daftar/detail/foto publik dan tetap terlihat pada antrean Admin.
+- [x] P7.5 Tambahkan tes tanggal batas, zona waktu, eksekusi berulang, dan visibilitas publik. `ReportArchiveTest` menambahkan 5 tes fitur.
 ## Tahap 8 — Penguatan dan kesiapan rilis
 - [ ] P8.1 Tinjau keamanan, otorisasi, CSRF, validasi, rate limit, dan penanganan unggahan.
 - [ ] P8.2 Tinjau kemudahan penggunaan responsif, aksesibilitas, dan teks Bahasa Indonesia.
@@ -80,6 +80,8 @@
 - [ ] P8.8 Tinjau penerimaan MVP berdasarkan PRD dan Requirement.
 ## Titik pemeriksaan saat ini
 - Repositori berisi dokumentasi perencanaan, README, lisensi, dan metadata Git; kerangka aplikasi Laravel 13 sudah diinisialisasi pada P1.1 tanpa menimpa dokumentasi atau lisensi.
+- P3.6, P4.5, dan P4.6 selesai: pemilik dapat mengubah, membatalkan, dan mengirim ulang laporan sesuai status; pengujian publik/privasi ditambahkan; 48 tes dan build Vite lulus.
+- P5.1–P5.5 selesai: Dashboard Admin, detail dengan pratinjau foto privat, keputusan setuju/tolak beralasan, riwayat moderasi, dan tes terkait telah diterapkan.
 - Arah teknis yang disetujui: Laravel monolith + MySQL + Blade + Bootstrap; UI responsif bergaya startup modern; beberapa akun Admin.
 - OpenCode boleh mengimplementasikan, menguji, dan memperbaiki masalah dalam tugas aktif secara mandiri, tetapi tidak boleh memulai tugas berikutnya. Pada setiap penyelesaian tugas, agent harus melapor lalu BERHENTI menunggu persetujuan pemilik.
 - Keputusan produk P0 yang telah disetujui diterapkan pada PRD, Requirement, ARCHITECTURE, RULES, serta TASKS. P0.8 selesai; pertanyaan non-P0 yang tersisa dicatat terbuka di dokumen terkait.
@@ -103,6 +105,25 @@
 | 2026-11-21 | P2.4 | Implementasi awal validasi akun tanpa verifikasi email dibuat sebelum keputusan P0.3; kemudian diganti dengan verifikasi email dan field identitas P0.3. | Pemilik/Agent | Selesai |
 | 2026-11-21 | P2.5 | Matriks feature test Guest/User/Admin dan akses tanpa izin diterapkan; akses publik, redirect login, `403`, dan logout Guest diuji. | Agent | Selesai |
 | 2026-11-21 | P2.4 | Migration identitas kampus, validasi registrasi, verifikasi email signed URL, resend notification, dan tes verifikasi diterapkan. | Agent | Selesai |
+| 2026-11-21 | P3.6 | Tes rute publik, daftar/detail, status nonpublik, batas 30 hari, pencarian/filter, dan privasi identitas pemilik ditambahkan. | Anggota 3/Agent | Selesai |
+| 2026-11-21 | P4.5 | Edit, batal, dan kirim ulang untuk laporan `Pending`/`Rejected` diterapkan; `Approved` ditolak dengan `403`; kepemilikan ditegakkan di server. | Anggota 3/Agent | Selesai |
+| 2026-11-21 | P4.6 | Feature test validasi, unggahan foto, kepemilikan, dan visibilitas ditambahkan bersama `LostReportFactory`. | Anggota 3/Agent | Selesai |
+| 2026-11-21 | P5.2 | Detail Admin dan pratinjau foto melalui rute privat; unggahan baru disimpan pada disk privat Laravel. | Anggota 3/Agent | Selesai |
+| 2026-11-21 | P5.3 | Persetujuan/penolakan dengan alasan wajib, transisi status, dan alasan penolakan yang tampil pada pemilik diterapkan. | Anggota 3/Agent | Selesai |
+| 2026-11-21 | P5.4 | Riwayat status mencatat Admin, waktu, keputusan, alasan, dan catatan internal. | Anggota 3/Agent | Selesai |
+| 2026-11-21 | P5.5 | Tes otorisasi, foto privat, perubahan status, validasi alasan, dan alur perbaikan ditambahkan. | Anggota 3/Agent | Selesai |
+| 2026-11-21 | P6.1 | Tabel `return_confirmations`, model/factory, penyimpanan bukti privat, dan service transisi status ditambahkan. | Agent | Selesai |
+| 2026-11-21 | P6.2 | Form konfirmasi pemilik, validasi 1–3 bukti 2 MB, pernyataan pengembalian, dan alasan penolakan terakhir diterapkan. | Agent | Selesai |
+| 2026-11-21 | P6.3 | Status `return_pending` tetap tampil di Barang Hilang dan tidak masuk Barang Ditemukan. | Agent | Selesai |
+| 2026-11-21 | P6.4 | Admin dapat meninjau galeri bukti pengembalian privat pada detail laporan. | Agent | Selesai |
+| 2026-11-21 | P6.5 | Persetujuan Admin mencatat `returned_at` dan memindahkan laporan ke Barang Ditemukan. | Agent | Selesai |
+| 2026-11-21 | P6.6 | Penolakan wajib beralasan, batas 3 pengiriman, dan resolusi Admin dengan catatan wajib diterapkan. | Agent | Selesai |
+| 2026-11-21 | P6.7 | Tes privasi, kepemilikan, unggahan, batas percobaan, resolusi Admin, dan perubahan status ditambahkan. | Agent | Selesai |
+| 2026-11-21 | P7.1 | Perhitungan batas arsip 30 hari dan zona waktu WITA diterapkan pada model dan scope publik. | Agent | Selesai |
+| 2026-11-21 | P7.2 | Command `reports:archive-returned`, service, dan scheduler harian ditambahkan. | Agent | Selesai |
+| 2026-11-21 | P7.3 | Pengarsipan dibuat idempoten dengan lock dan riwayat Sistem; kegagalan dicatat. | Agent | Selesai |
+| 2026-11-21 | P7.4 | Arsip disembunyikan dari publik, tetapi data dan bukti tetap disimpan serta dapat ditinjau Admin. | Agent | Selesai |
+| 2026-11-21 | P7.5 | Tes batas tanggal, timezone, pengulangan command, visibilitas, dan pencatatan kegagalan ditambahkan. | Agent | Selesai |
 ## Riwayat perubahan
 | Versi | Catatan |
 |---|---|
@@ -123,3 +144,7 @@
 | 1.5 | P2.5 selesai: matriks akses Guest/User/Admin dan akses tanpa izin diuji. |
 | 1.6 | P0.3 ditetapkan: field pendaftaran dan verifikasi email wajib sebelum pelaporan; implementasi P2.1/P2.4 perlu disesuaikan. |
 | 1.7 | P0.8 selesai: PRD, Requirement, ARCHITECTURE, RULES, dan TASKS diselaraskan dengan seluruh keputusan P0; versi/status, aturan status, privasi, retensi, dan daftar pertanyaan terbuka non-P0 disamakan. |
+| 1.8 | P3.6, P4.5, dan P4.6 selesai: form laporan dipakai ulang untuk edit, aksi pemilik ditambahkan pada `Laporan Saya`, dan pengujian publik/privasi/validasi/kepemilikan ditambahkan. |
+| 1.9 | P5.2–P5.5 selesai: detail dan foto privat Admin, keputusan moderasi beralasan, riwayat status, serta 61 tes lulus. |
+| 1.10 | P6.1–P6.7 selesai: konfirmasi pengembalian pemilik, bukti privat, tinjauan/setujui/tolak Admin, batas 3 kali, resolusi Admin, serta 68 tes lulus. |
+| 1.11 | P7.1–P7.5 selesai: pengarsipan 30 hari WITA, command/scheduler idempoten, riwayat Sistem, visibilitas arsip, serta 73 tes lulus. |
