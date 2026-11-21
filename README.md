@@ -43,6 +43,12 @@ Laporan dan konfirmasi akan diperiksa oleh Admin sebelum status dan publikasinya
 - User: membuat laporan dan konfirmasi pengembalian.
 - Admin: memoderasi laporan dan konfirmasi.
 
+## Struktur Repository
+
+- `backend/` — aplikasi Laravel: controller, model, migration, konfigurasi, public, dan tes.
+- `frontend/` — tampilan Blade, CSS, JavaScript, gambar, dan konfigurasi Vite.
+- `docs/` — dokumentasi proyek.
+
 ## Struktur Dokumentasi
 
 - `docs/project_brief.md`

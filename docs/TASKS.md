@@ -23,7 +23,7 @@
 - [x] P0.11 Alur OpenCode: satu tugas per instruksi; agent menyelesaikan, menguji, memperbaiki tugas aktif, melaporkan, lalu berhenti dan menunggu persetujuan eksplisit pemilik sebelum tugas selanjutnya.
 - [ ] P0.12 Tetapkan alur branch/PR tim yang disepakati.
 ## Tahap 1 — Fondasi
-- [ ] P1.1 Inisialisasi Laravel di repositori tanpa menimpa dokumentasi/license/konfigurasi Git yang sudah ada.
+- [x] P1.1 Inisialisasi Laravel di repositori tanpa menimpa dokumentasi/license/konfigurasi Git yang sudah ada. Laravel 13 (framework 13.43.0) diinisialisasi; README, LICENSE, `.gitignore` lama, `AGENTS.md`, dan `docs/` dipertahankan. Struktur dua folder utama: `backend/` untuk Laravel dan `frontend/` untuk Blade serta aset sumber.
 - [ ] P1.2 Konfigurasikan contoh environment, pengaturan aplikasi, dan petunjuk koneksi basis data.
 - [ ] P1.3 Siapkan layout dasar, gaya responsif, navigasi, dan konvensi UI.
 - [ ] P1.4 Siapkan framework pengujian dan tes dasar untuk memastikan aplikasi berjalan.
@@ -79,7 +79,7 @@
 - [ ] P8.7 Tinjau lisensi repositori dan kepatuhan lisensi aset pihak ketiga.
 - [ ] P8.8 Tinjau penerimaan MVP berdasarkan PRD dan Requirement.
 ## Titik pemeriksaan saat ini
-- Repositori berisi dokumentasi perencanaan, README, lisensi, dan metadata Git; implementasi aplikasi Laravel belum ditemukan pada pemeriksaan awal arsip.
+- Repositori berisi dokumentasi perencanaan, README, lisensi, dan metadata Git; kerangka aplikasi Laravel 13 sudah diinisialisasi pada P1.1 tanpa menimpa dokumentasi atau lisensi.
 - Arah teknis yang disetujui: Laravel monolith + MySQL + Blade + Bootstrap; UI responsif bergaya startup modern; beberapa akun Admin.
 - OpenCode boleh mengimplementasikan, menguji, dan memperbaiki masalah dalam tugas aktif secara mandiri, tetapi tidak boleh memulai tugas berikutnya. Pada setiap penyelesaian tugas, agent harus melapor lalu BERHENTI menunggu persetujuan pemilik.
 - Keputusan produk pada Tahap 0 masih terbuka sampai pemilik mengonfirmasi. Keputusan stack/desain/Admin/alur kerja yang sudah dikonfirmasi telah ditandai selesai di atas.
@@ -87,9 +87,11 @@
 | Tanggal | Tugas | Keputusan atau hambatan | Penanggung jawab | Status |
 |---|---|---|---|
 | Belum ditentukan | P0 | Pilihan produk/teknis menunggu konfirmasi tim | Tim | Terbuka |
+| 2026-11-21 | P1.1 | Pemilik menetapkan dua folder utama: `backend/` untuk aplikasi Laravel dan `frontend/` untuk view Blade serta aset sumber; Vite membangun aset ke `backend/public/build`. | Pemilik | Disetujui |
 ## Riwayat perubahan
 | Versi | Catatan |
 |---|---|
 | 0.1 | Peta jalan awal agent disusun berdasarkan dokumen repositori; keputusan yang belum selesai tetap dicatat sebagai pertanyaan. |
 | 0.2 | Pemilik mengonfirmasi Blade + Bootstrap, arah visual startup modern, beberapa akun Admin, dan alur OpenCode satu tugas per instruksi dengan checkpoint persetujuan eksplisit. |
 | 0.3 | Seluruh isi dokumen agent diterjemahkan ke Bahasa Indonesia; nama teknis dan status tugas dipertahankan. |
+| 0.4 | P1.1 selesai: kerangka Laravel 13 diinisialisasi, dokumentasi/lisensi/konfigurasi Git lama dipertahankan, dan pemeriksaan aplikasi lulus. |

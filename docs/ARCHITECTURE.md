@@ -29,6 +29,7 @@ Gunakan **satu aplikasi web monolitik Laravel** dengan pemisahan MVC sesuai konv
 7. **Jejak audit** — catat keputusan penting Admin dan perubahan status.
 
 ## 3.1 Frontend dan arah visual
+- Aplikasi Laravel berada di `backend/`; tampilan Blade dan aset sumber (CSS, JavaScript, gambar) berada di `frontend/`.
 - Gunakan Blade untuk halaman yang dirender server dan Bootstrap untuk tata letak/komponen responsif.
 - Terapkan estetika produk startup modern: hierarki jelas, ruang kosong cukup, jarak konsisten, tipografi masa kini, warna tidak berlebihan, kartu/formulir rapi, dan ikon yang fungsional.
 - Buat komponen/layout Blade yang dapat digunakan kembali untuk elemen berulang (navigasi, tombol, notifikasi, input formulir, kartu, badge, pagination, tampilan kosong).

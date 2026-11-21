@@ -104,36 +104,46 @@ Seluruh teknologi dipilih dengan mempertimbangkan ketersediaan, dokumentasi, dan
 
 ## 6. Struktur Repository
 
-Repository proyek direncanakan menggunakan struktur aplikasi Laravel dengan tambahan folder dokumentasi proyek.
+Repository proyek menggunakan dua folder utama: aplikasi Laravel di `backend/` serta tampilan dan aset sumber di `frontend/`. Folder `docs/` menyimpan dokumentasi proyek.
 
 ```text
-titiptemu/
-├── app/
-├── bootstrap/
-├── config/
-├── database/
+titipemu/
+├── backend/
+│   ├── app/
+│   ├── bootstrap/
+│   ├── config/
+│   ├── database/
+│   ├── public/
+│   ├── routes/
+│   ├── storage/
+│   ├── tests/
+│   ├── artisan
+│   ├── composer.json
+│   ├── composer.lock
+│   └── phpunit.xml
 ├── docs/
-│   ├── PROJECT_BRIEF.md
-│   ├── PRD.md
-│   ├── REQUIREMENT.md
+│   ├── project_brief.md
+│   ├── prd.md
+│   ├── requirement.md
+│   ├── ARCHITECTURE.md
+│   ├── RULES.md
+│   ├── TASKS.md
 │   ├── diagrams/
 │   └── wireframes/
-├── public/
-├── resources/
-├── routes/
-├── storage/
-├── tests/
-├── .env.example
+├── frontend/
+│   ├── css/
+│   ├── images/
+│   ├── js/
+│   ├── views/
+│   ├── package.json
+│   ├── package-lock.json
+│   └── vite.config.js
 ├── .gitignore
-├── artisan
-├── composer.json
-├── composer.lock
 ├── LICENSE
-├── package.json
 └── README.md
 ```
 
-Folder `docs` digunakan untuk menyimpan dokumen perencanaan, kebutuhan sistem, diagram, dan rancangan antarmuka. Folder aplikasi lainnya mengikuti struktur standar Laravel. File konfigurasi rahasia `.env` tidak akan dimasukkan ke repository publik.
+Folder `docs` digunakan untuk menyimpan dokumen perencanaan, kebutuhan sistem, diagram, dan rancangan antarmuka. Aset frontend dibangun dengan Vite ke `backend/public/build`. File konfigurasi rahasia `.env` tidak akan dimasukkan ke repository publik.
 
 ## 7. Lisensi Proyek
 

@@ -1,0 +1,3 @@
+Kerjakan Task 1 pada `docs/TASKS.md` sesuai seluruh aturan dan dokumentasi proyek. Selesaikan sampai tuntas, lakukan testing, perbaiki error, lalu berhenti dan tunggu instruksi saya untuk task berikutnya.
+sebelum lanjut saya ingin membuatnya menjadi 2 folder utama, yaitu frontend dan backend. jika file yang baru di buat merupakan bagian dari backend, pindah kan ke dalam folder backend.
+lanjutkan P1.2 (konfigurasi environment, aplikasi, dan koneksi MySQL), termasuk penyesuaian perintah setup untuk struktur backend/ + frontend/. Selesaikan sampai tuntas, lakukan testing, perbaiki error, lalu berhenti dan tunggu instruksi saya untuk task berikutnya.
