@@ -15,7 +15,7 @@
 - [ ] P0.3 Pastikan field pendaftaran dan verifikasi email/identitas kampus.
 - [ ] P0.4 Pastikan field formulir laporan, kategori, batas foto, format, dan ukuran.
 - [ ] P0.5 Pastikan cara kontak/privasi, edit/batal, penolakan/revisi, dan aturan pengiriman ulang konfirmasi pengembalian.
-- [ ] P0.6 Pastikan cara menghitung 30 hari, zona waktu, serta kebijakan arsip/retensi data.
+- [x] P0.6 Pastikan cara menghitung 30 hari, zona waktu, serta kebijakan arsip/retensi data. Ditetapkan: 30 hari sejak Admin menyetujui dan mempublikasikan laporan, zona waktu Asia/Makassar (WITA); setelah batas, status `Archived` dan disembunyikan dari publik; data tetap disimpan; foto bukti tetap privat.
 - [x] P0.7 Arah stack frontend dikonfirmasi: Laravel Blade + Bootstrap; tampilan modern bergaya startup. Versi Laravel dan implementasi autentikasi dipilih pada tugas setup yang sesuai berdasarkan kompatibilitas dan kemudahan pemeliharaan, tanpa mengganti stack yang disetujui.
 - [~] P0.8 Tinjau/persetujuan PRD, Requirement, ARCHITECTURE, RULES, dan peta jalan ini; dasar teknis telah disetujui, pertanyaan produk yang tersisa masih terbuka.
 - [x] P0.9 Periksa keadaan repositori; pertahankan riwayat Git dan dokumentasi yang ada.
@@ -24,11 +24,11 @@
 - [ ] P0.12 Tetapkan alur branch/PR tim yang disepakati.
 ## Tahap 1 — Fondasi
 - [x] P1.1 Inisialisasi Laravel di repositori tanpa menimpa dokumentasi/license/konfigurasi Git yang sudah ada. Laravel 13 (framework 13.43.0) diinisialisasi; README, LICENSE, `.gitignore` lama, `AGENTS.md`, dan `docs/` dipertahankan. Struktur dua folder utama: `backend/` untuk Laravel dan `frontend/` untuk Blade serta aset sumber.
-- [ ] P1.2 Konfigurasikan contoh environment, pengaturan aplikasi, dan petunjuk koneksi basis data.
-- [ ] P1.3 Siapkan layout dasar, gaya responsif, navigasi, dan konvensi UI.
-- [ ] P1.4 Siapkan framework pengujian dan tes dasar untuk memastikan aplikasi berjalan.
-- [ ] P1.5 Tetapkan konvensi migration/seeder dan data awal pengembangan.
-- [ ] P1.6 Dokumentasikan setup dan perintah pengembang yang umum di README.
+- [x] P1.2 Konfigurasikan contoh environment, pengaturan aplikasi, dan petunjuk koneksi basis data. `.env.example` memakai MySQL, nama aplikasi `TitipTemu`, README memuat perintah setup backend/frontend, dan migrasi MySQL telah diverifikasi.
+- [x] P1.3 Siapkan layout dasar, gaya responsif, navigasi, dan konvensi UI. Layout Blade + Bootstrap 5.3, token desain, navigasi responsif, partial brand/flash/footer, dan beranda modern telah diterapkan.
+- [x] P1.4 Siapkan framework pengujian dan tes dasar untuk memastikan aplikasi berjalan. PHPUnit 12 melalui Laravel; tes feature beranda dan health check, tes unit konfigurasi nama aplikasi, locale, dan timezone; SQLite in-memory dipakai saat testing.
+- [x] P1.5 Tetapkan konvensi migration/seeder dan data awal pengembangan. Konvensi reversibel dan idempotent didokumentasikan; `DatabaseSeeder` membuat satu User demo fiktif secara aman dan dapat dijalankan ulang.
+- [x] P1.6 Dokumentasikan setup dan perintah pengembang yang umum di README. README mencakup prasyarat, MySQL, setup backend/frontend, seeder, dev server, build, perintah Laravel, Composer, npm, dan testing.
 ## Tahap 2 — Autentikasi dan otorisasi
 - [ ] P2.1 Implementasikan registrasi/login/logout dengan metode autentikasi yang disetujui.
 - [ ] P2.2 Implementasikan otorisasi User/Admin dengan aman.
@@ -88,6 +88,11 @@
 |---|---|---|---|
 | Belum ditentukan | P0 | Pilihan produk/teknis menunggu konfirmasi tim | Tim | Terbuka |
 | 2026-11-21 | P1.1 | Pemilik menetapkan dua folder utama: `backend/` untuk aplikasi Laravel dan `frontend/` untuk view Blade serta aset sumber; Vite membangun aset ke `backend/public/build`. | Pemilik | Disetujui |
+| 2026-11-21 | P1.2 | Database dan user MySQL lokal dibuat; ekstensi `pdo_mysql` dipasang; seluruh migrasi bawaan berhasil dijalankan dan koneksi aplikasi ke MySQL diverifikasi. | Agent | Selesai |
+| 2026-11-21 | P0.6 | Pemilik menetapkan 30 hari sejak persetujuan dan publikasi Admin, zona waktu Asia/Makassar; setelahnya status `Archived`, disembunyikan dari publik, data tetap disimpan, dan foto bukti tetap privat. | Pemilik | Disetujui |
+| 2026-11-21 | P1.3 | Layout dasar, token desain, navigasi responsif, dan beranda Blade + Bootstrap 5.3 diterapkan; tautan navigasi hanya tampil jika rute terkait sudah tersedia. | Agent | Selesai |
+| 2026-11-21 | P1.5 | Konvensi migration/seeder didokumentasikan; seeder demo memakai data fiktif, kunci deterministik, dan `updateOrCreate`; idempotensi diuji. | Agent | Selesai |
+| 2026-11-21 | P1.6 | README dilengkapi panduan setup, konfigurasi MySQL, seeder, backend/frontend dev server, build, perintah pengembang umum, dan testing. | Agent | Selesai |
 ## Riwayat perubahan
 | Versi | Catatan |
 |---|---|
@@ -95,3 +100,9 @@
 | 0.2 | Pemilik mengonfirmasi Blade + Bootstrap, arah visual startup modern, beberapa akun Admin, dan alur OpenCode satu tugas per instruksi dengan checkpoint persetujuan eksplisit. |
 | 0.3 | Seluruh isi dokumen agent diterjemahkan ke Bahasa Indonesia; nama teknis dan status tugas dipertahankan. |
 | 0.4 | P1.1 selesai: kerangka Laravel 13 diinisialisasi, dokumentasi/lisensi/konfigurasi Git lama dipertahankan, dan pemeriksaan aplikasi lulus. |
+| 0.5 | P1.2 selesai: environment contoh, nama aplikasi, koneksi MySQL, dan perintah setup struktur backend/frontend didokumentasikan serta diuji. |
+| 0.6 | P0.6 diputuskan: arsip 30 hari sejak persetujuan dan publikasi Admin, zona waktu Asia/Makassar, status `Archived`, data tetap disimpan, foto bukti tetap privat. |
+| 0.7 | P1.3 selesai: layout dasar Blade + Bootstrap, token desain, navigasi responsif, dan beranda diterapkan. |
+| 0.8 | P1.4 selesai: framework PHPUnit, konfigurasi testing, dan tes dasar aplikasi diterapkan serta lulus. |
+| 0.9 | P1.5 selesai: konvensi migration/seeder dan data awal pengembangan diterapkan serta diuji. |
+| 1.0 | P1.6 selesai: setup dan perintah pengembang umum didokumentasikan di README. |
