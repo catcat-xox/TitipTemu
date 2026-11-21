@@ -1,8 +1,8 @@
 @php
     $footerNavigation = [
         ['route' => 'home', 'label' => 'Beranda'],
-        ['route' => 'lost.index', 'label' => 'Barang Hilang'],
-        ['route' => 'found.index', 'label' => 'Barang Ditemukan'],
+        ['route' => 'reports.index', 'params' => ['lost'], 'label' => 'Barang Hilang'],
+        ['route' => 'reports.index', 'params' => ['found'], 'label' => 'Barang Ditemukan'],
         ['route' => 'guide', 'label' => 'Panduan'],
     ];
 @endphp
@@ -23,7 +23,7 @@
                 <ul class="footer-links">
                     @foreach ($footerNavigation as $item)
                         @if (Route::has($item['route']))
-                            <li><a href="{{ route($item['route']) }}">{{ $item['label'] }}</a></li>
+                            <li><a href="{{ route($item['route'], $item['params'] ?? []) }}">{{ $item['label'] }}</a></li>
                         @endif
                     @endforeach
                 </ul>

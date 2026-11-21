@@ -36,17 +36,17 @@
 - [ ] P2.4 Implementasikan validasi/verifikasi akun sesuai keputusan.
 - [ ] P2.5 Tambahkan tes untuk Guest, User, Admin, dan akses tanpa izin.
 ## Tahap 3 — Penjelajahan publik
-- [ ] P3.1 Implementasikan halaman beranda publik.
-- [ ] P3.2 Implementasikan daftar Barang Hilang dengan pagination dan tampilan saat data kosong.
-- [ ] P3.3 Implementasikan daftar Barang Ditemukan dengan aturan tampil 30 hari (setelah kebijakan dikonfirmasi).
-- [ ] P3.4 Implementasikan halaman detail laporan publik dengan field yang aman bagi privasi.
-- [ ] P3.5 Tambahkan pencarian kata kunci dan filter yang disetujui.
+- [x] P3.1 Implementasikan halaman beranda publik. Beranda fondasi P1 dipertahankan dan navigasi publik kini terhubung ke daftar laporan.
+- [x] P3.2 Implementasikan daftar Barang Hilang dengan pagination dan tampilan saat data kosong.
+- [x] P3.3 Implementasikan daftar Barang Ditemukan dengan aturan tampil 30 hari berdasarkan `returned_at`.
+- [x] P3.4 Implementasikan halaman detail laporan publik dengan field yang aman bagi privasi.
+- [x] P3.5 Tambahkan pencarian kata kunci dan filter yang disetujui.
 - [ ] P3.6 Tambahkan tes rute publik dan privasi.
 ## Tahap 4 — Pelaporan barang hilang
-- [ ] P4.1 Rancang dan implementasikan skema/migration laporan serta pengelolaan kategori.
-- [ ] P4.2 Implementasikan formulir laporan dengan validasi, persetujuan ketentuan, dan unggahan gambar yang aman.
-- [ ] P4.3 Pastikan laporan terkirim dengan status Pending dan tidak tampil ke publik sebelum waktunya.
-- [ ] P4.4 Implementasikan daftar laporan milik User dan detail statusnya.
+- [x] P4.1 Rancang dan implementasikan skema/migration laporan serta pengelolaan kategori. Kategori MVP disediakan sebagai pilihan form.
+- [x] P4.2 Implementasikan formulir laporan dengan validasi, persetujuan ketentuan, dan unggahan gambar yang aman.
+- [x] P4.3 Pastikan laporan terkirim dengan status Pending dan tidak tampil ke publik sebelum waktunya.
+- [x] P4.4 Implementasikan daftar laporan milik User dan detail statusnya.
 - [ ] P4.5 Implementasikan edit/batal/revisi yang diizinkan (setelah keputusan ditetapkan).
 - [ ] P4.6 Tambahkan feature test untuk validasi, unggahan, kepemilikan, dan visibilitas.
 ## Tahap 5 — Moderasi laporan oleh Admin
