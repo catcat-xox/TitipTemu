@@ -16,6 +16,7 @@ class LostReportFactory extends Factory
             'description' => fake()->sentence(14),
             'lost_at' => fake()->dateTimeBetween('-30 days', '-1 day'),
             'location' => fake()->city(),
+            'contact_phone' => '0812'.fake()->numerify('#######'),
             'photo_path' => 'lost-reports/'.fake()->uuid().'.jpg',
             'status' => 'pending',
             'terms_accepted_at' => now(),

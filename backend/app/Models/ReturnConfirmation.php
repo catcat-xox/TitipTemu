@@ -10,7 +10,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable([
     'lost_report_id',
     'user_id',
+    'owner_name',
     'admin_id',
+    'reviewer_admin_id',
     'status',
     'attempt',
     'reported_returned_at',
@@ -48,6 +50,11 @@ class ReturnConfirmation extends Model
     public function admin(): BelongsTo
     {
         return $this->belongsTo(User::class, 'admin_id');
+    }
+
+    public function reviewerAdmin(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'reviewer_admin_id');
     }
 
     public function scopePending($query)

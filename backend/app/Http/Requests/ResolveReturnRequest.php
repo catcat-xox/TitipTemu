@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Admin;
 use App\Models\LostReport;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -15,7 +16,7 @@ class ResolveReturnRequest extends FormRequest
             : null;
 
         return $report instanceof LostReport
-            && $this->user()?->isAdmin() === true
+            && $this->user('admin') instanceof Admin
             && $report->status === 'approved'
             && $latest?->status === 'rejected'
             && $latest->attempt >= 3;

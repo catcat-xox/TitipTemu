@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
 @section('title', 'Masuk — TitipTemu')
-@section('description', 'Masuk ke akun TitipTemu untuk mengelola laporan barang hilang.') 
+@section('description', 'Masuk ke akun TitipTemu untuk mengelola laporan barang temuan.')
 
 @section('content')
     <section class="auth-section">
@@ -10,8 +10,7 @@
                 <div class="col-sm-10 col-md-8 col-lg-5">
                     <div class="auth-card">
                         <div class="text-center mb-4">
-                            <span class="eyebrow">Akses akun</span>
-                            <h1 class="auth-title mt-3">Selamat datang kembali</h1>
+                            <h1 class="auth-title">Selamat datang kembali</h1>
                             <p class="mb-0">Masuk untuk melihat dan mengelola laporan Anda.</p>
                         </div>
 

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
 @php
     $isLost = $type === 'lost';
@@ -8,24 +8,14 @@
 @section('title', $title . ' — TitipTemu')
 
 @section('content')
-    <section class="page-hero">
+    <section class="section reports-listing">
         <div class="container">
-            <span class="eyebrow">{{ $isLost ? 'Daftar aktif' : 'Riwayat pengembalian' }}</span>
-            <h1 class="mt-3">{{ $title }}</h1>
-            <p class="page-intro">
-                {{ $isLost
-                    ? 'Cari laporan kehilangan yang telah disetujui Admin.'
-                    : 'Lihat laporan yang pengembaliannya telah disetujui Admin dalam 30 hari terakhir.' }}
-            </p>
-        </div>
-    </section>
+            <h1 class="visually-hidden">{{ $title }}</h1>
 
-    <section class="section pt-0">
-        <div class="container">
-            <form class="filter-panel mb-4" method="GET" action="{{ route('reports.index', $type) }}">
+            <form class="filter-panel reports-filter-panel mb-4" method="GET" action="{{ route('reports.index', $type) }}">
                 <div class="row g-3 align-items-end">
                     <div class="col-lg-5">
-                        <label class="form-label" for="q">Cari barang</label>
+                        <label class="form-label" for="q">Cari {{ $title }}</label>
                         <input class="form-control" id="q" name="q" value="{{ request('q') }}"
                             placeholder="Nama, kategori, atau lokasi">
                     </div>
@@ -74,9 +64,12 @@
                                     <h2>{{ $report->item_name }}</h2>
                                     <p class="report-meta">{{ $report->category }} · {{ $report->location }}</p>
                                     <p class="report-excerpt">{{ Str::limit($report->description, 120) }}</p>
-                                    <a class="stretched-link" href="{{ route('reports.show', [$type, $report]) }}">
-                                        Lihat detail <span aria-hidden="true">→</span>
-                                    </a>
+                                    <div class="mt-auto pt-2">
+                                        <a class="btn btn-sm btn-outline-primary"
+                                            href="{{ route('reports.show', [$type, $report]) }}">
+                                            Lihat detail <span aria-hidden="true">→</span>
+                                        </a>
+                                    </div>
                                 </div>
                             </article>
                         </div>

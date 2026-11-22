@@ -65,6 +65,7 @@ class LostReportsTest extends TestCase
             'description' => 'Kartu mahasiswa hilang di sekitar gedung kuliah.',
             'lost_at' => now()->subDay()->toDateString(),
             'location' => 'Gedung Kuliah',
+            'contact_phone' => '081234567890',
             'photo' => UploadedFile::fake()->image('card.png'),
             'terms_accepted' => '1',
         ]);
@@ -88,6 +89,6 @@ class LostReportsTest extends TestCase
             'description' => 'Kartu mahasiswa hilang di sekitar gedung kuliah.',
             'lost_at' => now()->subDay()->toDateString(),
             'location' => 'Gedung Kuliah',
-        ])->assertSessionHasErrors(['photo', 'terms_accepted']);
+        ])->assertSessionHasErrors(['contact_phone', 'photo', 'terms_accepted']);
     }
 }

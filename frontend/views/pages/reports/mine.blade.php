@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
 @section('title', 'Laporan Saya — TitipTemu')
 
@@ -16,21 +16,20 @@
     @endphp
     <section class="page-hero">
         <div class="container">
-            <span class="eyebrow">Area User</span>
-            <h1 class="mt-3">Laporan saya</h1>
-            <p class="page-intro">Pantau status laporan kehilangan yang kamu kirimkan.</p>
+            <h1>Laporan saya</h1>
+            <p class="page-intro">Pantau status laporan barang temuan yang kamu kirimkan.</p>
         </div>
     </section>
     <section class="section pt-0">
         <div class="container">
             @if ($reports->isEmpty())
-                <div class="empty-state"><h2>Belum ada laporan</h2><p>Mulai dengan membuat laporan kehilangan.</p>
-                    <a class="btn btn-primary" href="{{ route('reports.create') }}">Buat laporan</a>
+                <div class="empty-state"><h2>Belum ada laporan</h2><p>Mulai dengan melaporkan barang yang kamu temukan.</p>
+                    <a class="btn btn-primary" href="{{ route('reports.create') }}">Laporkan Barang Temuan</a>
                 </div>
             @else
                 <div class="table-responsive surface-card">
                     <table class="table align-middle mb-0">
-                        <caption class="visually-hidden">Daftar laporan kehilangan milik saya</caption>
+                        <caption class="visually-hidden">Daftar laporan barang temuan milik saya</caption>
                         <thead><tr>
                             <th scope="col">Barang</th>
                             <th scope="col">Tanggal</th>

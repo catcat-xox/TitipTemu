@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
 @section('title', 'Konfirmasi Pengembalian — TitipTemu')
 
@@ -7,7 +7,7 @@
         <div class="container">
             <a class="back-link" href="{{ route('reports.mine') }}">← Kembali ke laporan saya</a>
             <h1 class="mt-3">Konfirmasi barang telah kembali</h1>
-            <p class="page-intro">Kirim bukti pengembalian untuk laporan <strong>{{ $report->item_name }}</strong>. Bukti hanya dapat dilihat oleh Anda dan Admin.</p>
+            <p class="page-intro">Kirim data pemilik dan foto bersama untuk laporan <strong>{{ $report->item_name }}</strong>. Data ini hanya dapat dilihat oleh Anda dan Admin.</p>
         </div>
     </section>
 
@@ -30,9 +30,15 @@
                     <form method="POST" action="{{ route('reports.return.store', $report) }}" enctype="multipart/form-data">
                         @csrf
                         <div class="mb-3">
-                            <label class="form-label" for="proof">Foto bukti pengembalian</label>
+                            <label class="form-label" for="owner_name">Nama pemilik *</label>
+                            <input class="form-control" id="owner_name" name="owner_name"
+                                value="{{ old('owner_name') }}" maxlength="100" required>
+                            <div class="form-text">Nama pemilik tidak ditampilkan di halaman publik.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="proof">Foto bersama penemu–pemilik *</label>
                             <input class="form-control" type="file" id="proof" name="proof[]" accept="image/jpeg,image/png,image/webp" multiple required>
-                            <div class="form-text">Wajib 1–3 foto JPG/JPEG/PNG/WebP, maksimal 2 MB per foto.</div>
+                            <div class="form-text">Wajib 1–3 foto JPG/JPEG/PNG/WebP, maksimal 2 MB per foto. Foto ini menjadi bukti pengembalian dan tidak ditampilkan di halaman publik.</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="note">Catatan pengembalian</label>

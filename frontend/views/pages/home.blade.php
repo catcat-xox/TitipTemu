@@ -1,25 +1,25 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
 @section('title', 'Beranda — TitipTemu')
-@section('description', 'TitipTemu memusatkan informasi barang hilang kampus dan mendokumentasikan barang yang telah kembali kepada pemiliknya.')
+@section('description', 'TitipTemu memudahkan pelaporan barang temuan kampus dan pencarian barang oleh pemiliknya.')
 
 @section('content')
     <section class="hero">
         <div class="container">
             <div class="row align-items-center g-5">
                 <div class="col-lg-6">
-                    <span class="eyebrow">Portal barang hilang kampus</span>
+                    <span class="eyebrow">Portal barang temuan kampus</span>
                     <h1 class="mt-3">
-                        Barang yang hilang, <span class="accent">lebih mudah kembali.</span>
+                        Barang yang ditemukan, <span class="accent">lebih mudah kembali.</span>
                     </h1>
                     <p class="lead">
-                        TitipTemu memusatkan laporan kehilangan dalam satu tempat.
-                        Setiap laporan diperiksa Admin sebelum dipublikasikan, dan
-                        pengembalian barang didokumentasikan dengan bukti yang privat.
+                        TitipTemu memusatkan laporan barang temuan dalam satu tempat.
+                        Setiap laporan kami periksa dulu sebelum ditampilkan, agar informasi
+                        yang Anda lihat tetap akurat dan aman.
                     </p>
                     <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
                         <a href="#cara-kerja" class="btn btn-primary btn-lg">Lihat cara kerja</a>
-                        <a href="#daftar-publik" class="btn btn-outline-secondary btn-lg">Tentang daftar publik</a>
+                        <a href="{{ route('reports.index', 'lost') }}" class="btn btn-outline-secondary btn-lg">Lihat barang hilang</a>
                     </div>
 
                     <ul class="hero-points">
@@ -35,14 +35,14 @@
                                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="m5 12 4 4L19 6" />
                             </svg>
-                            Laporan ditinjau Admin sebelum tampil.
+                            Laporan kami periksa dulu sebelum ditampilkan.
                         </li>
                         <li>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="m5 12 4 4L19 6" />
                             </svg>
-                            Foto bukti pengembalian tetap privat.
+                            Foto bukti pengembalian tidak kami tampilkan di halaman publik.
                         </li>
                     </ul>
                 </div>
@@ -54,28 +54,28 @@
                             <li>
                                 <span class="flow-index" aria-hidden="true">01</span>
                                 <div>
-                                    <strong>Lapor kehilangan</strong>
-                                    <p>User masuk, mengisi data barang, mengunggah foto, dan menyetujui ketentuan.</p>
+                                    <strong>Laporkan temuan</strong>
+                                    <p>Penemu barang mengisi data penemu dan barang, mengunggah foto, lalu mengirim laporan.</p>
                                 </div>
                             </li>
                             <li>
                                 <span class="flow-index" aria-hidden="true">02</span>
                                 <div>
-                                    <strong>Ditinjau Admin</strong>
-                                    <p>Laporan diperiksa. Setelah disetujui, laporan tampil di daftar Barang Hilang.</p>
+                                    <strong>Diperiksa tim kami</strong>
+                                    <p>Laporan kami periksa dulu. Setelah lolos pemeriksaan, barang muncul di daftar Barang Hilang.</p>
                                 </div>
                             </li>
                             <li>
                                 <span class="flow-index" aria-hidden="true">03</span>
                                 <div>
-                                    <strong>Konfirmasi kembali</strong>
-                                    <p>Pemilik mengirim bukti. Setelah disetujui, laporan masuk Barang Ditemukan.</p>
+                                    <strong>Konfirmasi pengembalian</strong>
+                                    <p>Pemilik barang mengirim nama dan foto bersama. Setelah kami periksa, barang muncul di daftar Barang Ditemukan.</p>
                                 </div>
                             </li>
                         </ol>
                         <div class="hero-card-note">
-                            Barang Ditemukan tampil selama 30 hari sejak disetujui Admin,
-                            lalu diarsipkan. Data tetap tersimpan.
+                            Barang yang sudah kembali tampil sekitar 30 hari, setelah itu tidak
+                            ditampilkan lagi. Datanya tetap kami simpan.
                         </div>
                     </div>
                 </div>
@@ -83,54 +83,53 @@
         </div>
     </section>
 
-    <section class="section" id="daftar-publik" aria-labelledby="judul-daftar-publik">
+    <section class="section pt-0" id="laporan-terbaru" aria-labelledby="judul-laporan-terbaru">
         <div class="container">
-            <div class="section-heading">
-                <span class="eyebrow">Daftar publik</span>
-                <h2 id="judul-daftar-publik">Dua daftar, satu alur yang jelas</h2>
-                <p>
-                    Guest dapat melihat informasi yang telah disetujui Admin tanpa
-                    membuat akun. Data pribadi dan bukti verifikasi tidak ditampilkan.
-                </p>
+            <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+                <div>
+                    <span class="eyebrow">Laporan terbaru</span>
+                    <h2 id="judul-laporan-terbaru" class="mt-2 mb-1">Barang hilang yang baru dilaporkan</h2>
+                    <p class="text-muted mb-0">Beberapa barang temuan yang sudah diverifikasi dan masih menunggu pemiliknya.</p>
+                </div>
+                <a class="btn btn-outline-primary" href="{{ route('reports.index', 'lost') }}">
+                    Lihat selengkapnya <span aria-hidden="true">→</span>
+                </a>
             </div>
 
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="surface-card">
-                        <span class="icon-box" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="7" />
-                                <path d="m20 20-4-4" />
-                            </svg>
-                        </span>
-                        <span class="card-label">Daftar publik</span>
-                        <h3>Barang Hilang</h3>
-                        <p>
-                            Berisi laporan kehilangan yang telah disetujui Admin dan masih
-                            aktif. Informasi ditampilkan secukupnya untuk membantu pencarian.
-                        </p>
-                    </div>
+            @if ($latestReports->isEmpty())
+                <div class="empty-state">
+                    <span class="icon-box" aria-hidden="true">⌕</span>
+                    <h2>Belum ada laporan barang hilang</h2>
+                    <p>Laporan yang sudah diverifikasi akan muncul di sini.</p>
                 </div>
-
-                <div class="col-md-6">
-                    <div class="surface-card">
-                        <span class="icon-box accent" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 7 9.5 17.5 4 12" />
-                                <path d="M20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9" />
-                            </svg>
-                        </span>
-                        <span class="card-label">Riwayat pengembalian</span>
-                        <h3>Barang Ditemukan</h3>
-                        <p>
-                            Berisi laporan yang pengembaliannya telah disetujui Admin.
-                            Tampil selama 30 hari, lalu diarsipkan dari daftar publik.
-                        </p>
-                    </div>
+            @else
+                <div class="row g-3">
+                    @foreach ($latestReports as $report)
+                        <div class="col-md-6 col-lg-3">
+                            <article class="report-card home-report-card">
+                                <div class="report-image">
+                                    <img src="{{ route('reports.photo', $report) }}"
+                                        alt="Foto {{ $report->item_name }}" loading="lazy">
+                                </div>
+                                <div class="report-card-body">
+                                    <div class="d-flex justify-content-between gap-2 align-items-start">
+                                        <span class="status-badge status-{{ $report->status }}">Masih dicari</span>
+                                        <span class="report-date">{{ $report->lost_at->translatedFormat('d M Y') }}</span>
+                                    </div>
+                                    <h2>{{ $report->item_name }}</h2>
+                                    <p class="report-meta">{{ $report->category }} · {{ $report->location }}</p>
+                                    <div class="mt-auto pt-2">
+                                        <a class="btn btn-sm btn-outline-primary"
+                                            href="{{ route('reports.show', ['lost', $report]) }}">
+                                            Lihat detail <span aria-hidden="true">→</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    @endforeach
                 </div>
-            </div>
+            @endif
         </div>
     </section>
 
@@ -140,8 +139,8 @@
                 <span class="eyebrow">Cara kerja</span>
                 <h2 id="judul-cara-kerja">Dari laporan hingga kembali ke pemilik</h2>
                 <p>
-                    Setiap perubahan status penting diperiksa dan dicatat oleh Admin.
-                    Laporan tidak langsung tampil ke publik.
+                    Setiap perubahan penting kami periksa dan catat. Laporan tidak langsung
+                    muncul di daftar publik.
                 </p>
             </div>
 
@@ -151,8 +150,8 @@
                         <span class="step-number">1</span>
                         <h3>Laporkan dengan lengkap</h3>
                         <p>
-                            User mengisi nama barang, kategori, deskripsi, tanggal dan
-                            lokasi kehilangan, foto, serta menyetujui ketentuan.
+                            Penemu barang mengisi nomor HP, nama barang, kategori, deskripsi,
+                            tanggal dan lokasi ditemukan, foto, serta menyetujui ketentuan.
                         </p>
                     </div>
                 </div>
@@ -160,10 +159,10 @@
                 <div class="col-md-4">
                     <div class="surface-card">
                         <span class="step-number">2</span>
-                        <h3>Tunggu pemeriksaan Admin</h3>
+                        <h3>Tunggu pemeriksaan</h3>
                         <p>
-                            Laporan berstatus Pending dan belum tampil publik. Admin
-                            menyetujui atau menolak setelah memeriksa isi laporan.
+                            Laporan masih menunggu pemeriksaan dan belum ditampilkan. Setelah
+                            isinya kami periksa, laporan kami setujui atau kami kembalikan untuk diperbaiki.
                         </p>
                     </div>
                 </div>
@@ -173,8 +172,8 @@
                         <span class="step-number">3</span>
                         <h3>Konfirmasi pengembalian</h3>
                         <p>
-                            Pemilik mengirim bukti bahwa barang telah diterima. Setelah
-                            disetujui Admin, laporan berpindah ke Barang Ditemukan.
+                            Pemilik mengirim bukti bahwa barang sudah diterima. Setelah kami
+                            periksa, barang berpindah ke daftar Barang Ditemukan.
                         </p>
                     </div>
                 </div>
@@ -201,59 +200,23 @@
                                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="m5 12 4 4L19 6" />
                                 </svg>
-                                Nomor identitas, email, dan kontak pribadi tidak ditampilkan.
+                                Nomor identitas dan email tidak ditampilkan. Nomor HP penemu hanya dipakai untuk tombol WhatsApp.
                             </li>
                             <li>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="m5 12 4 4L19 6" />
                                 </svg>
-                                Foto bukti pengembalian hanya diakses untuk verifikasi.
+                                Nama pemilik dan foto bersama hanya diakses untuk verifikasi.
                             </li>
                             <li>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="m5 12 4 4L19 6" />
                                 </svg>
-                                Laporan User hanya dapat dikelola oleh pemilik dan Admin.
+                                Laporan hanya dapat dikelola oleh penemu barang dan tim kami.
                             </li>
                         </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section pt-0" aria-labelledby="judul-peran">
-        <div class="container">
-            <div class="section-heading">
-                <span class="eyebrow">Peran pengguna</span>
-                <h2 id="judul-peran">Akses sesuai kebutuhan</h2>
-                <p>Guest bukan akun terdaftar. Sistem memiliki akun User dan Admin.</p>
-            </div>
-
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="surface-card">
-                        <span class="card-label">Guest</span>
-                        <h3>Melihat informasi</h3>
-                        <p>Membuka beranda, daftar barang yang dipublikasikan, detail publik, dan pencarian tanpa login.</p>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="surface-card">
-                        <span class="card-label">User</span>
-                        <h3>Melapor dan memantau</h3>
-                        <p>Membuat laporan kehilangan, melihat status laporan miliknya, dan mengirim konfirmasi pengembalian.</p>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="surface-card">
-                        <span class="card-label">Admin</span>
-                        <h3>Memeriksa dan memoderasi</h3>
-                        <p>Meninjau laporan, memeriksa bukti pengembalian, serta mengelola publikasi dan arsip.</p>
                     </div>
                 </div>
             </div>

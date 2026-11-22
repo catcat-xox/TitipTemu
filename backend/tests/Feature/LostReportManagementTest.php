@@ -83,8 +83,8 @@ class LostReportManagementTest extends TestCase
         $owner = User::factory()->create();
         $report = LostReport::factory()->for($owner)->create();
 
-        $this->actingAs($owner)->put(route('reports.update', $report), ['item_name' => ''])
-            ->assertSessionHasErrors(['item_name', 'category', 'description', 'lost_at', 'location']);
+        $this->actingAs($owner)->put(route('reports.update', $report), ['item_name' => '', 'contact_phone' => ''])
+            ->assertSessionHasErrors(['item_name', 'category', 'description', 'lost_at', 'location', 'contact_phone']);
         $this->actingAs($owner)->put(route('reports.update', $report), $this->payload([
             'photo' => UploadedFile::fake()->image('foto.gif'),
         ]))->assertSessionHasErrors('photo');
@@ -142,6 +142,23 @@ class LostReportManagementTest extends TestCase
         $this->get(route('reports.show', ['lost', $report]))->assertOk();
     }
 
+    public function test_user_without_verified_email_can_submit_a_report(): void
+    {
+        Storage::fake('local');
+        $user = User::factory()->create(['email_verified_at' => null]);
+
+        $this->actingAs($user)->post(route('reports.store'), $this->payload([
+            'photo' => UploadedFile::fake()->image('dompet.jpg'),
+            'terms_accepted' => '1',
+        ]))->assertRedirect(route('reports.mine'));
+
+        $this->assertDatabaseHas('lost_reports', [
+            'user_id' => $user->id,
+            'item_name' => 'Kartu mahasiswa',
+            'status' => 'pending',
+        ]);
+    }
+
     private function payload(array $overrides = []): array
     {
         return array_merge([
@@ -150,6 +167,7 @@ class LostReportManagementTest extends TestCase
             'description' => 'Kartu mahasiswa hilang di sekitar gedung kuliah.',
             'lost_at' => now()->subDay()->toDateString(),
             'location' => 'Gedung Kuliah',
+            'contact_phone' => '081234567890',
         ], $overrides);
     }
 }

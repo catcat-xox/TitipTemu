@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
 @section('title', $report->item_name . ' — TitipTemu')
 
@@ -18,12 +18,17 @@
                     <p class="page-intro">{{ $report->description }}</p>
                     <dl class="detail-list">
                         <div><dt>Kategori</dt><dd>{{ $report->category }}</dd></div>
-                        <div><dt>Tanggal kehilangan</dt><dd>{{ $report->lost_at->translatedFormat('d F Y') }}</dd></div>
-                        <div><dt>Lokasi</dt><dd>{{ $report->location }}</dd></div>
+                        <div><dt>Tanggal ditemukan</dt><dd>{{ $report->lost_at->translatedFormat('d F Y') }}</dd></div>
+                        <div><dt>Lokasi ditemukan</dt><dd>{{ $report->location }}</dd></div>
                     </dl>
-                    <div class="privacy-note">
+                    @if ($type === 'lost' && filled($report->contact_phone))
+                        <a class="btn btn-primary btn-lg" href="{{ route('reports.contact', $report) }}">
+                            Hubungi penemu via WhatsApp
+                        </a>
+                    @endif
+                    <div class="privacy-note mt-4">
                         <strong>Informasi aman untuk publik</strong>
-                        <p class="mb-0">Kontak pemilik dan bukti pengembalian tidak ditampilkan di halaman ini.</p>
+                        <p class="mb-0">Nomor HP penemu tidak ditampilkan. Tombol WhatsApp hanya membuka chat, tanpa menampilkan nomor di halaman ini. Nama pemilik dan foto bersama juga tetap privat.</p>
                     </div>
                 </div>
             </div>

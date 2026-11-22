@@ -10,6 +10,7 @@ use App\Services\ReturnConfirmationService;
 use App\Support\ReturnProof;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminReturnConfirmationController extends Controller
 {
@@ -22,7 +23,7 @@ class AdminReturnConfirmationController extends Controller
         ReturnConfirmation $confirmation,
         ReturnConfirmationService $service,
     ): RedirectResponse {
-        $service->approve($confirmation, auth()->user());
+        $service->approve($confirmation, Auth::guard('admin')->user());
 
         return redirect()->route('admin.dashboard', ['status' => 'return_pending'])
             ->with('success', 'Pengembalian disetujui. Laporan tampil di Barang Ditemukan.');
@@ -33,7 +34,7 @@ class AdminReturnConfirmationController extends Controller
         ReturnConfirmationService $service,
         ReturnConfirmation $confirmation,
     ): RedirectResponse {
-        $service->reject($confirmation, $request->user(), $request->validated('reason'));
+        $service->reject($confirmation, $request->user('admin'), $request->validated('reason'));
 
         return redirect()->route('admin.dashboard', ['status' => 'return_pending'])
             ->with('success', 'Konfirmasi pengembalian ditolak. Pemilik dapat memperbaiki dan mengirim ulang.');
@@ -44,7 +45,7 @@ class AdminReturnConfirmationController extends Controller
         ReturnConfirmationService $service,
         LostReport $report,
     ): RedirectResponse {
-        $service->resolveByAdmin($report, $request->user(), $request->validated('note'));
+        $service->resolveByAdmin($report, $request->user('admin'), $request->validated('note'));
 
         return redirect()->route('admin.dashboard', ['status' => 'returned'])
             ->with('success', 'Pengembalian diselesaikan oleh Admin dan tampil di Barang Ditemukan.');

@@ -94,6 +94,21 @@ class PublicReportTest extends TestCase
             ->assertDontSee($other->item_name);
     }
 
+    public function test_public_list_pagination_uses_bootstrap_five_markup(): void
+    {
+        foreach (range(1, 13) as $number) {
+            LostReport::factory()->approved()->create(['item_name' => 'Barang Hilang '.$number]);
+        }
+
+        $this->get(route('reports.index', 'lost'))
+            ->assertOk()
+            ->assertSee('class="pagination"', false)
+            ->assertSee('class="page-item', false)
+            ->assertSee('class="page-link"', false)
+            ->assertSee('rel="next"', false)
+            ->assertDontSee('inline-flex items-center px-2 py-2', false);
+    }
+
     public function test_public_detail_does_not_expose_private_owner_data(): void
     {
         $owner = User::factory()->create([

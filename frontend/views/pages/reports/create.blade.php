@@ -1,13 +1,12 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
-@section('title', 'Buat Laporan Kehilangan — TitipTemu')
+@section('title', 'Laporkan Barang Temuan — TitipTemu')
 
 @section('content')
     <section class="page-hero">
         <div class="container">
-            <span class="eyebrow">Untuk User</span>
-            <h1 class="mt-3">Buat laporan kehilangan</h1>
-            <p class="page-intro">Lengkapi informasi agar Admin dapat memeriksa laporanmu sebelum dipublikasikan.</p>
+            <h1>Laporkan barang temuan</h1>
+            <p class="page-intro">Lengkapi data penemu dan informasi barang agar Admin dapat memeriksa laporanmu sebelum dipublikasikan.</p>
         </div>
     </section>
 

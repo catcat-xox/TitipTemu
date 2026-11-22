@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -15,12 +16,13 @@ class AccessControlTest extends TestCase
         $this->get('/')->assertOk();
         $this->get('/login')->assertOk();
         $this->get('/register')->assertOk();
+        $this->get(route('admin.login'))->assertOk();
     }
 
     public function test_guest_cannot_access_user_or_admin_dashboard(): void
     {
-        $this->get('/user/dashboard')->assertRedirect(route('login'));
-        $this->get('/admin/dashboard')->assertRedirect(route('login'));
+        $this->get('/akun')->assertRedirect(route('login'));
+        $this->get('/admin/dashboard')->assertRedirect(route('admin.login'));
         $this->post('/logout')->assertRedirect(route('login'));
     }
 
@@ -28,15 +30,15 @@ class AccessControlTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user)->get('/user/dashboard')->assertOk();
-        $this->actingAs($user)->get('/admin/dashboard')->assertForbidden();
+        $this->actingAs($user)->get('/akun')->assertOk();
+        $this->actingAs($user)->get('/admin/dashboard')->assertRedirect(route('admin.login'));
     }
 
     public function test_admin_cannot_access_user_dashboard(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = Admin::factory()->create();
 
-        $this->actingAs($admin)->get('/admin/dashboard')->assertOk();
-        $this->actingAs($admin)->get('/user/dashboard')->assertForbidden();
+        $this->actingAs($admin, 'admin')->get('/admin/dashboard')->assertOk();
+        $this->actingAs($admin, 'admin')->get('/akun')->assertForbidden();
     }
 }

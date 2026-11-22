@@ -1,32 +1,35 @@
 
 # TitipTemu
 
-Website Informasi Barang Hilang dan Konfirmasi Pengembalian Barang.
+Portal barang temuan kampus: pelaporan oleh User, pencarian oleh Guest, dan verifikasi oleh Admin.
 
 ## Tentang Proyek
 
-TitipTemu merupakan website untuk seluruh lingkungan kampus. Mahasiswa, dosen, dan staf aktif dapat membuat laporan kehilangan, melihat informasi publik, serta mengirim konfirmasi apabila barang telah kembali.
+TitipTemu merupakan website untuk seluruh lingkungan kampus. User (mahasiswa, dosen, atau staf aktif) melaporkan barang yang ditemukan dan mengirim konfirmasi pengembalian. Guest mencari barang tanpa akun. Admin menggunakan akun terpisah dan jalur login tersembunyi untuk memeriksa laporan serta konfirmasi sebelum status dan publikasinya diperbarui.
 
-Laporan dan konfirmasi akan diperiksa oleh Admin sebelum status dan publikasinya diperbarui.
+Laporan yang disetujui tampil di **Barang Hilang**. Setelah pengembalian disetujui Admin, laporan berpindah ke **Barang Ditemukan** selama 30 hari, lalu diarsipkan otomatis tanpa menghapus data.
 
 ## Tujuan
 
-- Memusatkan informasi laporan barang hilang.
-- Memudahkan pengguna membuat laporan dengan foto.
-- Menyediakan pencarian informasi barang.
-- Menyediakan moderasi laporan oleh Admin.
-- Mendokumentasikan konfirmasi pengembalian barang.
+- Memusatkan laporan barang temuan yang sudah diverifikasi Admin.
+- Memudahkan User melaporkan barang temuan lengkap dengan data penemu dan foto.
+- Menyediakan pencarian publik untuk Guest tanpa akun.
+- Menghubungkan Guest dengan penemu lewat WhatsApp tanpa menampilkan nomor HP di halaman publik.
+- Menyediakan verifikasi laporan dan konfirmasi pengembalian oleh Admin.
+- Menjaga privasi nama pemilik dan foto bersama penemu–pemilik.
 
 ## Fitur Utama
 
-- Halaman publik Barang Hilang dan Barang Ditemukan.
-- Registrasi dan login User.
-- Login Admin.
-- Form laporan kehilangan dengan foto wajib.
-- Riwayat laporan User.
-- Verifikasi laporan oleh Admin.
-- Konfirmasi barang telah kembali dengan foto bukti.
-- Pengarsipan publik Barang Ditemukan setelah 30 hari.
+- Halaman publik Barang Hilang dan Barang Ditemukan, lengkap dengan pencarian.
+- Registrasi dan login User tanpa verifikasi email; menu **Akun** dimulai dari kartu profil dan berisi aktivitas serta laporan User.
+- Login Admin terpisah melalui jalur tersembunyi dari `ADMIN_LOGIN_URI`.
+- Dashboard Admin dengan filter status dan pencarian laporan lintas status melalui menu **Cari laporan**.
+- Form **Laporkan Barang Temuan** dengan no. HP penemu dan foto wajib.
+- Tombol WhatsApp pada detail publik tanpa menampilkan nomor penemu.
+- Verifikasi, penolakan, dan edit Admin hanya untuk laporan `Pending`.
+- Konfirmasi pengembalian dengan nama pemilik dan foto bersama penemu–pemilik.
+- Pengarsipan otomatis Barang Ditemukan setelah 30 hari dan penghapusan permanen manual oleh Admin untuk laporan `returned`/`archived`.
+- Notifikasi mengambang di bawah navbar untuk setiap hasil aksi, hilang otomatis setelah 3 detik.
 
 ## Teknologi
 
@@ -41,9 +44,13 @@ Laporan dan konfirmasi akan diperiksa oleh Admin sebelum status dan publikasinya
 
 Prasyarat:
 
-- PHP 8.3 atau lebih baru dengan ekstensi `pdo_mysql`, `mbstring`, `openssl`, `fileinfo`, dan `tokenizer`.
-  - Fedora: `sudo dnf install php-mysqlnd`
-  - Debian/Ubuntu: `sudo apt install php-mysql`
+- PHP 8.3 atau lebih baru dengan ekstensi `pdo_mysql`, `pdo_sqlite`, `sqlite3`, `mbstring`, `openssl`, `fileinfo`, `tokenizer`, `gd`, dan `zip`.
+  - `pdo_mysql` dipakai aplikasi dengan MySQL.
+  - `pdo_sqlite` dan `sqlite3` dipakai pengujian dengan database SQLite in-memory.
+  - `gd` dipakai saat pengujian membuat berkas gambar; `zip` dipakai Composer saat memasang dependensi.
+  - Fedora: `sudo dnf install php-mysqlnd php-pdo php-sqlite3 php-gd php-zip`
+  - Debian/Ubuntu: `sudo apt install php-mysql php-sqlite3 php-gd php-zip`
+  - Windows/XAMPP: pastikan baris `extension=pdo_sqlite`, `extension=sqlite3`, `extension=gd`, dan `extension=zip` tidak diberi awalan `;` pada `php.ini` yang dimuat PHP. Restart Apache jika aplikasi dijalankan melalui Apache.
 - Composer 2.
 - MySQL 8 atau lebih baru.
 - Node.js 20.19 atau lebih baru (disarankan 22.12+).
@@ -94,7 +101,12 @@ DB_PORT=3306
 DB_DATABASE=titiptemu
 DB_USERNAME=titiptemu
 DB_PASSWORD=ganti-password-lokal
+
+# Jalur login Admin; tidak ditautkan di navigasi publik.
+ADMIN_LOGIN_URI=/admin-login
 ```
+
+Ganti nilai `ADMIN_LOGIN_URI` dengan jalur lain jika diperlukan. Jangan menautkan jalur ini dari navbar, footer, atau halaman publik lainnya.
 
 Jalankan migrasi:
 
@@ -108,7 +120,15 @@ Isi data demo fiktif:
 php artisan db:seed
 ```
 
-Seeder dapat dijalankan ulang tanpa menggandakan User demo.
+Seeder dapat dijalankan ulang tanpa menggandakan User atau Admin demo. Seeder membuat:
+
+- User demo: `demo.user@titiptemu.test`
+- Admin demo: `admin@titiptemu.test` di tabel `admins`
+- Jika akun User bernama `wandi saputra` sudah terdaftar, `WandiStatusDemoSeeder` menambahkan 6 laporan fiktif untuk masing-masing status (`pending`, `approved`, `return_pending`, `rejected`, `returned`, `archived`, `cancelled`) dengan riwayat dan bukti pengembalian. Seeder ini dilewati tanpa error bila akun tersebut belum ada. Jalankan sendiri dengan `php artisan db:seed --class=WandiStatusDemoSeeder`.
+
+Keduanya memakai password demo `password` hanya untuk pengembangan. Ganti password sebelum dipakai di lingkungan bersama. Sistem mendukung beberapa akun Admin; tambahkan Admin lain melalui `App\Models\Admin::create()` atau mekanisme internal yang disetujui, bukan dengan menaikkan role akun User.
+
+Admin masuk lewat `ADMIN_LOGIN_URI`, bukan lewat `/login` dan bukan lewat tautan navigasi.
 
 `backend/.env` diabaikan Git. Jangan commit kredensial atau file environment lokal.
 
@@ -121,32 +141,28 @@ npm install
 
 ### 4. Jalankan aplikasi
 
-Gunakan dua terminal.
-
-Terminal backend:
+Untuk menjalankan aplikasi dengan aset yang sudah dibangun, cukup satu terminal:
 
 ```bash
 cd backend
 php artisan serve
 ```
 
-Terminal frontend:
+Aplikasi dapat dibuka di `http://localhost:8000`. Hasil build berada di `backend/public/build` dan dipakai secara default.
+
+Jika ingin hot reload saat mengerjakan CSS/JS, jalankan juga:
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Aplikasi dapat dibuka di `http://localhost:8000`.
-
-Untuk aset produksi:
+Saat `npm run dev` dimatikan, hapus `backend/public/hot` agar Laravel kembali memakai aset hasil build. Untuk memperbarui aset produksi:
 
 ```bash
 cd frontend
 npm run build
 ```
-
-Hasil build ditulis ke `backend/public/build`.
 
 ### 5. Perintah pengembang umum
 
@@ -215,11 +231,19 @@ php artisan test --filter=home_page
 
 Pengujian memakai SQLite in-memory dan tidak mengubah database pengembangan MySQL. Aset Vite dinonaktifkan otomatis selama tes, jadi `npm run build` tidak diperlukan sebelum menjalankan tes.
 
+### 7. Masalah umum saat menjalankan
+
+- `could not find driver (Connection: sqlite ...)` ketika menjalankan `php artisan test`: aktifkan `extension=pdo_sqlite` dan `extension=sqlite3` pada `php.ini` yang dibaca PHP CLI, lalu cek dengan `php -m`.
+- `GD extension is not installed` ketika menjalankan tes unggah foto: aktifkan `extension=gd` pada `php.ini` yang sama.
+- `Vite manifest not found` ketika membuka halaman: jalankan `npm run dev` bersamaan dengan `php artisan serve`, atau jalankan `npm run build` sekali sebelum `php artisan serve`.
+- Tampilan hanya berupa struktur HTML tanpa CSS/JS setelah `npm run dev` dimatikan: hapus `backend/public/hot` agar Laravel memakai aset hasil `npm run build`, atau hidupkan kembali `npm run dev` jika ingin memakai hot reload.
+- `SQLSTATE[42S02] ... performance_schema.session_status` pada perintah diagnostik seperti `php artisan db:show` dapat muncul di sebagian instalasi XAMPP. Perintah tersebut opsional dan tidak menghalangi migrasi, pengujian, atau aplikasi.
+
 ## Peran Pengguna
 
-- Guest: melihat informasi publik.
-- User (mahasiswa, dosen, atau staf aktif): membuat laporan dan konfirmasi pengembalian.
-- Admin: memoderasi laporan dan konfirmasi.
+- **Guest**: bukan akun database; melihat dan mencari Barang Hilang/Barang Ditemukan serta membuka detail publik.
+- **User**: akun terdaftar; melaporkan barang temuan, memantau status lewat menu **Akun**, dan mengirim konfirmasi pengembalian. No. HP Akun wajib dan privat; diisi saat daftar atau diubah pada biodata **Akun**.
+- **Admin**: akun terpisah di tabel `admins`; masuk lewat jalur tersembunyi, memeriksa laporan, menyetujui/menolak, mengedit laporan `Pending`, memeriksa bukti privat, serta menghapus permanen laporan yang sudah `returned`/`archived`.
 
 ## Struktur Repository
 
@@ -232,6 +256,10 @@ Pengujian memakai SQLite in-memory dan tidak mengubah database pengembangan MySQ
 - `docs/project_brief.md`
 - `docs/prd.md`
 - `docs/requirement.md`
+- `docs/ARCHITECTURE.md`
+- `docs/RULES.md`
+- `docs/TASKS.md`
+- `docs/CHANGELOG_ANGGOTA_2.md` (log historis pekerjaan Anggota 2)
 
 ## Lisensi
 
@@ -240,4 +268,4 @@ Lihat file `LICENSE` untuk ketentuan lisensi.
 
 ## Status Pengembangan
 
-Tahap 1 — Fondasi.
+Fondasi dan alur utama tersedia: pelaporan barang temuan oleh User, pencarian publik oleh Guest, kontak WhatsApp tanpa eksposur nomor, verifikasi Admin terpisah, konfirmasi pengembalian privat, serta retensi 30 hari dan penghapusan permanen manual.

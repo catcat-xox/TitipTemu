@@ -4,11 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\LostReport;
 use App\Support\ReportPhoto;
+use App\Support\WhatsAppLink;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PublicReportController extends Controller
 {
+    public function home(): View
+    {
+        $latestReports = LostReport::query()
+            ->publicLost()
+            ->latest()
+            ->limit(4)
+            ->get();
+
+        return view('pages.home', compact('latestReports'));
+    }
+
     public function index(Request $request, string $type): View
     {
         abort_unless(in_array($type, ['lost', 'found'], true), 404);
@@ -51,6 +64,20 @@ class PublicReportController extends Controller
         );
 
         return view('pages.reports.show', compact('report', 'type'));
+    }
+
+    public function contact(LostReport $report): RedirectResponse
+    {
+        abort_unless(
+            in_array($report->status, ['approved', 'return_pending'], true)
+                && filled($report->contact_phone),
+            404
+        );
+
+        $url = WhatsAppLink::forReport($report);
+        abort_unless($url !== null, 404);
+
+        return redirect()->away($url);
     }
 
     public function photo(LostReport $report)

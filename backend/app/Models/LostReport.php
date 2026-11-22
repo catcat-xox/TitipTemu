@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
     'description',
     'lost_at',
     'location',
+    'contact_phone',
     'photo_path',
     'status',
     'terms_accepted_at',

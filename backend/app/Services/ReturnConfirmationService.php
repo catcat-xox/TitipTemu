@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Admin;
 use App\Models\LostReport;
 use App\Models\ReportStatusHistory;
 use App\Models\ReturnConfirmation;
@@ -13,22 +14,27 @@ final class ReturnConfirmationService
 {
     private const MAX_ATTEMPTS = 3;
 
-    public function submit(LostReport $report, User $owner, array $files, ?string $note): ReturnConfirmation
-    {
+    public function submit(
+        LostReport $report,
+        User $owner,
+        string $ownerName,
+        array $files,
+        ?string $note,
+    ): ReturnConfirmation {
         abort_unless(
             $report->user_id === $owner->id
-                && $report->status === 'approved'
-                && $owner->hasVerifiedEmail(),
+                && $report->status === 'approved',
             403
         );
 
         $attempt = (int) $report->returnConfirmations()->max('attempt') + 1;
         abort_if($attempt > self::MAX_ATTEMPTS, 403);
 
-        return DB::transaction(function () use ($report, $owner, $files, $note, $attempt): ReturnConfirmation {
+        return DB::transaction(function () use ($report, $owner, $ownerName, $files, $note, $attempt): ReturnConfirmation {
             $confirmation = ReturnConfirmation::create([
                 'lost_report_id' => $report->id,
                 'user_id' => $owner->id,
+                'owner_name' => $ownerName,
                 'status' => 'pending',
                 'attempt' => $attempt,
                 'reported_returned_at' => now(),
@@ -41,6 +47,7 @@ final class ReturnConfirmationService
             ReportStatusHistory::create([
                 'lost_report_id' => $report->id,
                 'actor_id' => $owner->id,
+                'admin_id' => null,
                 'action' => 'return_submitted',
                 'from_status' => 'approved',
                 'to_status' => 'return_pending',
@@ -51,7 +58,7 @@ final class ReturnConfirmationService
         });
     }
 
-    public function approve(ReturnConfirmation $confirmation, User $admin, ?string $note = null): void
+    public function approve(ReturnConfirmation $confirmation, Admin $admin, ?string $note = null): void
     {
         abort_unless(
             $confirmation->status === 'pending'
@@ -65,7 +72,7 @@ final class ReturnConfirmationService
 
             $confirmation->update([
                 'status' => 'approved',
-                'admin_id' => $admin->id,
+                'reviewer_admin_id' => $admin->id,
                 'admin_note' => $note,
                 'reviewed_at' => $now,
             ]);
@@ -77,7 +84,8 @@ final class ReturnConfirmationService
 
             ReportStatusHistory::create([
                 'lost_report_id' => $report->id,
-                'actor_id' => $admin->id,
+                'actor_id' => null,
+                'admin_id' => $admin->id,
                 'action' => 'return_approved',
                 'from_status' => 'return_pending',
                 'to_status' => 'returned',
@@ -86,7 +94,7 @@ final class ReturnConfirmationService
         });
     }
 
-    public function reject(ReturnConfirmation $confirmation, User $admin, string $reason): void
+    public function reject(ReturnConfirmation $confirmation, Admin $admin, string $reason): void
     {
         abort_unless(
             $confirmation->status === 'pending'
@@ -100,7 +108,7 @@ final class ReturnConfirmationService
 
             $confirmation->update([
                 'status' => 'rejected',
-                'admin_id' => $admin->id,
+                'reviewer_admin_id' => $admin->id,
                 'rejection_reason' => $reason,
                 'reviewed_at' => now(),
             ]);
@@ -109,7 +117,8 @@ final class ReturnConfirmationService
 
             ReportStatusHistory::create([
                 'lost_report_id' => $report->id,
-                'actor_id' => $admin->id,
+                'actor_id' => null,
+                'admin_id' => $admin->id,
                 'action' => 'return_rejected',
                 'from_status' => 'return_pending',
                 'to_status' => 'approved',
@@ -118,7 +127,7 @@ final class ReturnConfirmationService
         });
     }
 
-    public function resolveByAdmin(LostReport $report, User $admin, string $note): ReturnConfirmation
+    public function resolveByAdmin(LostReport $report, Admin $admin, string $note): ReturnConfirmation
     {
         $latest = $report->returnConfirmations()->latest('id')->first();
 
@@ -136,7 +145,9 @@ final class ReturnConfirmationService
             $confirmation = ReturnConfirmation::create([
                 'lost_report_id' => $report->id,
                 'user_id' => $report->user_id,
-                'admin_id' => $admin->id,
+                'owner_name' => $latest->owner_name,
+                'admin_id' => null,
+                'reviewer_admin_id' => $admin->id,
                 'status' => 'approved',
                 'attempt' => $latest->attempt,
                 'reported_returned_at' => $now,
@@ -153,7 +164,8 @@ final class ReturnConfirmationService
 
             ReportStatusHistory::create([
                 'lost_report_id' => $report->id,
-                'actor_id' => $admin->id,
+                'actor_id' => null,
+                'admin_id' => $admin->id,
                 'action' => 'return_resolved_by_admin',
                 'from_status' => 'approved',
                 'to_status' => 'returned',

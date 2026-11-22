@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Admin;
 use App\Models\LostReport;
 use App\Models\ReportStatusHistory;
 use App\Models\ReturnConfirmation;
@@ -99,7 +100,7 @@ class ReportArchiveTest extends TestCase
         $this->assertNotNull($report->fresh()->returned_at);
         $this->assertDatabaseHas('return_confirmations', ['id' => $confirmation->id]);
 
-        $this->actingAs(User::factory()->admin()->create())
+        $this->actingAs(Admin::factory()->create(), 'admin')
             ->get(route('admin.reports.show', $report))
             ->assertOk()
             ->assertSee('Diarsipkan otomatis');

@@ -10,18 +10,23 @@
 - `[!]` Terhambat / membutuhkan keputusan
 
 ## Tahap 0 — Keputusan produk dan persiapan proyek
-- [x] P0.1 Pastikan makna Barang Ditemukan. Ditetapkan: hanya laporan barang hilang yang berhasil dikembalikan kepada pemilik; masuk setelah konfirmasi pengembalian disetujui Admin; bukan laporan barang temuan baru.
+- [x] P0.1 Pastikan makna Barang Ditemukan. Ditetapkan: hanya laporan yang pengembaliannya disetujui Admin yang masuk daftar ini. Sejak 2026-11-22, laporan barang temuan dibuat User dan tampil di Barang Hilang setelah disetujui; Barang Ditemukan tetap bukan daftar pelaporan terpisah.
 - [x] P0.2 Pastikan kampus/fakultas/program sasaran dan pengguna akun yang diperbolehkan. Ditetapkan: seluruh lingkungan kampus; akun dapat didaftarkan oleh mahasiswa, dosen, dan staf aktif; Guest tetap dapat melihat informasi publik tanpa akun; pelaporan memerlukan akun User.
-- [x] P0.3 Pastikan field pendaftaran dan verifikasi email/identitas kampus. Ditetapkan: nama lengkap, NIM/NIP, email, password, fakultas, dan program studi untuk mahasiswa; email wajib diverifikasi sebelum akun dapat melaporkan; identitas dicatat tanpa verifikasi database resmi kampus.
-- [x] P0.4 Pastikan field formulir laporan, kategori, batas foto, format, dan ukuran. Ditetapkan: nama barang, kategori tetap, deskripsi, tanggal hilang, lokasi hilang, dan foto wajib; maksimal 3 foto; JPG/JPEG/PNG/WebP; maksimal 2 MB per foto; foto disimpan di storage lokal Laravel dan baru publik setelah laporan disetujui Admin.
-- [x] P0.5 Pastikan cara kontak/privasi, edit/batal, penolakan/revisi, dan aturan pengiriman ulang konfirmasi pengembalian. Kontak pribadi tidak publik; Pending dapat diedit/dibatalkan pemilik; Approved tidak dapat diedit langsung; penolakan wajib beralasan dan dapat diperbaiki/kirim ulang; konfirmasi pengembalian maksimal 3 kali, lalu melalui Admin; data dan riwayat tidak dihapus permanen.
+- [x] P0.3 Pastikan field pendaftaran dan verifikasi email/identitas kampus. Ditetapkan: nama lengkap, NIM/NIP, email, password, fakultas, dan program studi untuk mahasiswa; email wajib diverifikasi sebelum akun dapat melaporkan; identitas dicatat tanpa verifikasi database resmi kampus. Ketentuan verifikasi email kemudian dicabut oleh pemilik pada A11 (2026-11-22); field identitas tetap berlaku.
+- [x] P0.4 Pastikan field formulir laporan, kategori, batas foto, format, dan ukuran. Ditetapkan: nama barang, kategori tetap, deskripsi, tanggal hilang, lokasi hilang, dan foto wajib; maksimal 3 foto; JPG/JPEG/PNG/WebP; maksimal 2 MB per foto; foto disimpan di storage lokal Laravel dan baru publik setelah laporan disetujui Admin. Diperjelas 2026-11-22: field laporan temuan juga memuat **no. HP penemu**, tanggal dan lokasi **ditemukan**. Catatan selisih: implementasi saat ini menerima satu foto dan lima kategori, bukan tiga foto dan delapan kategori; belum diselaraskan.
+- [x] P0.5 Pastikan cara kontak/privasi, edit/batal, penolakan/revisi, dan aturan pengiriman ulang konfirmasi pengembalian. Kontak pribadi tidak publik; Pending dapat diedit/dibatalkan pemilik; Approved tidak dapat diedit langsung; penolakan wajib beralasan dan dapat diperbaiki/kirim ulang; konfirmasi pengembalian maksimal 3 kali, lalu melalui Admin; data dan riwayat pada umumnya tidak dihapus permanen. Pengecualian 2026-11-22: Admin dapat menghapus permanen laporan `returned`/`archived` setelah konfirmasi.
 - [x] P0.6 Pastikan cara menghitung 30 hari, zona waktu, serta kebijakan arsip/retensi data. Ditetapkan: 30 hari sejak Admin menyetujui konfirmasi pengembalian dan mempublikasikannya, zona waktu Asia/Makassar (WITA); setelah batas, status `Archived` dan disembunyikan dari publik; data tetap disimpan; foto bukti tetap privat.
 - [x] P0.7 Arah stack frontend dikonfirmasi: Laravel Blade + Bootstrap; tampilan modern bergaya startup. Versi Laravel dan implementasi autentikasi dipilih pada tugas setup yang sesuai berdasarkan kompatibilitas dan kemudahan pemeliharaan, tanpa mengganti stack yang disetujui.
-- [x] P0.8 Tinjau/persetujuan PRD, Requirement, ARCHITECTURE, RULES, dan peta jalan ini. Ditinjau dan diselaraskan dengan seluruh keputusan P0 yang telah disetujui: versi/status dokumen, aturan edit/batal/penolakan/pengiriman ulang, privasi kontak dan bukti, retensi data, serta daftar pertanyaan terbuka non-P0. Tidak ada konflik tersisa antar dokumen; pertanyaan non-P0 tetap terbuka.
+- [x] P0.8 Tinjau/persetujuan PRD, Requirement, ARCHITECTURE, RULES, dan peta jalan ini. Ditinjau dan diselaraskan dengan seluruh keputusan P0 yang telah disetujui: versi/status dokumen, aturan edit/batal/penolakan/pengiriman ulang, privasi kontak dan bukti, retensi data, serta daftar pertanyaan terbuka non-P0. Saat itu tidak ada konflik antar dokumen; pertanyaan non-P0 tetap terbuka. Penyelarasan lanjutan 2026-11-22 dicatat terpisah di bawah.
 - [x] P0.9 Periksa keadaan repositori; pertahankan riwayat Git dan dokumentasi yang ada.
 - [x] P0.10 Akun Admin: beberapa Admin dapat mengelola website secara terpisah.
 - [x] P0.11 Alur OpenCode: satu tugas per instruksi; agent menyelesaikan, menguji, memperbaiki tugas aktif, melaporkan, lalu berhenti dan menunggu persetujuan eksplisit pemilik sebelum tugas selanjutnya.
 - [ ] P0.12 Tetapkan alur branch/PR tim yang disepakati.
+- [x] P0.13 Peran dan identitas (2026-11-22): User adalah penemu/pelapor, Guest adalah pencari tanpa akun, Admin adalah akun terpisah di tabel `admins` dengan jalur login tersembunyi; beberapa akun Admin dapat berdiri sendiri.
+- [x] P0.14 Alur pelaporan dan kontak (2026-11-22): User melaporkan barang temuan dengan no. HP penemu; setelah disetujui Admin laporan tampil di Barang Hilang; Guest menghubungi penemu lewat redirect `wa.me` tanpa eksposur nomor.
+- [x] P0.15 Alur pengembalian (2026-11-22): konfirmasi User memuat nama pemilik dan foto bersama penemu–pemilik; keduanya privat hanya untuk User terkait dan Admin; persetujuan Admin memindahkan laporan ke Barang Ditemukan.
+- [x] P0.16 Wewenang Admin (2026-11-22): Admin dapat menyetujui, menolak/minta revisi, dan mengedit laporan hanya saat `Pending`; penghapusan permanen hanya untuk `returned`/`archived` setelah konfirmasi; arsip otomatis 30 hari tidak berubah.
+- [x] P0.17 Penyelarasan dokumentasi (2026-11-22): PRD/Requirement v2.7, brief, ARCHITECTURE, RULES, README, dan TASKS mengikuti alur yang berjalan; P8 sengaja tetap `[ ]` dan menunggu persetujuan terpisah.
 ## Tahap 1 — Fondasi
 - [x] P1.1 Inisialisasi Laravel di repositori tanpa menimpa dokumentasi/license/konfigurasi Git yang sudah ada. Laravel 13 (framework 13.43.0) diinisialisasi; README, LICENSE, `.gitignore` lama, `AGENTS.md`, dan `docs/` dipertahankan. Struktur dua folder utama: `backend/` untuk Laravel dan `frontend/` untuk Blade serta aset sumber.
 - [x] P1.2 Konfigurasikan contoh environment, pengaturan aplikasi, dan petunjuk koneksi basis data. `.env.example` memakai MySQL, nama aplikasi `TitipTemu`, README memuat perintah setup backend/frontend, dan migrasi MySQL telah diverifikasi.
@@ -30,10 +35,10 @@
 - [x] P1.5 Tetapkan konvensi migration/seeder dan data awal pengembangan. Konvensi reversibel dan idempotent didokumentasikan; `DatabaseSeeder` membuat satu User demo fiktif secara aman dan dapat dijalankan ulang.
 - [x] P1.6 Dokumentasikan setup dan perintah pengembang yang umum di README. README mencakup prasyarat, MySQL, setup backend/frontend, seeder, dev server, build, perintah Laravel, Composer, npm, dan testing.
 ## Tahap 2 — Autentikasi dan otorisasi
-- [x] P2.1 Implementasikan registrasi/login/logout dengan metode autentikasi yang disetujui. Registrasi manual Laravel berbasis session + Bootstrap memakai field identitas P0.3; event verifikasi email, route signed, resend, CSRF, hashing, dan regenerasi session diterapkan.
-- [x] P2.2 Implementasikan otorisasi User/Admin dengan aman. Kolom role, helper model, Gate server-side, factory state Admin, migration reversibel, dan tes beberapa akun Admin diterapkan.
-- [x] P2.3 Lindungi rute Admin dan tindakan khusus User. Middleware alias role diterapkan pada dashboard User/Admin; Guest mendapat redirect login dan role salah mendapat `403`.
-- [x] P2.4 Implementasikan validasi/verifikasi akun sesuai keputusan. Validasi field identitas, program studi kondisional mahasiswa, verifikasi email, dan notifikasi verifikasi diterapkan; identitas kampus dicatat tanpa pencocokan database resmi.
+- [x] P2.1 Implementasikan registrasi/login/logout dengan metode autentikasi yang disetujui. Registrasi manual Laravel berbasis session + Bootstrap memakai field identitas P0.3; event verifikasi email, route signed, resend, CSRF, hashing, dan regenerasi session diterapkan. Event/route verifikasi dihapus pada A11; CSRF, hashing, dan regenerasi session tetap berlaku.
+- [x] P2.2 Implementasikan otorisasi User/Admin dengan aman. Implementasi awal memakai kolom `role`, helper model, Gate server-side, factory state Admin, migration reversibel, dan tes beberapa akun Admin. Jalur Admin kemudian digantikan tabel `admins` + guard `admin` sesuai P0.13; kolom lama hanya kompatibilitas data.
+- [x] P2.3 Lindungi rute Admin dan tindakan khusus User. Middleware `role` menangani `guest`, `user`, dan `admin`; rute situs utama memakai `main-site`, rute User `role:user`, rute Admin `role:admin`, dan login Admin `role:guest`. Guest/peran salah diarahkan ke login yang sesuai atau menerima `403`.
+- [x] P2.4 Implementasikan validasi/verifikasi akun sesuai keputusan. Validasi field identitas, program studi kondisional mahasiswa, verifikasi email, dan notifikasi verifikasi diterapkan; identitas kampus dicatat tanpa pencocokan database resmi. Verifikasi email dicabut pada A11; validasi identitas tetap berlaku.
 - [x] P2.5 Tambahkan tes untuk Guest, User, Admin, dan akses tanpa izin. Matriks akses publik, autentikasi, dashboard User/Admin, logout Guest, dan akses silang role diuji.
 ## Tahap 3 — Penjelajahan publik
 - [x] P3.1 Implementasikan halaman beranda publik. Beranda fondasi P1 dipertahankan dan navigasi publik kini terhubung ke daftar laporan.
@@ -42,24 +47,24 @@
 - [x] P3.4 Implementasikan halaman detail laporan publik dengan field yang aman bagi privasi.
 - [x] P3.5 Tambahkan pencarian kata kunci dan filter yang disetujui.
 - [x] P3.6 Tambahkan tes rute publik dan privasi. Daftar/detail publik, tipe tidak valid, status nonpublik, batas 30 hari, pencarian/filter, dan kerahasiaan identitas pemilik diuji.
-## Tahap 4 — Pelaporan barang hilang
-- [x] P4.1 Rancang dan implementasikan skema/migration laporan serta pengelolaan kategori. Kategori MVP disediakan sebagai pilihan form.
-- [x] P4.2 Implementasikan formulir laporan dengan validasi, persetujuan ketentuan, dan unggahan gambar yang aman.
-- [x] P4.3 Pastikan laporan terkirim dengan status Pending dan tidak tampil ke publik sebelum waktunya.
-- [x] P4.4 Implementasikan daftar laporan milik User dan detail statusnya.
+## Tahap 4 — Pelaporan barang temuan
+- [x] P4.1 Rancang dan implementasikan skema/migration laporan serta pengelolaan kategori. Kategori MVP disediakan sebagai pilihan form. Setelah P0.14, skema juga menyimpan no. HP penemu dan tanggal/lokasi ditemukan.
+- [x] P4.2 Implementasikan formulir **Laporkan Barang Temuan** dengan validasi, no. HP penemu, tanggal/lokasi ditemukan, persetujuan ketentuan, dan unggahan gambar yang aman.
+- [x] P4.3 Pastikan laporan terkirim dengan status Pending dan tidak tampil ke publik sebelum waktunya; setelah disetujui Admin, laporan tampil di Barang Hilang.
+- [x] P4.4 Implementasikan daftar laporan milik User dan detail statusnya melalui menu **Akun**.
 - [x] P4.5 Implementasikan edit/batal/revisi: pemilik dapat mengedit/membatalkan Pending; Approved tidak dapat diedit langsung; penolakan dapat diperbaiki dan dikirim ulang. Route, controller, Form Request, form Blade, dan aksi pada daftar laporan diterapkan dengan pemeriksaan kepemilikan di server.
-- [x] P4.6 Tambahkan feature test untuk validasi, unggahan, kepemilikan, dan visibilitas. `LostReportManagementTest` dan `LostReportFactory` ditambahkan; seluruh suite mencapai 48 tes.
-## Tahap 5 — Moderasi laporan oleh Admin
-- [x] P5.1 Implementasikan dashboard/antrean moderasi Admin. Dashboard Admin menampilkan antrean laporan dengan filter status, ringkasan jumlah, pagination, dan field privat yang dibatasi.
+- [x] P4.6 Tambahkan feature test untuk validasi, unggahan, kepemilikan, dan visibilitas. `LostReportManagementTest` dan `LostReportFactory` ditambahkan; saat itu seluruh suite mencapai 48 tes, kemudian dikembangkan pada penyelarasan 2026-11-22.
+## Tahap 5 — Verifikasi laporan oleh Admin
+- [x] P5.1 Implementasikan dashboard/antrean verifikasi Admin. Dashboard Admin menampilkan antrean laporan dengan filter status, ringkasan jumlah, pagination, dan field privat yang dibatasi.
 - [x] P5.2 Implementasikan detail laporan dan pratinjau foto yang aman. Halaman detail Admin, rute foto privat, dan validasi path foto diterapkan; unggahan baru kini memakai disk privat Laravel.
 - [x] P5.3 Implementasikan persetujuan/penolakan dengan alasan wajib dan alur perbaikan/pengiriman ulang. Form Request, service, transisi `Pending → Approved/Rejected`, alasan wajib penolakan, dan tampilan alasan pada pemilik diterapkan.
-- [x] P5.4 Catat Admin, waktu, keputusan, dan catatan/riwayat moderasi. Migration `report_status_histories`, model, relasi, dan tampilan riwayat pada detail Admin diterapkan.
-- [x] P5.5 Tambahkan tes otorisasi moderasi dan perubahan status. `AdminReportModerationTest` menguji Guest/User/Admin, foto privat, persetujuan, penolakan, validasi alasan, riwayat, dan alur perbaikan.
+- [x] P5.4 Catat Admin, waktu, keputusan, dan catatan/riwayat verifikasi. Migration `report_status_histories`, model, relasi, dan tampilan riwayat pada detail Admin diterapkan. Setelah P0.13, peninjau dicatat sebagai `admin_id` dari tabel `admins`.
+- [x] P5.5 Tambahkan tes otorisasi verifikasi dan perubahan status. `AdminReportModerationTest` menguji Guest/User/Admin, foto privat, persetujuan, penolakan, validasi alasan, riwayat, dan alur perbaikan.
 ## Tahap 6 — Konfirmasi pengembalian
 - [x] P6.1 Rancang model data konfirmasi pengembalian dan penyimpanan bukti privat. Migration `return_confirmations`, model/factory, `ReturnProof`, dan `ReturnConfirmationService` ditambahkan.
-- [x] P6.2 Implementasikan formulir konfirmasi pengembalian khusus pemilik dan unggah bukti yang diwajibkan. Bukti 1–3 file JPG/JPEG/PNG/WebP maksimal 2 MB/file disimpan pada disk privat `local`.
+- [x] P6.2 Implementasikan formulir konfirmasi pengembalian khusus pemilik dengan **nama pemilik** dan **foto bersama penemu–pemilik**. Bukti 1–3 file JPG/JPEG/PNG/WebP maksimal 2 MB/file disimpan pada disk privat `local`; catatan pengembalian opsional.
 - [x] P6.3 Terapkan status Return Pending tanpa memindahkan laporan ke daftar publik lain sebelum waktunya. Laporan tetap di Barang Hilang, bukan Barang Ditemukan.
-- [x] P6.4 Implementasikan peninjauan bukti pengembalian privat oleh Admin. Detail Admin menampilkan galeri bukti melalui rute privat khusus Admin.
+- [x] P6.4 Implementasikan peninjauan bukti pengembalian privat oleh Admin. Detail Admin menampilkan galeri bukti dan nama pemilik; akses hanya untuk Admin dan User pemilik laporan, bukan publik.
 - [x] P6.5 Setujui pengembalian: ubah laporan menjadi Returned dan pindahkan ke Barang Ditemukan. `returned_at` dicatat otomatis saat persetujuan.
 - [x] P6.6 Tolak pengembalian: alasan wajib, perbaikan/pengiriman ulang maksimal 3 kali, lalu penyelesaian melalui Admin. Setelah 3 penolakan, Admin menyetujui dengan catatan wajib tanpa bukti baru.
 - [x] P6.7 Tambahkan tes privasi, kepemilikan, unggahan, dan perubahan status. `ReturnConfirmationTest` menambahkan 7 tes fitur.
@@ -69,6 +74,26 @@
 - [x] P7.3 Pastikan operasi arsip aman dijalankan berulang dan tercatat. Proses memakai lock/status filter, mencatat riwayat `archive` sebagai Sistem, dan mencatat kegagalan ke log.
 - [x] P7.4 Pastikan data yang diarsipkan tidak tampil untuk publik, tetapi tetap disimpan. Status `archived` tersembunyi dari daftar/detail/foto publik dan tetap terlihat pada antrean Admin.
 - [x] P7.5 Tambahkan tes tanggal batas, zona waktu, eksekusi berulang, dan visibilitas publik. `ReportArchiveTest` menambahkan 5 tes fitur.
+
+## Penyelarasan alur 2026-11-22 (di luar P8, selesai)
+- [x] A1 Admin terpisah: migration/model/factory `admins`, guard dan provider `admin`, `ADMIN_LOGIN_URI`, controller/view login tersembunyi, middleware, serta `admin_id` pada riwayat; User lama ber-`role = admin` diblokir dari `/login`.
+- [x] A2 Pelaporan temuan dan kontak: field `contact_phone`, teks formulir **Laporkan Barang Temuan**, validasi nomor, serta redirect server `/laporan/{report}/hubungi` ke `wa.me`; nomor penemu tidak dirender pada HTML publik.
+- [x] A3 Konfirmasi privat: field `owner_name`, teks **Foto bersama penemu–pemilik**, validasi, penyimpanan privat, dan pembatasan akses untuk User terkait serta Admin.
+- [x] A4 Wewenang Admin: edit langsung hanya untuk laporan `Pending`; penghapusan permanen hanya `returned`/`archived` setelah konfirmasi, termasuk pembersihan foto dan bukti terkait.
+- [x] A5 Navigasi dan bahasa: tautan Admin dihapus dari navigasi publik, menu User menjadi **Akun**, dan sebagian besar teks alur diperbarui. Satu teks lama pada kartu beranda sempat tercatat sebagai selisih di `ARCHITECTURE.md` bagian 14 dan selesai pada A8.
+- [x] A6 Pengujian dan dokumentasi: suite menjadi 87 tes/470 assertion, build Vite lulus, 42 rute terdaftar, pemeriksaan HTTP publik/Admin lulus, serta PRD/Requirement v2.7 dan dokumen terkait diselaraskan.
+- [x] A7 Pemisahan total situs utama dan panel Admin: layout `public`, `admin`, dan `admin-auth` terpisah; navbar/footer publik tidak dirender pada halaman Admin; middleware `main-site` dan guard `guest`/`user`/`admin` mengatur akses; login Admin langsung menuju `/admin/dashboard`; `LayoutSeparationTest` ditambahkan.
+- [x] A8 Perbaikan tampilan situs utama, akun, dan Admin: beranda dipangkas menjadi 4 kartu laporan terbaru dalam satu baris dengan tautan “Lihat selengkapnya”; active state navbar per jenis laporan; bahasa lebih alami tanpa istilah User/Guest di situs utama; kredit footer `Dikembangkan oleh Kelompok 6 Opensource`; foto profil opsional saat daftar dan dapat diubah di **Akun** dengan penyimpanan privat; layout login Admin dan sidebar penuh tinggi diperbaiki.
+- [x] A9 Penyesuaian lanjutan: kartu beranda memakai 4 laporan **Barang Hilang** terbaru dengan “Lihat detail” berbentuk tombol; filter status Admin mendapat opsi **Semua**; kartu statistik Admin muat satu baris; topbar dihapus dan tombol panah kembali sejajar dengan judul Dashboard Admin; istilah “moderasi” diganti “verifikasi”; seeder idempoten menambah 10 laporan barang hilang fiktif.
+- [x] A10 Perapian panel Admin: nama kartu status disingkat menjadi **MENUNGGU** dan **PENGEMBALIAN** tanpa mengubah label filter/badge; halaman **Cari laporan** lintas status ditambahkan ke sidebar; pagination memakai Bootstrap 5 agar Previous/Next rapi; subtitle Dashboard Admin dihapus; header **Tinjau laporan** memakai tombol panah kembali tanpa “Area Admin”.
+- [x] A11 Penyempurnaan UI dan autentikasi: subtitle **Cari laporan** dihapus; eyebrow hanya tersisa di beranda; semua flash message menjadi notifikasi mengambang di bawah navbar yang hilang setelah 3 detik; verifikasi email beserta rute/view/pemeriksaannya dihapus; menu **Akun** dimulai dari kartu profil. PRD/Requirement v2.8 dan dokumen terkait diselaraskan.
+- [x] A12 Data Akun dan label formulir: no. HP opsional dan privat ditambahkan pada pendaftaran serta biodata **Akun** (kolom `users.phone`, migrasi baru, validasi, dan tampilan pada kartu profil); label **Program studi (wajib diisi mahasiswa)** memakai format kurung seperti **Foto profil (opsional)**; teks bantuan di bawah pemilihan foto profil dihapus. PRD/Requirement v2.9 dan dokumen terkait diselaraskan.
+- [x] A13 No. HP wajib: validasi `phone` pada pendaftaran dan biodata **Akun** diubah dari `nullable` menjadi `required`; keterangan `(opsional)` dihapus sehingga label hanya **No. HP** di kedua formulir; atribut `required` tetap dipakai tanpa teks tambahan. PRD/Requirement v2.10 dan dokumen terkait diselaraskan.
+- [x] A14 Data uji coba per status: `WandiStatusDemoSeeder` membuat 6 laporan fiktif untuk masing-masing 7 status (total 42), semuanya milik akun **wandi saputra**, lengkap dengan riwayat status, konfirmasi pengembalian, foto/bukti placeholder, dan `returned_at` sesuai aturan 30 hari. Seeder idempoten, dilewati bila akun belum ada, dan dipanggil dari `DatabaseSeeder`.
+- [x] A15 Halaman daftar publik: judul **Barang Hilang**/**Barang Ditemukan** beserta kalimat pembukanya dihapus dari tampilan; panel pencarian menjadi elemen pertama dengan label **Cari Barang Hilang**/**Cari Barang Ditemukan**; jarak, aksen panel, dan `<h1>` tersembunyi untuk pembaca layar ditambahkan agar tata letak tetap nyaman dan accessible.
+- [x] A16 Jalur login Admin diubah dari `/admin-masuk-9d4f` menjadi `/admin-login`: nilai `ADMIN_LOGIN_URI` diperbarui di `.env`, `.env.example`, default `config/admin.php`, README, dan contoh pada `ARCHITECTURE.md`. Rute tetap tidak ditautkan di halaman publik; aturan `role:guest` tidak berubah.
+- [x] A17 Keseragaman card item: `.report-card` dan `.report-card-body` memakai flex column dengan body mengisi sisa tinggi, serta tombol **Lihat detail** dibungkus `mt-auto pt-2` agar sejajar di bawah card setinggi card terpanjang pada baris yang sama. Berlaku di beranda dan daftar Barang Hilang/Barang Ditemukan.
+
 ## Tahap 8 — Penguatan dan kesiapan rilis
 - [ ] P8.1 Tinjau keamanan, otorisasi, CSRF, validasi, rate limit, dan penanganan unggahan.
 - [ ] P8.2 Tinjau kemudahan penggunaan responsif, aksesibilitas, dan teks Bahasa Indonesia.
@@ -80,11 +105,14 @@
 - [ ] P8.8 Tinjau penerimaan MVP berdasarkan PRD dan Requirement.
 ## Titik pemeriksaan saat ini
 - Repositori berisi dokumentasi perencanaan, README, lisensi, dan metadata Git; kerangka aplikasi Laravel 13 sudah diinisialisasi pada P1.1 tanpa menimpa dokumentasi atau lisensi.
-- P3.6, P4.5, dan P4.6 selesai: pemilik dapat mengubah, membatalkan, dan mengirim ulang laporan sesuai status; pengujian publik/privasi ditambahkan; 48 tes dan build Vite lulus.
-- P5.1–P5.5 selesai: Dashboard Admin, detail dengan pratinjau foto privat, keputusan setuju/tolak beralasan, riwayat moderasi, dan tes terkait telah diterapkan.
-- Arah teknis yang disetujui: Laravel monolith + MySQL + Blade + Bootstrap; UI responsif bergaya startup modern; beberapa akun Admin.
+- P1–P7 selesai: alur publik, pelaporan barang temuan, verifikasi, konfirmasi pengembalian, dan pengarsipan 30 hari berjalan.
+- Penyelarasan 2026-11-22 selesai: Admin terpisah dengan login tersembunyi, no. HP penemu dan WhatsApp, nama pemilik/foto bersama yang privat, edit `Pending`, dan penghapusan permanen terbatas telah diterapkan serta diuji.
+- Pemisahan UI selesai: beranda, daftar/detail publik, halaman auth User, dan halaman User memakai layout `public`; dashboard/detail/edit Admin memakai layout `admin`; login Admin memakai layout `admin-auth` tanpa navbar/footer publik.
+- Verifikasi terakhir: migrasi `add_phone_to_users_table` berhasil dijalankan; `php artisan test` lulus dengan 124 tes/763 assertion; `npm run build` lulus dengan peringatan opsional `fontaine`; `route:list` menampilkan 42 rute dan tidak ada rute `email/verify`; `git diff --check` bersih; seeder lama menghasilkan 10 laporan demo, lalu A14 menambah 42 laporan per status milik wandi saputra sehingga total laporan lokal menjadi 54 (12 lama tidak diubah). Pemeriksaan HTTP `/`, `/barang/lost`, `/barang/found`, `/panduan`, `/login`, `/register`, dan login Admin tersembunyi mengembalikan 200, sementara `/email/verify` mengembalikan 404. Halaman daftar memuat field `phone` dengan label tepat **No. HP** dan atribut `required`, label `(opsional)` pada foto profil serta `(wajib diisi mahasiswa)` pada program studi, dan tidak lagi memuat teks bantuan foto profil lama. Beranda masih memuat eyebrow; daftar Barang Hilang dan halaman login tidak lagi memuatnya. Pemeriksaan A7–A10 tetap berlaku: navbar/footer publik tidak dirender pada halaman Admin, label kartu dan pagination Bootstrap 5 sesuai, halaman **Cari laporan** tanpa subtitle, dan header **Tinjau laporan** tanpa “Area Admin”.
+- Arah teknis yang disetujui: Laravel monolith + MySQL + Blade + Bootstrap; UI responsif bergaya startup modern; beberapa akun Admin terpisah dengan jalur masuk tersembunyi.
 - OpenCode boleh mengimplementasikan, menguji, dan memperbaiki masalah dalam tugas aktif secara mandiri, tetapi tidak boleh memulai tugas berikutnya. Pada setiap penyelesaian tugas, agent harus melapor lalu BERHENTI menunggu persetujuan pemilik.
-- Keputusan produk P0 yang telah disetujui diterapkan pada PRD, Requirement, ARCHITECTURE, RULES, serta TASKS. P0.8 selesai; pertanyaan non-P0 yang tersisa dicatat terbuka di dokumen terkait.
+- Dokumen produk dan teknis telah diselaraskan: PRD/Requirement v2.10, `project_brief.md`, `ARCHITECTURE.md`, `RULES.md`, `README.md`, dan TASKS ini. Istilah “verifikasi” kini menggantikan “moderasi” pada teks antarmuka, URI aksi Admin, dan dokumentasi. Keputusan verifikasi email lama dari P0.3/P2.4 dicabut secara eksplisit pada A11 dan ditandai sebagai catatan historis, bukan aturan aktif. P8 sengaja tetap `[ ]` dan bukan bagian dari persetujuan tugas penyelarasan/pemisahan ini.
+- Selisih implementasi yang belum diselaraskan tercatat di `ARCHITECTURE.md` bagian 14: jumlah foto dan daftar kategori. Selisih teks lama pada kartu beranda tidak lagi relevan karena bagian “Peran pengguna” dihapus pada A8.
 ## Catatan keputusan / hambatan
 | Tanggal | Tugas | Keputusan atau hambatan | Penanggung jawab | Status |
 |---|---|---|---|
@@ -94,7 +122,7 @@
 | 2026-11-21 | P0.6 | Pemilik menetapkan 30 hari sejak persetujuan dan publikasi Admin, zona waktu Asia/Makassar; setelahnya status `Archived`, disembunyikan dari publik, data tetap disimpan, dan foto bukti tetap privat. | Pemilik | Disetujui |
 | 2026-11-21 | P0.1 | Pemilik menetapkan Barang Ditemukan hanya berisi laporan barang hilang yang berhasil dikembalikan; laporan masuk setelah konfirmasi pengembalian disetujui Admin, tanpa alur laporan barang temuan baru. | Pemilik | Disetujui |
 | 2026-11-21 | P0.2 | Pemilik menetapkan cakupan seluruh kampus dan pendaftar mahasiswa, dosen, serta staf aktif; Guest hanya membaca publik, pelaporan memerlukan akun. | Pemilik | Disetujui |
-| 2026-11-21 | P0.3 | Pemilik menetapkan field nama lengkap, NIM/NIP, email, password, fakultas, program studi khusus mahasiswa; email wajib diverifikasi sebelum pelaporan; identitas dicatat tanpa verifikasi database resmi kampus. | Pemilik | Disetujui |
+| 2026-11-21 | P0.3 | Pemilik menetapkan field nama lengkap, NIM/NIP, email, password, fakultas, program studi khusus mahasiswa; email wajib diverifikasi sebelum pelaporan; identitas dicatat tanpa verifikasi database resmi kampus. Ketentuan verifikasi email dicabut pada A11 (2026-11-22). | Pemilik | Disetujui, sebagian dicabut A11 |
 | 2026-11-21 | P0.5 | Pemilik menetapkan privasi kontak, edit/batal Pending, larangan edit langsung Approved, alasan penolakan wajib, pengiriman ulang, batas 3 kali konfirmasi pengembalian, dan retensi data/riwayat permanen. | Pemilik | Disetujui |
 | 2026-11-21 | P1.3 | Layout dasar, token desain, navigasi responsif, dan beranda Blade + Bootstrap 5.3 diterapkan; tautan navigasi hanya tampil jika rute terkait sudah tersedia. | Agent | Selesai |
 | 2026-11-21 | P1.5 | Konvensi migration/seeder didokumentasikan; seeder demo memakai data fiktif, kunci deterministik, dan `updateOrCreate`; idempotensi diuji. | Agent | Selesai |
@@ -124,6 +152,24 @@
 | 2026-11-21 | P7.3 | Pengarsipan dibuat idempoten dengan lock dan riwayat Sistem; kegagalan dicatat. | Agent | Selesai |
 | 2026-11-21 | P7.4 | Arsip disembunyikan dari publik, tetapi data dan bukti tetap disimpan serta dapat ditinjau Admin. | Agent | Selesai |
 | 2026-11-21 | P7.5 | Tes batas tanggal, timezone, pengulangan command, visibilitas, dan pencatatan kegagalan ditambahkan. | Agent | Selesai |
+| 2026-11-22 | P0.13 | Pemilik menetapkan User sebagai penemu/pelapor, Guest sebagai pencari tanpa akun, dan Admin sebagai akun terpisah di `admins` dengan jalur login tersembunyi; beberapa Admin diperbolehkan. | Pemilik | Disetujui |
+| 2026-11-22 | P0.14 | Pemilik menetapkan laporan barang temuan oleh User dengan no. HP penemu; setelah disetujui Admin tampil di Barang Hilang; kontak publik lewat `wa.me` tanpa eksposur nomor. | Pemilik | Disetujui |
+| 2026-11-22 | P0.15 | Pemilik menetapkan konfirmasi pengembalian dengan nama pemilik dan foto bersama penemu–pemilik yang bersifat privat hanya untuk User terkait dan Admin. | Pemilik | Disetujui |
+| 2026-11-22 | P0.16 | Pemilik menetapkan Admin dapat menyetujui, menolak/minta revisi, dan mengedit hanya laporan `Pending`; penghapusan permanen hanya `returned`/`archived` setelah konfirmasi; arsip 30 hari tetap. | Pemilik | Disetujui |
+| 2026-11-22 | A1–A5 | Implementasi Admin terpisah/tersembunyi, no. HP penemu dan WhatsApp, konfirmasi privat, edit `Pending`, penghapusan terbatas, serta penyesuaian navigasi/bahasa diterapkan. | Agent | Selesai |
+| 2026-11-22 | A6/P0.17 | Suite 87 tes/470 assertion lulus, build dan pemeriksaan HTTP lulus, serta PRD/Requirement v2.7 dan seluruh dokumen proyek diselaraskan. | Agent | Selesai |
+| 2026-11-22 | A7 | Pemisahan layout, rute, guard, dan navigasi situs utama/Admin; navbar publik tidak lagi muncul pada dashboard Admin dan login Admin langsung ke dashboard. | Agent | Selesai |
+| 2026-11-22 | A8 | Perbaikan tampilan beranda (4 kartu terbaru), active state navbar, bahasa dan footer, foto profil privat di pendaftaran/Akun, layout login Admin, serta sidebar tetap penuh tinggi; suite 100 tes/563 assertion dan 44 rute lulus. | Agent | Selesai |
+| 2026-11-22 | A9 | Beranda menampilkan Barang Hilang dan tombol detail, filter “Semua”, kartu stat satu baris, tombol kembali, terminologi verifikasi, serta 10 laporan demo; suite 101 tes/579 assertion dan 44 rute lulus. | Agent | Selesai |
+| 2026-11-22 | A10 | Kartu status disingkat, pencarian Admin lintas status ditambahkan, pagination Bootstrap 5 diperbaiki, subtitle Dashboard dan “Area Admin” pada Tinjau laporan dihapus; suite 109 tes/636 assertion dan 45 rute lulus. | Agent | Selesai |
+| 2026-11-22 | A11 | Pemilik meminta subtitle **Cari laporan**, semua eyebrow non-beranda, dan verifikasi email dihapus; notifikasi dijadikan toast mengambang 3 detik; **Akun** dimulai dari kartu profil. Keputusan P0.3/P2.4 tentang verifikasi email dengan demikian dicabut. | Pemilik/Agent | Selesai |
+| 2026-11-22 | A12 | Pemilik meminta no. HP opsional pada pendaftaran/biodata **Akun**, label **Program studi (wajib diisi mahasiswa)** dalam kurung, dan penghapusan teks bantuan pemilihan foto profil. No. HP ditetapkan opsional dan privat, tidak ditampilkan di halaman publik. | Pemilik/Agent | Selesai |
+| 2026-11-22 | A13 | Pemilik mengubah keputusan A12: no. HP Akun menjadi wajib pada pendaftaran/biodata, keterangan `(opsional)` dihapus, dan label cukup **No. HP**. Sifat privat serta validasi format tetap berlaku. | Pemilik/Agent | Selesai |
+| 2026-11-22 | A14 | Pemilik meminta 6 data palsu per kategori status untuk uji coba Admin dan User, dengan akun wandi saputra sebagai pembuat semua laporan. Status yang dipakai: pending, approved, return_pending, rejected, returned, archived, cancelled. | Pemilik/Agent | Selesai |
+| 2026-11-22 | A15 | Pemilik meminta judul dan kalimat pembuka di halaman Barang Hilang/Barang Ditemukan dihapus, kolom pencarian langsung di bagian atas dengan label sesuai halaman, dan tata letak dirapikan. | Pemilik/Agent | Selesai |
+| 2026-11-22 | A16 | Pemilik menyetujui penggantian jalur login Admin menjadi `/admin-login`, termasuk `.env.example`, default konfigurasi, dan dokumentasi. Jalur tetap tidak ditautkan; konsekuensinya, URL lebih mudah ditebak sehingga keamanan tetap bertumpu pada guard dan kredensial Admin. | Pemilik/Agent | Selesai |
+| 2026-11-22 | A17 | Pemilik meminta ukuran card item disesuaikan agar tombol **Lihat detail** sejajar dengan tombol lain dalam satu baris, mengacu pada card terpanjang. | Pemilik/Agent | Selesai |
+| 2026-11-22 | P8 | Tidak dimulai; menunggu persetujuan eksplisit pemilik sebagai tugas terpisah. | Pemilik | Menunggu |
 ## Riwayat perubahan
 | Versi | Catatan |
 |---|---|
@@ -140,11 +186,23 @@
 | 1.1 | P2.1 implementasi awal autentikasi manual Laravel diterapkan serta diuji; kemudian disesuaikan dengan P0.3. |
 | 1.2 | P2.2 selesai: otorisasi role User/Admin diterapkan dengan Gate server-side dan diuji. |
 | 1.3 | P2.3 selesai: middleware role dan perlindungan route User/Admin diterapkan serta diuji. |
-| 1.4 | P2.4 implementasi awal tanpa verifikasi email diuji; kebijakan ini kemudian superseded oleh keputusan P0.3. |
+| 1.4 | P2.4 implementasi awal tanpa verifikasi email diuji; kebijakan ini kemudian digantikan oleh keputusan P0.3. |
 | 1.5 | P2.5 selesai: matriks akses Guest/User/Admin dan akses tanpa izin diuji. |
 | 1.6 | P0.3 ditetapkan: field pendaftaran dan verifikasi email wajib sebelum pelaporan; implementasi P2.1/P2.4 perlu disesuaikan. |
 | 1.7 | P0.8 selesai: PRD, Requirement, ARCHITECTURE, RULES, dan TASKS diselaraskan dengan seluruh keputusan P0; versi/status, aturan status, privasi, retensi, dan daftar pertanyaan terbuka non-P0 disamakan. |
 | 1.8 | P3.6, P4.5, dan P4.6 selesai: form laporan dipakai ulang untuk edit, aksi pemilik ditambahkan pada `Laporan Saya`, dan pengujian publik/privasi/validasi/kepemilikan ditambahkan. |
-| 1.9 | P5.2–P5.5 selesai: detail dan foto privat Admin, keputusan moderasi beralasan, riwayat status, serta 61 tes lulus. |
+| 1.9 | P5.2–P5.5 selesai: detail dan foto privat Admin, keputusan verifikasi beralasan, riwayat status, serta 61 tes lulus. |
 | 1.10 | P6.1–P6.7 selesai: konfirmasi pengembalian pemilik, bukti privat, tinjauan/setujui/tolak Admin, batas 3 kali, resolusi Admin, serta 68 tes lulus. |
 | 1.11 | P7.1–P7.5 selesai: pengarsipan 30 hari WITA, command/scheduler idempoten, riwayat Sistem, visibilitas arsip, serta 73 tes lulus. |
+| 1.12 | 2026-11-22: P0.13–P0.17 dan A1–A6 dicatat; dokumentasi diselaraskan dengan alur pelaporan temuan, Admin terpisah, WhatsApp, konfirmasi privat, edit `Pending`, dan penghapusan terbatas. P8 tetap `[ ]`. |
+| 1.13 | 2026-11-22: A7 memisahkan layout `public`/`admin`/`admin-auth`, menambahkan guard `guest`/`user`/`admin` dan middleware `main-site`, serta menguji ketiadaan navigasi publik pada halaman Admin. P8 tetap `[ ]`. |
+| 1.14 | 2026-11-22: A8 merapikan beranda dan navbar, memperhalus teks serta footer, menambahkan foto profil privat di pendaftaran/Akun, dan memperbaiki layout login serta sidebar Admin. P8 tetap `[ ]`. |
+| 1.15 | 2026-11-22: A9 mengarahkan kartu beranda ke Barang Hilang, menambah filter “Semua” dan tombol kembali di Dashboard Admin, merapikan kartu status, mengganti istilah moderasi dengan verifikasi, serta menambah 10 data demo. P8 tetap `[ ]`. |
+| 1.16 | 2026-11-22: A10 menyingkat label kartu status, menambah pencarian laporan Admin lintas status, memperbaiki pagination Bootstrap 5, dan menyederhanakan header Dashboard/Tinjau laporan. P8 tetap `[ ]`. |
+| 1.17 | 2026-11-22: A11 menghapus subtitle **Cari laporan**, eyebrow non-beranda, dan verifikasi email; notifikasi menjadi toast mengambang 3 detik; **Akun** dimulai dari kartu profil. PRD/Requirement v2.8, suite 115 tes/688 assertion dan 42 rute lulus. P8 tetap `[ ]`. |
+| 1.18 | 2026-11-22: A12 menambahkan no. HP opsional dan privat pada pendaftaran/biodata **Akun**, merapikan label program studi dan foto profil dalam kurung, serta menghapus teks bantuan pemilihan foto profil. PRD/Requirement v2.9, suite 119 tes/713 assertion dan 42 rute lulus. P8 tetap `[ ]`. |
+| 1.19 | 2026-11-22: A13 mengubah no. HP Akun menjadi wajib pada pendaftaran/biodata dan menyederhanakan label menjadi **No. HP**. PRD/Requirement v2.10, suite 120 tes/724 assertion dan 42 rute lulus. P8 tetap `[ ]`. |
+| 1.20 | 2026-11-22: A14 menambahkan seeder data uji coba 6 laporan per status untuk akun wandi saputra, lengkap dengan riwayat dan bukti pengembalian. Suite 123 tes/745 assertion lulus; total laporan lokal 54. P8 tetap `[ ]`. |
+| 1.21 | 2026-11-22: A15 menghapus hero/judul/kalimat pembuka pada daftar Barang Hilang dan Barang Ditemukan, menjadikan panel pencarian elemen teratas dengan label spesifik halaman serta tata letak yang dirapikan. Suite 124 tes/763 assertion lulus. P8 tetap `[ ]`. |
+| 1.22 | 2026-11-22: A16 mengganti jalur login Admin menjadi `/admin-login` pada `.env`, `.env.example`, default konfigurasi, dan dokumentasi. P8 tetap `[ ]`. |
+| 1.23 | 2026-11-22: A17 menyelaraskan tombol **Lihat detail** di bawah card item memakai flex column dan pembungkus `mt-auto pt-2` di beranda serta daftar publik. Suite 125 tes/773 assertion lulus. P8 tetap `[ ]`. |

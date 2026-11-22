@@ -16,6 +16,7 @@ class ReturnConfirmationFactory extends Factory
         return [
             'lost_report_id' => LostReport::factory(),
             'user_id' => User::factory(),
+            'owner_name' => fake()->name(),
             'status' => 'pending',
             'attempt' => 1,
             'reported_returned_at' => now(),
