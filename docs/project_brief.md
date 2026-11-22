@@ -1,13 +1,13 @@
 # PROJECT BRIEF
 # TITIPTEMU
-### Portal Barang Temuan Kampus: Pelaporan oleh User, Pencarian oleh Guest, Verifikasi oleh Admin
+### Portal Barang Hilang & Temuan Kampus: Pelaporan oleh User, Pencarian oleh Guest, Verifikasi oleh Admin
 
 **Platform:** Website  
 **Teknologi:** Laravel dan MySQL  
 **Lisensi:** MIT License  
-**Status:** Dokumen perencanaan; alur kerja diselaraskan dengan keputusan pemilik 2026-11-22
+**Status:** Dokumen perencanaan; alur kerja diselaraskan dengan keputusan pemilik A18 (2026-11-22)
 
-> **Catatan penyelarasan 2026-11-22:** alur yang berlaku adalah User melaporkan **barang yang ditemukan**, laporan yang disetujui Admin tampil di **Barang Hilang**, dan laporan yang pengembaliannya disetujui Admin tampil di **Barang Ditemukan**. Barang Ditemukan tetap merupakan riwayat pengembalian, bukan daftar pelaporan barang temuan terpisah. Akun Admin terpisah dari akun User dan masuk melalui jalur tersembunyi.
+> **Catatan A18 (2026-11-22):** baseline aktif adalah dua kanal laporan. **Barang Hilang** berisi laporan **kehilangan** yang dibuat User pemilik; **Barang Ditemukan** berisi laporan **temuan** yang dibuat User penemu. Keduanya tersimpan di tabel terpisah, tidak ditautkan, memakai dua card status per menu, dan aturan 30 hari pada daftar “Sudah”. Catatan lama yang menyatakan Barang Ditemukan hanya riwayat pengembalian **sudah digantikan**. Akun Admin terpisah dan masuk melalui jalur tersembunyi.
 
 ---
 
@@ -15,25 +15,25 @@
 
 Kehilangan barang di lingkungan kampus merupakan kejadian yang dapat dialami oleh mahasiswa maupun civitas akademika. Informasi kehilangan barang sering disampaikan melalui grup WhatsApp, media sosial, atau pengumuman secara langsung. Cara tersebut terkadang membuat informasi sulit ditemukan kembali karena bercampur dengan pesan lain dan tidak tersimpan dalam satu tempat yang terstruktur.
 
-Berdasarkan permasalahan tersebut, kelompok kami mengusulkan pengembangan **TitipTemu**, yaitu website yang memusatkan **laporan barang temuan** di lingkungan institusi pendidikan. User yang menemukan barang membuat laporan berisi data penemu, informasi barang, dan foto. Laporan diperiksa oleh Admin sebelum ditampilkan kepada publik.
+Berdasarkan permasalahan tersebut, kelompok kami mengusulkan pengembangan **TitipTemu**, yaitu website yang memusatkan dua kanal laporan di lingkungan institusi pendidikan: **laporan kehilangan** yang dibuat pemilik dan **laporan temuan** yang dibuat penemu. Tiap laporan berisi data pelapor, informasi barang, dan foto, lalu diperiksa Admin sebelum ditampilkan kepada publik.
 
-Guest yang kehilangan barang dapat mencari laporan tersebut tanpa akun. Setiap detail publik menyediakan tombol WhatsApp untuk menghubungi penemu; nomor HP penemu tetap disembunyikan dan tidak ditampilkan sebagai teks.
+Guest dapat mencari informasi di kedua kanal tanpa akun. Setiap detail publik menyediakan tombol WhatsApp untuk menghubungi pemilik atau penemu; nomor HP tetap disembunyikan dan tidak ditampilkan sebagai teks.
 
-TitipTemu juga menyediakan mekanisme konfirmasi ketika barang telah kembali kepada pemiliknya. User mengirimkan **nama pemilik** dan **foto bersama penemu–pemilik** sebagai bukti. Admin memeriksa bukti tersebut. Apabila disetujui, laporan berpindah dari halaman Barang Hilang ke halaman Barang Ditemukan sebagai riwayat barang yang telah kembali.
+TitipTemu juga menyediakan konfirmasi status “Sudah”. Pada laporan temuan, User mengirimkan **nama pemilik** dan **foto bersama penemu–pemilik** sebagai bukti. Admin memeriksa bukti tersebut. Apabila disetujui, laporan berpindah dari **Barang Belum Kembali** ke **Barang Sudah Kembali** di menu **Barang Ditemukan**. Laporan kehilangan berpindah dari **Barang Belum Ditemukan** ke **Barang Sudah Ditemukan** di menu **Barang Hilang**. Keduanya tetap terpisah dan tidak dicocokkan.
 
-Dengan adanya TitipTemu, informasi barang temuan dan pengembaliannya diharapkan dapat dikelola secara lebih terpusat, terstruktur, dan mudah diakses.
+Dengan adanya TitipTemu, informasi barang hilang, barang temuan, dan statusnya diharapkan dapat dikelola secara lebih terpusat, terstruktur, dan mudah diakses.
 
 ## 2. Tujuan Proyek
 
 Tujuan pengembangan TitipTemu adalah:
 
-1. Menyediakan website sebagai pusat laporan barang temuan di lingkungan institusi.
-2. Mempermudah User melaporkan barang temuan dengan data penemu, informasi barang, dan foto.
-3. Memungkinkan Guest melihat dan mencari informasi barang tanpa login.
-4. Menyediakan proses pemeriksaan laporan oleh Admin sebelum dipublikasikan.
-5. Menghubungkan Guest dengan penemu melalui WhatsApp tanpa menampilkan nomor HP secara publik.
-6. Menyediakan fitur konfirmasi pengembalian dengan nama pemilik dan foto bersama yang privat.
-7. Menyediakan riwayat status laporan dan pengelolaan publikasi barang oleh Admin.
+1. Menyediakan website sebagai pusat laporan kehilangan dan laporan temuan di lingkungan institusi.
+2. Mempermudah User melaporkan kehilangan maupun temuan dengan data pelapor, informasi barang, dan foto.
+3. Memungkinkan Guest melihat dan mencari informasi barang pada kedua kanal tanpa login.
+4. Menyediakan proses pemeriksaan kedua jenis laporan oleh Admin sebelum dipublikasikan.
+5. Menghubungkan Guest dengan pemilik/penemu melalui WhatsApp tanpa menampilkan nomor HP secara publik.
+6. Menyediakan fitur konfirmasi status “Sudah” dengan bukti privat dan aturan tampil 30 hari.
+7. Menyediakan dua card status per menu, dropdown **Buat Laporan**, dan sidebar Admin 5 menu.
 8. Menerapkan pengembangan perangkat lunak menggunakan teknologi open source.
 
 ## 3. Ruang Lingkup Proyek
@@ -43,57 +43,69 @@ Pengembangan TitipTemu ditujukan untuk seluruh lingkungan kampus, bukan hanya sa
 ### A. Fitur utama
 
 1. **Halaman Beranda:** menampilkan informasi umum dan navigasi utama website.
-2. **Barang Hilang:** menampilkan laporan barang temuan yang telah disetujui Admin dan masih menunggu diambil pemiliknya.
-3. **Barang Ditemukan:** menampilkan riwayat laporan yang pengembaliannya disetujui Admin. Bukan daftar pelaporan barang temuan terpisah.
-4. **Pencarian Barang:** membantu Guest mencari informasi berdasarkan kata kunci.
-5. **Kontak WhatsApp:** tombol pada detail publik yang membuka chat dengan penemu tanpa menampilkan nomor HP.
-6. **Registrasi dan Login User:** menyediakan akun untuk melaporkan barang temuan dan mengirim konfirmasi pengembalian.
-7. **Login Admin terpisah:** jalur masuk tersembunyi, tidak ditautkan pada navigasi publik.
-8. **Laporkan Barang Temuan:** memungkinkan User mengisi data penemu, data barang, dan foto.
-9. **Akun:** menampilkan aktivitas dan laporan milik User beserta statusnya.
-10. **Konfirmasi Barang Telah Kembali:** memungkinkan User mengirim nama pemilik dan foto bersama penemu–pemilik yang bersifat privat.
-11. **Dashboard Admin:** memeriksa laporan dan konfirmasi, menyetujui/menolak, mengedit laporan `Pending`, serta menghapus permanen laporan yang telah selesai.
-12. **Pengarsipan dan retensi:** Barang Ditemukan tidak ditampilkan setelah 30 hari dan diarsipkan; data tetap disimpan kecuali Admin melakukan penghapusan permanen yang disetujui.
+2. **Barang Hilang:** menampilkan laporan **kehilangan** pemilik yang disetujui Admin, dengan card **Barang Belum Ditemukan** dan **Barang Sudah Ditemukan**.
+3. **Barang Ditemukan:** menampilkan laporan **temuan** penemu yang disetujui Admin, dengan card **Barang Belum Kembali** dan **Barang Sudah Kembali**.
+4. **Card status publik:** dapat diklik dan membawa ke state berbeda di dalam menu aktif; diikuti pencarian dan card item.
+5. **Pencarian Barang:** membantu Guest mencari informasi berdasarkan kata kunci di dalam menu aktif.
+6. **Kontak WhatsApp:** tombol pada detail publik yang membuka chat dengan pemilik/penemu tanpa menampilkan nomor HP.
+7. **Registrasi dan Login User:** menyediakan akun untuk membuat kedua jenis laporan dan mengirim konfirmasi status.
+8. **Login Admin terpisah:** jalur masuk tersembunyi, tidak ditautkan pada navigasi publik.
+9. **Buat Laporan:** dropdown di navbar berisi **Laporkan Kehilangan Barang** dan **Laporkan Barang Temuan**; **Akun** menampilkan daftar keduanya tanpa tombol buat laporan.
+10. **Akun:** menampilkan profil, aktivitas, dan kedua jenis laporan milik User beserta statusnya.
+11. **Konfirmasi status “Sudah”:** User mengirim bukti privat; pada laporan temuan memakai nama pemilik dan foto bersama penemu–pemilik.
+12. **Dashboard Admin:** sidebar 5 menu — Dashboard, Cari laporan, Barang Hilang, Barang Ditemukan, Keluar Admin — dengan card status yang dapat diklik; menu jenis difilter menurut jenis laporan.
+13. **Pengarsipan dan retensi:** kedua daftar “Sudah” tidak ditampilkan setelah 30 hari dan diarsipkan; data tetap disimpan kecuali Admin melakukan penghapusan permanen yang disetujui.
 
 ### B. Hak akses pengguna
 
 | Pengguna | Hak akses |
 |---|---|
-| Guest | Melihat beranda, daftar barang, detail publik, melakukan pencarian, dan menghubungi penemu via WhatsApp tanpa login |
-| User (mahasiswa, dosen, atau staf aktif) | Melaporkan barang temuan, mengunggah foto, melihat laporan miliknya di menu **Akun**, menghubungi penemu, dan mengirim konfirmasi pengembalian |
-| Admin | Memeriksa, menyetujui, menolak, mengedit laporan `Pending`, memeriksa bukti privat, mengelola publikasi, dan menghapus permanen laporan `returned`/`archived` |
+| Guest | Melihat beranda, dua daftar barang, detail publik, melakukan pencarian, dan menghubungi pemilik/penemu via WhatsApp tanpa login |
+| User (mahasiswa, dosen, atau staf aktif) | Melaporkan kehilangan maupun temuan, mengunggah foto, melihat kedua jenis laporan di menu **Akun**, menghubungi pelapor, dan mengirim konfirmasi status |
+| Admin | Memeriksa, menyetujui, menolak, mengedit laporan pada status menunggu verifikasi, memeriksa bukti privat, mengelola publikasi, dan menghapus permanen laporan selesai/arsip |
 
 Guest merupakan pengunjung tanpa login, bukan jenis akun terdaftar. Sistem memiliki dua jenis akun yang terpisah: User dan Admin. Admin masuk melalui jalur tersembunyi dan tidak memiliki tautan pada navigasi publik. Beberapa akun Admin dapat berdiri sendiri.
 
 ### C. Batasan proyek
 
-Pada tahap MVP, proyek berfokus pada website. Pengembangan aplikasi mobile native, integrasi WhatsApp API, notifikasi SMS, pencocokan barang menggunakan AI, dan integrasi SSO akademik belum termasuk ruang lingkup utama.
+Pada tahap MVP, proyek berfokus pada website. Pengembangan aplikasi mobile native, integrasi WhatsApp API, notifikasi SMS, pencocokan barang menggunakan AI maupun aturan sederhana, penautan laporan pemilik dan penemu, dan integrasi SSO akademik belum termasuk ruang lingkup utama. Field/bukti konfirmasi laporan kehilangan serta penggantian URI publik masih terbuka pada A18.
 
 ## 4. Alur Kerja Sistem
 
-### A. Proses pelaporan barang temuan
+### A. Proses pelaporan kehilangan (pemilik)
 
 1. User melakukan login.
-2. User membuka formulir **Laporkan Barang Temuan**.
+2. User membuka **Buat Laporan → Laporkan Kehilangan Barang** atau tombol di **Akun**.
+3. User mengisi data pemilik (nama tercatat pada akun dan **no. HP pemilik**), informasi barang seperti nama, kategori, deskripsi, tanggal dan lokasi **hilang**.
+4. User mengunggah foto barang dan menyetujui ketentuan laporan.
+5. Sistem memvalidasi data dan menyimpan ke tabel laporan kehilangan dengan status menunggu verifikasi.
+6. Admin memeriksa laporan; Admin juga dapat mengedit langsung laporan pada status menunggu verifikasi dan mencatat perubahannya.
+7. Admin menyetujui atau menolak dengan alasan wajib saat menolak; User dapat memperbaiki dan mengirim ulang.
+8. Jika disetujui, laporan ditampilkan pada **Barang Hilang → Barang Belum Ditemukan**.
+9. Guest membuka detail dan memakai tombol WhatsApp. Sistem mengarahkan ke `wa.me` tanpa menampilkan nomor pemilik.
+
+### B. Proses pelaporan temuan (penemu)
+
+1. User melakukan login.
+2. User membuka **Buat Laporan → Laporkan Barang Temuan** atau tombol di **Akun**.
 3. User mengisi data penemu (nama tercatat pada akun dan **no. HP penemu**), informasi barang seperti nama, kategori, deskripsi, tanggal dan lokasi **ditemukan**.
 4. User mengunggah foto barang dan menyetujui ketentuan laporan.
-5. Sistem memvalidasi data dan menyimpan laporan dengan status `Pending`.
-6. Admin memeriksa laporan; Admin juga dapat mengedit langsung laporan `Pending` dan mencatat perubahannya.
-7. Admin menyetujui atau menolak laporan dengan alasan wajib saat menolak; User dapat memperbaiki dan mengirim ulang.
-8. Jika disetujui, laporan ditampilkan pada halaman **Barang Hilang**.
-9. Guest membuka detail dan memakai tombol WhatsApp. Sistem mengarahkan ke `wa.me` tanpa menampilkan nomor penemu di halaman publik.
+5. Sistem memvalidasi data dan menyimpan ke tabel laporan temuan (`lost_reports`) dengan status menunggu verifikasi.
+6. Admin memeriksa, lalu menyetujui atau menolak dengan alasan wajib saat menolak.
+7. Jika disetujui, laporan ditampilkan pada **Barang Ditemukan → Barang Belum Kembali**.
+8. Laporan pemilik dan penemu tidak dicocokkan atau ditautkan, meskipun barangnya sama.
 
-### B. Proses konfirmasi barang telah kembali
+### C. Proses konfirmasi status “Sudah”
 
 1. User membuka laporan miliknya yang masih aktif lewat menu **Akun**.
-2. User memilih fitur konfirmasi barang telah kembali.
-3. User mengisi **nama pemilik**, mengunggah **foto bersama penemu–pemilik**, dan menyetujui pernyataan pengembalian. Catatan pengembalian opsional.
-4. Sistem menyimpan konfirmasi dengan status `Return Pending`; nama pemilik dan foto bersama tidak tampil di publik.
-5. Admin memeriksa konfirmasi dan bukti foto melalui halaman privat.
-6. Admin menyetujui atau menolak konfirmasi dengan alasan wajib saat menolak.
-7. Jika disetujui, status laporan berubah menjadi `Returned` dan laporan berpindah ke halaman **Barang Ditemukan**. Jika ditolak, laporan tetap di Barang Hilang dan User dapat memperbaiki serta mengirim ulang maksimal 3 kali, lalu penyelesaian melalui Admin.
-8. Setelah masa tampil 30 hari sejak persetujuan konfirmasi pengembalian dan publikasi Admin, sistem mengarsipkan laporan sehingga tidak lagi tampil kepada publik; data tetap disimpan.
-9. Pada status `returned` atau `archived`, Admin dapat menghapus laporan secara permanen setelah konfirmasi; penghapusan juga membersihkan foto dan bukti privat terkait.
+2. User memilih konfirmasi status “Sudah”.
+3. Untuk laporan temuan, User mengisi **nama pemilik**, mengunggah **foto bersama penemu–pemilik**, dan menyetujui pernyataan. Ketentuan untuk laporan kehilangan masih terbuka pada A18.
+4. Sistem menyimpan konfirmasi dengan status menunggu pemeriksaan Admin; data privat tidak tampil di publik dan item tetap pada card “Belum”.
+5. Admin memeriksa konfirmasi dan bukti melalui halaman privat.
+6. Admin menyetujui atau menolak dengan alasan wajib saat menolak.
+7. Jika disetujui, laporan berpindah ke card “Sudah” **di menu yang sama**: kehilangan ke **Barang Sudah Ditemukan**, temuan ke **Barang Sudah Kembali**. Jika ditolak, item tetap di card “Belum” dan User dapat memperbaiki serta mengirim ulang maksimal 3 kali, lalu penyelesaian melalui Admin.
+8. Setelah masa tampil 30 hari sejak persetujuan dan publikasi Admin, sistem mengarsipkan laporan sehingga tidak lagi tampil kepada publik; data tetap disimpan.
+9. Admin dapat menghapus laporan selesai/arsip secara permanen setelah konfirmasi; penghapusan juga membersihkan foto dan bukti privat terkait.
 
 ## 5. Teknologi yang Digunakan
 
@@ -195,7 +207,7 @@ Rencana kolaborasi meliputi:
 | Tahap | Kegiatan | Target hasil |
 |---|---|---|
 | P14 — Perencanaan | Menyusun Project Brief, PRD, Requirement, repository, lisensi, README, Issues, dan branch protection | Dokumen perencanaan dan repository awal |
-| P15 — Implementasi | Mengembangkan autentikasi User/Admin terpisah, halaman publik, pelaporan barang temuan, dashboard Admin, konfirmasi pengembalian privat, dan pengarsipan | Website MVP |
+| P15 — Implementasi | Mengembangkan autentikasi User/Admin terpisah, dua kanal laporan (kehilangan dan temuan) dengan tabel terpisah, halaman publik dengan 2 card status per menu, dropdown **Buat Laporan**, sidebar Admin 5 menu, konfirmasi status privat, dan pengarsipan 30 hari | Website MVP |
 | P16 — Pengujian dan penyelesaian | Melakukan pengujian, memperbaiki kesalahan, melengkapi dokumentasi, demo, dan presentasi | Website yang telah diuji dan siap didemonstrasikan |
 
 ## 11. Risiko dan Mitigasi
@@ -212,7 +224,7 @@ Rencana kolaborasi meliputi:
 
 ## 12. Penutup
 
-TitipTemu dirancang sebagai solusi berbasis website untuk membantu pengelolaan laporan barang temuan dan dokumentasi pengembalian barang di lingkungan institusi pendidikan. Dengan fitur pelaporan oleh User, pencarian oleh Guest, kontak WhatsApp tanpa eksposur nomor, verifikasi Admin terpisah, konfirmasi pengembalian yang privat, dan pencatatan status, sistem ini diharapkan dapat membantu pengguna memperoleh informasi secara lebih terstruktur.
+TitipTemu dirancang sebagai solusi berbasis website untuk membantu pengelolaan laporan kehilangan dan laporan temuan di lingkungan institusi pendidikan. Dengan fitur pelaporan oleh User pada dua kanal terpisah, pencarian oleh Guest, kontak WhatsApp tanpa eksposur nomor, verifikasi Admin terpisah, konfirmasi status “Sudah” yang privat, dan pencatatan status per menu, sistem ini diharapkan dapat membantu pengguna memperoleh informasi secara lebih terstruktur.
 
 Penggunaan Laravel, MySQL, Git, GitHub, dan MIT License mendukung penerapan teknologi open source dalam proses pengembangan proyek. Melalui kolaborasi empat anggota kelompok, proyek akan dikembangkan secara bertahap mulai dari perencanaan, implementasi, hingga pengujian dan demonstrasi.
 

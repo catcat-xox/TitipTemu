@@ -78,7 +78,7 @@ class AdminReportModerationTest extends TestCase
         $report = LostReport::factory()->create();
 
         $this->actingAs($admin, 'admin')->post(route('admin.reports.verify', $report), ['decision' => 'approve'])
-            ->assertRedirect(route('admin.dashboard', ['status' => 'approved']));
+            ->assertRedirect(route('admin.dashboard', ['jenis' => 'found', 'status' => 'approved']));
 
         $this->assertSame('approved', $report->fresh()->status);
         $this->assertDatabaseHas('report_status_histories', [
@@ -105,7 +105,7 @@ class AdminReportModerationTest extends TestCase
             'decision' => 'reject',
             'reason' => 'Foto barang kurang jelas.',
             'note' => 'Catatan internal',
-        ])->assertRedirect(route('admin.dashboard', ['status' => 'rejected']));
+        ])->assertRedirect(route('admin.dashboard', ['jenis' => 'found', 'status' => 'rejected']));
 
         $this->assertSame('rejected', $report->fresh()->status);
         $this->assertDatabaseHas('report_status_histories', [
@@ -148,7 +148,7 @@ class AdminReportModerationTest extends TestCase
         $this->actingAs($admin, 'admin')->post(route('admin.reports.verify', $report), [
             'decision' => 'reject',
             'reason' => 'Deskripsi perlu diperjelas.',
-        ])->assertRedirect(route('admin.dashboard', ['status' => 'rejected']));
+        ])->assertRedirect(route('admin.dashboard', ['jenis' => 'found', 'status' => 'rejected']));
 
         $this->actingAs($owner, 'web')->get(route('reports.mine'))
             ->assertOk()

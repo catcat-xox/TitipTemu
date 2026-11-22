@@ -2,7 +2,7 @@
 
 @php
     $isLost = $type === 'lost';
-    $title = $isLost ? 'Barang Hilang' : 'Barang Ditemukan';
+    $title = $labels['title'];
 @endphp
 
 @section('title', $title . ' — TitipTemu')
@@ -12,7 +12,22 @@
         <div class="container">
             <h1 class="visually-hidden">{{ $title }}</h1>
 
+            <nav class="row g-3 mb-4" aria-label="Pilih status {{ $title }}">
+                @foreach (['belum', 'sudah'] as $option)
+                    <div class="col-md-6">
+                        <a class="state-card{{ $state === $option ? ' is-active' : '' }}"
+                            href="{{ route('reports.index', [$type, 'status' => $option]) }}"
+                            @if ($state === $option) aria-current="page" @endif>
+                            <span class="state-card-label">{{ $labels[$option] }}</span>
+                            <span class="state-card-count">{{ $counts[$option] }} laporan</span>
+                            <span class="state-card-arrow" aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                @endforeach
+            </nav>
+
             <form class="filter-panel reports-filter-panel mb-4" method="GET" action="{{ route('reports.index', $type) }}">
+                <input type="hidden" name="status" value="{{ $state }}">
                 <div class="row g-3 align-items-end">
                     <div class="col-lg-5">
                         <label class="form-label" for="q">Cari {{ $title }}</label>
@@ -45,7 +60,7 @@
                 <div class="empty-state">
                     <span class="icon-box" aria-hidden="true">⌕</span>
                     <h2>Belum ada laporan yang sesuai</h2>
-                    <p>Coba gunakan kata kunci atau filter lain.</p>
+                    <p>Coba gunakan kata kunci atau filter lain, atau pilih card status lainnya.</p>
                 </div>
             @else
                 <div class="row g-4">
@@ -53,12 +68,12 @@
                         <div class="col-md-6 col-xl-4">
                             <article class="report-card">
                                 <div class="report-image">
-                                    <img src="{{ route('reports.photo', $report) }}"
+                                    <img src="{{ route($isLost ? 'missing-reports.photo' : 'reports.photo', $report) }}"
                                         alt="Foto {{ $report->item_name }}" loading="lazy">
                                 </div>
                                 <div class="report-card-body">
                                     <div class="d-flex justify-content-between gap-2 align-items-start">
-                                        <span class="status-badge">{{ $isLost ? 'Masih dicari' : 'Sudah kembali' }}</span>
+                                        <span class="status-badge">{{ $labels[$state] }}</span>
                                         <span class="report-date">{{ $report->lost_at->translatedFormat('d M Y') }}</span>
                                     </div>
                                     <h2>{{ $report->item_name }}</h2>

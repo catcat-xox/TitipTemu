@@ -23,31 +23,36 @@
     <section class="section pt-0">
         <div class="container">
             <div class="admin-stat-grid mb-4">
-                @foreach ($statusCardLabels as $status => $label)
-                    <div class="admin-stat-card surface-card">
-                        <span class="card-label">{{ $label }}</span>
-                        <h2 class="mt-2 mb-0">{{ $counts->get($status, 0) }}</h2>
-                    </div>
+                @foreach ($cards as $filter => $card)
+                    <a class="admin-stat-card surface-card admin-stat-link {{ $currentStatus === $filter ? 'active' : '' }}"
+                        href="{{ route('admin.dashboard', ['jenis' => $currentJenis, 'status' => $filter]) }}"
+                        @if ($currentStatus === $filter) aria-current="page" @endif>
+                        <span class="card-label">{{ $card['label'] }}</span>
+                        <h2 class="mt-2 mb-0">{{ $card['total'] }}</h2>
+                    </a>
                 @endforeach
             </div>
 
             <form class="filter-panel mb-4" method="GET" action="{{ route('admin.dashboard') }}">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-6 col-lg-4">
-                        <label class="form-label" for="status">Status laporan</label>
-                        <select class="form-select" id="status" name="status">
-                            <option value="all" @selected($currentStatus === 'all')>
-                                Semua ({{ $counts->sum() }})
-                            </option>
-                            @foreach ($statusLabels as $status => $label)
-                                <option value="{{ $status }}" @selected($currentStatus === $status)>
-                                    {{ $label }} ({{ $counts->get($status, 0) }})
-                                </option>
+                        <label class="form-label" for="jenis">Jenis laporan</label>
+                        <select class="form-select" id="jenis" name="jenis" onchange="this.form.submit()">
+                            @foreach ($jenisLabels as $value => $label)
+                                <option value="{{ $value }}" @selected($currentJenis === $value)>{{ $label }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-6 col-lg-2 d-grid">
-                        <button class="btn btn-primary" type="submit">Terapkan</button>
+                    <div class="col-md-6 col-lg-4">
+                        <label class="form-label" for="status">Status laporan</label>
+                        <select class="form-select" id="status" name="status">
+                            @foreach ($statusOptions as $value => $label)
+                                <option value="{{ $value }}" @selected($currentStatus === $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-12 col-lg-4 d-flex justify-content-lg-end">
+                        <button class="btn btn-primary ms-lg-auto" type="submit">Terapkan</button>
                     </div>
                 </div>
             </form>
@@ -60,14 +65,15 @@
                 </div>
             @else
                 <div class="table-responsive surface-card">
-                    <table class="table align-middle mb-0">
-                        <caption class="visually-hidden">Antrean laporan barang temuan {{ $currentStatusLabel }}</caption>
+                    <table class="table table-admin-compact align-middle mb-0">
+                        <caption class="visually-hidden">Laporan {{ $jenisLabels[$currentJenis] }} dengan status {{ $currentStatusLabel }}</caption>
                         <thead>
                             <tr>
                                 <th scope="col">Barang</th>
+                                <th scope="col">Jenis</th>
                                 <th scope="col">Kategori</th>
                                 <th scope="col">Lokasi</th>
-                                <th scope="col">Tanggal hilang</th>
+                                <th scope="col">Tanggal</th>
                                 <th scope="col">Pelapor</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Dikirim</th>
@@ -77,21 +83,24 @@
                         <tbody>
                             @foreach ($reports as $report)
                                 <tr>
-                                    <td><strong>{{ $report->item_name }}</strong></td>
-                                    <td>{{ $report->category }}</td>
-                                    <td>{{ $report->location }}</td>
-                                    <td>{{ $report->lost_at->translatedFormat('d M Y') }}</td>
-                                    <td>{{ $report->user?->name ?? '-' }}</td>
-                                    <td><span class="status-badge status-{{ $report->status }}">{{ $statusLabels[$report->status] ?? $report->status }}</span></td>
-                                    <td>{{ $report->created_at->translatedFormat('d M Y H:i') }}</td>
+                                    <td><strong>{{ $report['item_name'] }}</strong></td>
+                                    <td>{{ $report['kind_label'] }}</td>
+                                    <td>{{ $report['category'] }}</td>
+                                    <td>{{ $report['location'] }}</td>
+                                    <td>{{ $report['lost_at']->translatedFormat('d M Y') }}</td>
+                                    <td>{{ $report['user_name'] }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ $report['status'] }}">{{ $report['status_label'] }}</span>
+                                    </td>
+                                    <td>{{ $report['created_at']->translatedFormat('d M Y H:i') }}</td>
                                     <td class="text-end">
-                                        <div class="d-flex flex-wrap gap-2 justify-content-end">
-                                            <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.reports.show', $report) }}">Tinjau</a>
-                                            @if ($report->status === 'pending')
-                                                <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.reports.edit', $report) }}">Edit</a>
+                                        <div class="d-flex flex-nowrap gap-2 justify-content-end">
+                                            <a class="btn btn-sm btn-outline-primary" href="{{ $report['show_url'] }}">Tinjau</a>
+                                            @if ($report['status'] === 'pending')
+                                                <a class="btn btn-sm btn-outline-secondary" href="{{ $report['edit_url'] }}">Edit</a>
                                             @endif
-                                            @if (in_array($report->status, ['returned', 'archived'], true))
-                                                <form method="POST" action="{{ route('admin.reports.destroy', $report) }}"
+                                            @if ($report['delete_url'])
+                                                <form method="POST" action="{{ $report['delete_url'] }}"
                                                     onsubmit="return confirm('Hapus permanen laporan ini beserta buktinya? Tindakan ini tidak dapat dibatalkan.');">
                                                     @csrf
                                                     @method('DELETE')

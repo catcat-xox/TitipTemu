@@ -44,7 +44,7 @@ class AdminModerationQueueTest extends TestCase
             ->assertSee('Kunci Pending')
             ->assertSee('Pemilik Test')
             ->assertSee('MENUNGGU')
-            ->assertSee('PENGEMBALIAN')
+            ->assertSee('TINDAK LANJUT')
             ->assertSee('Menunggu pemeriksaan')
             ->assertSee('Pengembalian diperiksa')
             ->assertSee('Kembali ke halaman sebelumnya')

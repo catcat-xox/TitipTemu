@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Admin;
 use App\Models\LostReport;
+use App\Models\MissingReport;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
@@ -79,11 +80,26 @@ class InterfaceRefinementTest extends TestCase
         $this->assertStringNotContainsString('Akun saya', $html);
         $this->assertStringNotContainsString('Profil Anda dan aktivitas laporan barang temuan', $html);
         $this->assertStringNotContainsString('Buka halaman verifikasi', $html);
+        $this->assertStringContainsString('Edit profil', $html);
+        $this->assertStringContainsString('>Keluar</button>', $html);
+        $this->assertStringNotContainsString('class="profile-form"', $html);
         $this->assertLessThan(
-            strpos($html, 'Ubah profil'),
+            strpos($html, 'Laporan saya'),
             strpos($html, 'profile-card'),
-            'Kartu profil harus muncul sebelum formulir lain.'
+            'Kartu profil harus muncul sebelum daftar laporan.'
         );
+    }
+
+    public function test_account_report_tables_center_the_status_column(): void
+    {
+        $user = User::factory()->create();
+        MissingReport::factory()->for($user)->create(['item_name' => 'Kunci hilang']);
+        LostReport::factory()->for($user)->create(['item_name' => 'Dompet ditemukan']);
+
+        $html = $this->actingAs($user)->get(route('user.dashboard'))->assertOk()->getContent();
+
+        $this->assertSame(2, substr_count($html, '<th scope="col" class="text-center">Status</th>'));
+        $this->assertSame(2, substr_count($html, '<td class="text-center">'));
     }
 
     public function test_registration_form_has_required_phone_field_with_plain_label(): void
@@ -105,9 +121,11 @@ class InterfaceRefinementTest extends TestCase
     {
         $user = User::factory()->create(['phone' => '0812-3456-7890']);
 
-        $html = $this->actingAs($user)->get(route('user.dashboard'))->assertOk()->getContent();
+        $dashboardHtml = $this->actingAs($user)->get(route('user.dashboard'))->assertOk()->getContent();
+        $html = $this->actingAs($user)->get(route('user.profile.edit'))->assertOk()->getContent();
 
-        $this->assertStringContainsString('No. HP: 0812-3456-7890', $html);
+        $this->assertStringContainsString('No. HP: 0812-3456-7890', $dashboardHtml);
+        $this->assertStringContainsString('Edit profil', $dashboardHtml);
         $this->assertStringContainsString('<label class="form-label" for="phone">No. HP</label>', $html);
         $this->assertStringNotContainsString('<label class="form-label" for="phone">No. HP <span', $html);
         $this->assertMatchesRegularExpression('/<input[^>]*name="phone"[^>]*required/', $html);
@@ -117,15 +135,27 @@ class InterfaceRefinementTest extends TestCase
         $this->assertStringNotContainsString('Kosongkan jika tidak ingin mengganti foto profil.', $html);
     }
 
+    public function test_profile_edit_page_is_restricted_to_authenticated_users(): void
+    {
+        $this->get(route('user.profile.edit'))->assertRedirect(route('login'));
+
+        $user = User::factory()->create(['name' => 'Pemilik Profil']);
+
+        $this->actingAs($user)->get(route('user.profile.edit'))
+            ->assertOk()
+            ->assertSee('Ubah profil')
+            ->assertSee('Simpan profil');
+    }
+
     public function test_report_card_detail_buttons_use_bottom_aligned_wrapper(): void
     {
-        LostReport::factory()->approved()->create([
+        MissingReport::factory()->approved()->create([
             'description' => 'Deskripsi pendek.',
         ]);
-        LostReport::factory()->approved()->create([
+        MissingReport::factory()->approved()->create([
             'description' => str_repeat('Deskripsi panjang untuk menguji keseragaman tinggi kartu. ', 8),
         ]);
-        LostReport::factory()->returnedAt(now()->subDays(2))->create();
+        LostReport::factory()->approved()->create();
 
         foreach (['/', route('reports.index', 'lost'), route('reports.index', 'found')] as $uri) {
             $html = $this->get($uri)->assertOk()->getContent();
@@ -143,33 +173,79 @@ class InterfaceRefinementTest extends TestCase
         }
     }
 
-    public function test_public_list_pages_start_with_search_and_use_page_specific_labels(): void
+    public function test_public_list_pages_start_with_status_cards_then_search_and_use_page_specific_labels(): void
     {
+        MissingReport::factory()->approved()->create();
+        MissingReport::factory()->foundAt(now()->subDays(2))->create();
         LostReport::factory()->approved()->create();
         LostReport::factory()->returnedAt(now()->subDays(2))->create();
 
         foreach ([
-            'lost' => 'Cari Barang Hilang',
-            'found' => 'Cari Barang Ditemukan',
-        ] as $type => $label) {
+            'lost' => [
+                'search' => 'Cari Barang Hilang',
+                'labels' => ['Barang Belum Ditemukan', 'Barang Sudah Ditemukan'],
+            ],
+            'found' => [
+                'search' => 'Cari Barang Ditemukan',
+                'labels' => ['Barang Belum Kembali', 'Barang Sudah Kembali'],
+            ],
+        ] as $type => $expected) {
             $html = $this->get(route('reports.index', $type))->assertOk()->getContent();
 
             $this->assertStringNotContainsString('page-hero', $html);
             $this->assertStringNotContainsString('page-intro', $html);
             $this->assertStringNotContainsString('Cari barang temuan yang telah disetujui', $html);
             $this->assertStringNotContainsString('Lihat barang yang sudah dikembalikan', $html);
-            $this->assertStringContainsString('<label class="form-label" for="q">'.$label.'</label>', $html);
+            $this->assertStringContainsString('<label class="form-label" for="q">'.$expected['search'].'</label>', $html);
 
+            foreach ($expected['labels'] as $label) {
+                $this->assertStringContainsString($label, $html);
+            }
+            foreach (['belum', 'sudah'] as $option) {
+                $this->assertStringContainsString(
+                    route('reports.index', [$type, 'status' => $option]),
+                    $html,
+                );
+            }
+            $this->assertStringContainsString('<input type="hidden" name="status" value="belum">', $html);
+
+            $statePosition = strpos($html, 'class="state-card');
             $searchPosition = strpos($html, 'reports-filter-panel');
             $cardPosition = strpos($html, 'report-card');
+            $this->assertNotFalse($statePosition);
             $this->assertNotFalse($searchPosition);
             $this->assertNotFalse($cardPosition);
-            $this->assertLessThan(
-                $cardPosition,
-                $searchPosition,
-                "Panel pencarian harus tampil sebelum kartu laporan ({$type})."
-            );
+            $this->assertLessThan($searchPosition, $statePosition, "Card status harus tampil sebelum pencarian ({$type}).");
+            $this->assertLessThan($cardPosition, $searchPosition, "Panel pencarian harus tampil sebelum kartu laporan ({$type}).");
         }
+    }
+
+    public function test_public_navbar_uses_report_dropdown_and_icon_account_actions(): void
+    {
+        $user = User::factory()->create(['name' => 'Navbar Pengguna']);
+        $html = $this->actingAs($user)->get(route('home'))->assertOk()->getContent();
+
+        $this->assertStringContainsString('id="buatLaporanMenu"', $html);
+        $this->assertStringContainsString('Buat Laporan', $html);
+        $this->assertStringContainsString('data-bs-toggle="dropdown"', $html);
+        $this->assertStringContainsString('<a class="dropdown-item" href="'.route('missing-reports.create').'">', $html);
+        $this->assertStringContainsString('Laporkan Kehilangan Barang', $html);
+        $this->assertStringContainsString('<a class="dropdown-item" href="'.route('reports.create').'">', $html);
+        $this->assertStringContainsString('Laporkan Barang Temuan', $html);
+        $this->assertStringContainsString('aria-label="Akun"', $html);
+        $this->assertStringNotContainsString('aria-label="Keluar"', $html);
+        $this->assertStringNotContainsString('Halo, Navbar Pengguna', $html);
+        $this->assertStringNotContainsString('btn btn-outline-secondary">Akun', $html);
+        $this->assertStringNotContainsString(route('logout'), $html);
+        $this->assertLessThan(
+            strpos($html, 'id="buatLaporanMenu"'),
+            strpos($html, 'aria-label="Akun"'),
+            'Tombol Akun harus berada sebelum dropdown Buat Laporan.'
+        );
+
+        $admin = Admin::factory()->create(['name' => 'Admin Navbar']);
+        $adminHtml = $this->actingAs($admin, 'admin')->get(route('admin.dashboard'))->assertOk()->getContent();
+        $this->assertStringContainsString('Halo, Admin Navbar', $adminHtml);
     }
 
     public function test_flash_notices_render_as_floating_toasts_in_every_layout(): void

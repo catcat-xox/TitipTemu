@@ -77,7 +77,7 @@
                                 <p class="text-muted small">Pilih satu keputusan. Penolakan wajib disertai alasan yang dapat diperbaiki pelapor.</p>
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="decision" id="decision-approve" value="approve" @checked(old('decision') === 'approve')>
-                                    <label class="form-check-label" for="decision-approve">Setujui dan tampilkan di Barang Hilang</label>
+                                    <label class="form-check-label" for="decision-approve">Setujui dan tampilkan di Barang Ditemukan</label>
                                 </div>
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="radio" name="decision" id="decision-reject" value="reject" @checked(old('decision') === 'reject')>

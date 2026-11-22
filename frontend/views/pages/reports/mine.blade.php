@@ -71,7 +71,7 @@
                                                 <a class="btn btn-sm btn-outline-primary" href="{{ route('reports.return.create', $report) }}">Konfirmasi kembali</a>
                                             @endif
                                             @if ($report->isPublic())
-                                                <a class="btn btn-sm btn-link" href="{{ route('reports.show', [$report->status === 'returned' ? 'found' : 'lost', $report]) }}">Detail</a>
+                                                <a class="btn btn-sm btn-outline-primary" href="{{ route('reports.show', ['found', $report]) }}">Detail</a>
                                             @endif
                                         </div>
                                     </td>

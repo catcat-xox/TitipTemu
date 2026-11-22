@@ -38,15 +38,34 @@
                 </ul>
 
                 @if (auth('web')->check())
-                    <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2">
-                        <a href="{{ route('user.dashboard') }}" class="btn btn-outline-secondary">Akun</a>
-                        <span class="nav-user">Halo, {{ auth('web')->user()->name }}</span>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-secondary w-100">Keluar</button>
-                        </form>
+                    <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 nav-actions">
+                        <a href="{{ route('user.dashboard') }}" class="btn btn-outline-secondary nav-icon-button"
+                            aria-label="Akun" title="Akun">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="3.5"></circle>
+                                <path d="M5 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5"></path>
+                            </svg>
+                        </a>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle w-100" type="button"
+                                id="buatLaporanMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                                Buat Laporan
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="buatLaporanMenu">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('missing-reports.create') }}">
+                                        Laporkan Kehilangan Barang
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('reports.create') }}">
+                                        Laporkan Barang Temuan
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                    <a href="{{ route('reports.create') }}" class="btn btn-primary ms-lg-2 mt-2 mt-lg-0">Laporkan Barang Temuan</a>
                 @else
                     <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2">
                         <a href="{{ route('login') }}" class="btn btn-outline-secondary">Masuk</a>

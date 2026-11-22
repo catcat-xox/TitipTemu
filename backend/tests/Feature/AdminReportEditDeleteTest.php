@@ -8,7 +8,6 @@ use App\Models\ReportStatusHistory;
 use App\Models\ReturnConfirmation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -100,7 +99,7 @@ class AdminReportEditDeleteTest extends TestCase
         Storage::disk('local')->put('return-proofs/bukti.jpg', 'bukti-privat');
 
         $this->actingAs($admin, 'admin')->delete(route('admin.reports.destroy', $report))
-            ->assertRedirect(route('admin.dashboard', ['status' => 'returned']))
+            ->assertRedirect(route('admin.dashboard', ['jenis' => 'found', 'status' => 'returned']))
             ->assertSessionHas('success');
 
         $this->assertDatabaseMissing('lost_reports', ['id' => $report->id]);

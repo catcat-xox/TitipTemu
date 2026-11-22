@@ -102,7 +102,7 @@ class LostReportManagementTest extends TestCase
             ->assertRedirect(route('reports.mine'));
 
         $this->assertSame('cancelled', $report->fresh()->status);
-        $this->get(route('reports.index', 'lost'))->assertDontSee($report->item_name);
+        $this->get(route('reports.index', 'found'))->assertDontSee($report->item_name);
     }
 
     public function test_rejected_report_can_be_resubmitted_without_changes(): void
@@ -133,13 +133,33 @@ class LostReportManagementTest extends TestCase
     {
         $report = LostReport::factory()->create();
 
-        $this->get(route('reports.index', 'lost'))->assertDontSee($report->item_name);
-        $this->get(route('reports.show', ['lost', $report]))->assertNotFound();
+        $this->get(route('reports.index', 'found'))->assertDontSee($report->item_name);
+        $this->get(route('reports.show', ['found', $report]))->assertNotFound();
 
         $report->update(['status' => 'approved']);
 
-        $this->get(route('reports.index', 'lost'))->assertSee($report->item_name);
-        $this->get(route('reports.show', ['lost', $report]))->assertOk();
+        $this->get(route('reports.index', 'found'))->assertSee($report->item_name);
+        $this->get(route('reports.show', ['found', $report]))->assertOk();
+    }
+
+    public function test_management_detail_link_uses_found_type_and_button_style(): void
+    {
+        $owner = User::factory()->create();
+        $report = LostReport::factory()->for($owner)->approved()->create([
+            'item_name' => 'Dompet dengan detail',
+        ]);
+
+        $html = $this->actingAs($owner)->get(route('reports.mine'))->assertOk()->getContent();
+        $detailUrl = route('reports.show', ['found', $report]);
+
+        $this->assertStringContainsString($detailUrl, $html);
+        $this->assertStringNotContainsString(route('reports.show', ['lost', $report]), $html);
+        $this->assertStringContainsString(
+            '<a class="btn btn-sm btn-outline-primary" href="'.$detailUrl.'">Detail</a>',
+            $html
+        );
+        $this->assertStringNotContainsString('btn btn-sm btn-link', $html);
+        $this->get($detailUrl)->assertOk();
     }
 
     public function test_user_without_verified_email_can_submit_a_report(): void

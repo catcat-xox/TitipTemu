@@ -41,7 +41,7 @@ class AdminReportSearchTest extends TestCase
         $response = $this->actingAs($admin, 'admin')->get(route('admin.reports.search'))
             ->assertOk()
             ->assertSee('Cari laporan')
-            ->assertSee('Menampilkan semua laporan.');
+            ->assertSee('Menampilkan semua laporan dari kedua jenis.');
 
         foreach ($statuses as $status) {
             $response->assertSee('Laporan '.ucfirst($status));

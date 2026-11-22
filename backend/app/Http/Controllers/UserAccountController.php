@@ -10,6 +10,19 @@ use Illuminate\View\View;
 
 class UserAccountController extends Controller
 {
+    private const TYPE_LABELS = [
+        'student' => 'Mahasiswa',
+        'lecturer' => 'Dosen',
+        'staff' => 'Staf',
+    ];
+
+    public function edit(): View
+    {
+        return view('pages.user.edit', [
+            'typeLabels' => self::TYPE_LABELS,
+        ]);
+    }
+
     public function index(): View
     {
         return view('pages.user.dashboard', [
@@ -17,6 +30,10 @@ class UserAccountController extends Controller
                 ->with(['latestRejection', 'latestReturnRejection'])
                 ->latest()
                 ->paginate(10),
+            'missingReports' => auth()->user()->missingReports()
+                ->with('latestRejection')
+                ->latest()
+                ->paginate(10, ['*'], 'missing_page'),
         ]);
     }
 

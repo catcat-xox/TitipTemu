@@ -32,6 +32,11 @@ class User extends Authenticatable
         return $this->hasMany(LostReport::class);
     }
 
+    public function missingReports(): HasMany
+    {
+        return $this->hasMany(MissingReport::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;

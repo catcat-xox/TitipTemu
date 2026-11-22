@@ -29,20 +29,18 @@
                         <input class="form-control" id="q" name="q" value="{{ $keyword }}"
                             placeholder="Nama barang, kategori, lokasi, atau pelapor">
                     </div>
-                    <div class="col-md-4 col-lg-2 d-grid">
-                        <button class="btn btn-primary" type="submit">Cari</button>
-                    </div>
-                    @if ($keyword !== '')
-                        <div class="col-md-4 col-lg-2 d-grid">
+                    <div class="col-12 col-lg-4 d-flex flex-wrap justify-content-lg-end gap-2">
+                        <button class="btn btn-primary ms-lg-auto" type="submit">Cari</button>
+                        @if ($keyword !== '')
                             <a class="btn btn-outline-secondary" href="{{ route('admin.reports.search') }}">Atur ulang</a>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 </div>
             </form>
 
             <p class="text-muted small mb-3">
                 {{ $keyword === ''
-                    ? 'Menampilkan semua laporan.'
+                    ? 'Menampilkan semua laporan dari kedua jenis.'
                     : 'Ditemukan '.$reports->total().' laporan untuk “'.$keyword.'”.' }}
             </p>
 
@@ -55,10 +53,11 @@
             @else
                 <div class="table-responsive surface-card">
                     <table class="table align-middle mb-0">
-                        <caption class="visually-hidden">Hasil pencarian laporan lintas status</caption>
+                        <caption class="visually-hidden">Hasil pencarian laporan lintas jenis dan status</caption>
                         <thead>
                             <tr>
                                 <th scope="col">Barang</th>
+                                <th scope="col">Jenis</th>
                                 <th scope="col">Kategori</th>
                                 <th scope="col">Lokasi</th>
                                 <th scope="col">Pelapor</th>
@@ -71,16 +70,18 @@
                             @foreach ($reports as $report)
                                 <tr>
                                     <td>
-                                        <strong>{{ $report->item_name }}</strong>
-                                        <span class="d-block text-muted small">{{ Str::limit($report->description, 72) }}</span>
+                                        <strong>{{ $report['item_name'] }}</strong>
                                     </td>
-                                    <td>{{ $report->category }}</td>
-                                    <td>{{ $report->location }}</td>
-                                    <td>{{ $report->user?->name ?? '-' }}</td>
-                                    <td><span class="status-badge status-{{ $report->status }}">{{ $statusLabels[$report->status] ?? $report->status }}</span></td>
-                                    <td>{{ $report->created_at->translatedFormat('d M Y H:i') }}</td>
+                                    <td>{{ $report['kind_label'] }}</td>
+                                    <td>{{ $report['category'] }}</td>
+                                    <td>{{ $report['location'] }}</td>
+                                    <td>{{ $report['user_name'] }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ $report['status'] }}">{{ $report['status_label'] }}</span>
+                                    </td>
+                                    <td>{{ $report['created_at']->translatedFormat('d M Y H:i') }}</td>
                                     <td class="text-end">
-                                        <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.reports.show', $report) }}">Tinjau</a>
+                                        <a class="btn btn-sm btn-outline-primary" href="{{ $report['show_url'] }}">Tinjau</a>
                                     </td>
                                 </tr>
                             @endforeach

@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\AdminReturnConfirmationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LostReportController;
+use App\Http\Controllers\MissingReportController;
 use App\Http\Controllers\PublicReportController;
 use App\Http\Controllers\ReturnConfirmationController;
 use App\Http\Controllers\UserAccountController;
@@ -27,6 +28,10 @@ Route::middleware('main-site')->group(function (): void {
         ->name('reports.photo');
     Route::get('/laporan/{report}/hubungi', [PublicReportController::class, 'contact'])
         ->name('reports.contact');
+    Route::get('/laporan-kehilangan/{report}/foto', [PublicReportController::class, 'photoMissing'])
+        ->name('missing-reports.photo');
+    Route::get('/laporan-kehilangan/{report}/hubungi', [PublicReportController::class, 'contactMissing'])
+        ->name('missing-reports.contact');
 
     Route::middleware('role:guest')->group(function (): void {
         Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -40,6 +45,21 @@ Route::middleware('main-site')->group(function (): void {
  * Area User. Admin tidak boleh melihat UI ini; role:user memberi 403.
  */
 Route::middleware('role:user')->group(function (): void {
+    Route::get('/laporkan-kehilangan-barang', [MissingReportController::class, 'create'])
+        ->name('missing-reports.create');
+    Route::post('/laporkan-kehilangan-barang', [MissingReportController::class, 'store'])
+        ->name('missing-reports.store');
+    Route::get('/laporan-kehilangan-saya', [MissingReportController::class, 'mine'])
+        ->name('missing-reports.mine');
+    Route::get('/laporan-kehilangan-saya/{report}/edit', [MissingReportController::class, 'edit'])
+        ->name('missing-reports.edit');
+    Route::put('/laporan-kehilangan-saya/{report}', [MissingReportController::class, 'update'])
+        ->name('missing-reports.update');
+    Route::post('/laporan-kehilangan-saya/{report}/batalkan', [MissingReportController::class, 'cancel'])
+        ->name('missing-reports.cancel');
+    Route::post('/laporan-kehilangan-saya/{report}/kirim-ulang', [MissingReportController::class, 'resubmit'])
+        ->name('missing-reports.resubmit');
+
     Route::get('/laporkan-barang-temuan', [LostReportController::class, 'create'])
         ->name('reports.create');
     Route::post('/laporkan-barang-temuan', [LostReportController::class, 'store'])
@@ -62,6 +82,7 @@ Route::middleware('role:user')->group(function (): void {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/akun', [UserAccountController::class, 'index'])->name('user.dashboard');
+    Route::get('/akun/profil/edit', [UserAccountController::class, 'edit'])->name('user.profile.edit');
     Route::put('/akun/profil', [UserAccountController::class, 'update'])->name('user.profile.update');
     Route::get('/akun/foto-profil', [UserAccountController::class, 'photo'])->name('user.profile-photo');
     Route::redirect('/user/dashboard', '/akun')->name('user.dashboard.legacy');
@@ -94,6 +115,11 @@ Route::middleware('role:admin')
         Route::delete('/laporan/{report}', [AdminReportController::class, 'destroy'])->name('reports.destroy');
         Route::get('/laporan/{report}/foto', [AdminReportController::class, 'photo'])->name('reports.photo');
         Route::post('/laporan/{report}/verifikasi', [AdminReportController::class, 'moderate'])->name('reports.verify');
+        Route::get('/laporan-kehilangan/{report}', [AdminReportController::class, 'showMissing'])->name('reports.missing.show');
+        Route::get('/laporan-kehilangan/{report}/edit', [AdminReportController::class, 'editMissing'])->name('reports.missing.edit');
+        Route::put('/laporan-kehilangan/{report}', [AdminReportController::class, 'updateMissing'])->name('reports.missing.update');
+        Route::get('/laporan-kehilangan/{report}/foto', [AdminReportController::class, 'photoMissing'])->name('reports.missing.photo');
+        Route::post('/laporan-kehilangan/{report}/verifikasi', [AdminReportController::class, 'verifyMissing'])->name('reports.missing.verify');
         Route::post('/laporan/{report}/selesaikan-pengembalian', [AdminReturnConfirmationController::class, 'resolve'])->name('reports.resolve-return');
         Route::get('/pengembalian/{confirmation}/bukti', [AdminReturnConfirmationController::class, 'proof'])->name('returns.proof');
         Route::post('/pengembalian/{confirmation}/setujui', [AdminReturnConfirmationController::class, 'approve'])->name('returns.approve');

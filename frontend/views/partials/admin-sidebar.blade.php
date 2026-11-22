@@ -1,12 +1,9 @@
 @php
     $adminNavigation = [
-        ['route' => 'admin.dashboard', 'status' => null, 'label' => 'Dashboard'],
-        ['route' => 'admin.reports.search', 'status' => null, 'label' => 'Cari laporan'],
-        ['route' => 'admin.dashboard', 'status' => 'pending', 'label' => 'Menunggu verifikasi'],
-        ['route' => 'admin.dashboard', 'status' => 'approved', 'label' => 'Masih dicari'],
-        ['route' => 'admin.dashboard', 'status' => 'return_pending', 'label' => 'Pengembalian diperiksa'],
-        ['route' => 'admin.dashboard', 'status' => 'returned', 'label' => 'Sudah kembali'],
-        ['route' => 'admin.dashboard', 'status' => 'archived', 'label' => 'Diarsipkan'],
+        ['route' => 'admin.dashboard', 'params' => [], 'label' => 'Dashboard', 'jenis' => 'all'],
+        ['route' => 'admin.reports.search', 'params' => [], 'label' => 'Cari laporan', 'jenis' => null],
+        ['route' => 'admin.dashboard', 'params' => ['jenis' => 'lost', 'status' => 'all'], 'label' => 'Barang Hilang', 'jenis' => 'lost'],
+        ['route' => 'admin.dashboard', 'params' => ['jenis' => 'found', 'status' => 'all'], 'label' => 'Barang Ditemukan', 'jenis' => 'found'],
     ];
 @endphp
 
@@ -20,12 +17,10 @@
     <nav class="admin-nav" aria-label="Menu Admin">
         @foreach ($adminNavigation as $item)
             @php
-                $url = route($item['route'], $item['status'] ? ['status' => $item['status']] : []);
-                $isActive = request()->routeIs($item['route'])
-                    && (
-                        $item['route'] === 'admin.reports.search'
-                        || request()->query('status') === $item['status']
-                    );
+                $url = route($item['route'], $item['params']);
+                $isActive = $item['jenis'] === null
+                    ? request()->routeIs($item['route'])
+                    : request()->routeIs('admin.dashboard') && request()->query('jenis', 'all') === $item['jenis'];
             @endphp
             <a class="admin-nav-link {{ $isActive ? 'active' : '' }}" href="{{ $url }}"
                 @if ($isActive) aria-current="page" @endif>

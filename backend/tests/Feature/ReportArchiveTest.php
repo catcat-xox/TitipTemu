@@ -91,7 +91,7 @@ class ReportArchiveTest extends TestCase
 
         $this->artisan('reports:archive-returned')->assertSuccessful();
 
-        $this->get(route('reports.index', 'found'))->assertDontSee('Barang Arsip');
+        $this->get(route('reports.index', ['found', 'status' => 'sudah']))->assertDontSee('Barang Arsip');
         $this->get(route('reports.show', ['found', $report]))->assertNotFound();
         $this->get(route('reports.photo', $report))->assertNotFound();
 

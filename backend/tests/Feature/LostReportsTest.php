@@ -13,7 +13,7 @@ class LostReportsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guest_can_browse_public_lost_reports(): void
+    public function test_guest_can_browse_public_found_reports(): void
     {
         $user = User::factory()->create();
         LostReport::create([
@@ -28,7 +28,7 @@ class LostReportsTest extends TestCase
             'terms_accepted_at' => now(),
         ]);
 
-        $response = $this->get(route('reports.index', 'lost'));
+        $response = $this->get(route('reports.index', 'found'));
 
         $response->assertOk();
         $response->assertSee('Dompet biru');
@@ -49,7 +49,7 @@ class LostReportsTest extends TestCase
             'terms_accepted_at' => now(),
         ]);
 
-        $this->get(route('reports.index', 'lost'))
+        $this->get(route('reports.index', 'found'))
             ->assertOk()
             ->assertDontSee('Laporan privat');
     }
