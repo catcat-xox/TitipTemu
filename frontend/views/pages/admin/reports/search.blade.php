@@ -56,14 +56,14 @@
                         <caption class="visually-hidden">Hasil pencarian laporan lintas jenis dan status</caption>
                         <thead>
                             <tr>
-                                <th scope="col">Barang</th>
-                                <th scope="col">Jenis</th>
-                                <th scope="col">Kategori</th>
-                                <th scope="col">Lokasi</th>
-                                <th scope="col">Pelapor</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Dikirim</th>
-                                <th scope="col"><span class="visually-hidden">Aksi</span></th>
+                                <th scope="col" class="text-center">Barang</th>
+                                <th scope="col" class="text-center">Jenis</th>
+                                <th scope="col" class="text-center">Kategori</th>
+                                <th scope="col" class="text-center">Lokasi</th>
+                                <th scope="col" class="text-center">Pelapor</th>
+                                <th scope="col" class="text-center">Status</th>
+                                <th scope="col" class="text-center">Dikirim</th>
+                                <th scope="col" class="text-center"><span class="visually-hidden">Aksi</span></th>
                             </tr>
                         </thead>
                         <tbody>

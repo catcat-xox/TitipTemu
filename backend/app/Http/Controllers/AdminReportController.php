@@ -46,6 +46,8 @@ class AdminReportController extends Controller
         'approve' => 'Laporan disetujui',
         'reject' => 'Laporan ditolak',
         'admin_edited' => 'Laporan diedit Admin',
+        'cancel_by_owner' => 'Dibatalkan pemilik',
+        'found_by_owner' => 'Barang ditemukan pemilik',
         'return_submitted' => 'Konfirmasi dikirim',
         'return_approved' => 'Pengembalian disetujui',
         'return_rejected' => 'Pengembalian ditolak',
@@ -66,7 +68,7 @@ class AdminReportController extends Controller
     ];
 
     private const STATUSES_LOST = [
-        'pending', 'approved', 'found_pending', 'rejected', 'found', 'archived', 'cancelled',
+        'pending', 'approved', 'rejected', 'found', 'archived', 'cancelled',
     ];
 
     private const STATUS_LABELS_EXTENDED = [
@@ -234,11 +236,12 @@ class AdminReportController extends Controller
                             : route('admin.reports.show', $report),
                         'edit_url' => $kind === 'lost'
                             ? route('admin.reports.missing.edit', $report)
-                            : route('admin.reports.edit', $report),
-                        'delete_url' => $kind === 'found'
-                            && in_array($report->status, ['returned', 'archived'], true)
-                                ? route('admin.reports.destroy', $report)
-                                : null,
+                            : ($report->status === 'pending' ? route('admin.reports.edit', $report) : null),
+                        'delete_url' => match (true) {
+                            $kind === 'lost' => route('admin.reports.missing.destroy', $report),
+                            in_array($report->status, ['returned', 'archived'], true) => route('admin.reports.destroy', $report),
+                            default => null,
+                        },
                     ]);
             })
             ->sortByDesc('created_at')
@@ -341,8 +344,6 @@ class AdminReportController extends Controller
 
     public function editMissing(MissingReport $report): View
     {
-        abort_unless($report->status === MissingReport::STATUS_PENDING, 403);
-
         return view('pages.admin.missing-reports.edit', [
             'report' => $report,
             'categories' => self::CATEGORIES,
@@ -397,6 +398,21 @@ class AdminReportController extends Controller
                 ? 'Laporan disetujui dan tampil di Barang Hilang.'
                 : 'Laporan ditolak. Pelapor dapat memperbaiki dan mengirim ulang.',
         );
+    }
+
+    public function destroyMissing(MissingReport $report): RedirectResponse
+    {
+        DB::transaction(function () use ($report): void {
+            if (is_string($report->photo_path)) {
+                $this->deleteStoredFile($report->photo_path, MissingReportPhoto::DIRECTORY);
+            }
+
+            $report->statusHistories()->delete();
+            $report->delete();
+        });
+
+        return redirect()->route('admin.dashboard', ['jenis' => 'lost', 'status' => 'all'])
+            ->with('success', 'Laporan kehilangan dihapus permanen beserta foto dan riwayatnya.');
     }
 
     public function photo(LostReport $report)
@@ -463,7 +479,7 @@ class AdminReportController extends Controller
 
     private function deleteStoredFile(string $path, string $directory): void
     {
-        if (! str_starts_with($path, $directory.'/') || str_contains($path, '..')) {
+        if (! str_starts_with($path, $directory.'/') || str_contains($path, '..') || str_contains($path, '\\')) {
             return;
         }
 

@@ -17,11 +17,24 @@ use Illuminate\Support\Facades\Route;
  */
 Route::middleware('main-site')->group(function (): void {
     Route::get('/', [PublicReportController::class, 'home'])->name('home');
+    Route::get('/barang/lost', [PublicReportController::class, 'legacyIndex'])
+        ->defaults('type', 'hilang')
+        ->name('reports.index.legacy.lost');
+    Route::get('/barang/found', [PublicReportController::class, 'legacyIndex'])
+        ->defaults('type', 'ditemukan')
+        ->name('reports.index.legacy.found');
+    Route::get('/barang/lost/{report}', [PublicReportController::class, 'legacyShow'])
+        ->defaults('type', 'hilang')
+        ->name('reports.show.legacy.lost');
+    Route::get('/barang/found/{report}', [PublicReportController::class, 'legacyShow'])
+        ->defaults('type', 'ditemukan')
+        ->name('reports.show.legacy.found');
+
     Route::get('/barang/{type}', [PublicReportController::class, 'index'])
-        ->whereIn('type', ['lost', 'found'])
+        ->whereIn('type', ['hilang', 'ditemukan'])
         ->name('reports.index');
     Route::get('/barang/{type}/{report}', [PublicReportController::class, 'show'])
-        ->whereIn('type', ['lost', 'found'])
+        ->whereIn('type', ['hilang', 'ditemukan'])
         ->name('reports.show');
     Route::view('/panduan', 'pages.guide')->name('guide');
     Route::get('/laporan/{report}/foto', [PublicReportController::class, 'photo'])
@@ -35,9 +48,9 @@ Route::middleware('main-site')->group(function (): void {
 
     Route::middleware('role:guest')->group(function (): void {
         Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-        Route::post('/login', [AuthController::class, 'login'])->name('login.store');
+        Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth')->name('login.store');
         Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-        Route::post('/register', [AuthController::class, 'register'])->name('register.store');
+        Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth')->name('register.store');
     });
 });
 
@@ -57,6 +70,8 @@ Route::middleware('role:user')->group(function (): void {
         ->name('missing-reports.update');
     Route::post('/laporan-kehilangan-saya/{report}/batalkan', [MissingReportController::class, 'cancel'])
         ->name('missing-reports.cancel');
+    Route::post('/laporan-kehilangan-saya/{report}/ditemukan', [MissingReportController::class, 'found'])
+        ->name('missing-reports.found');
     Route::post('/laporan-kehilangan-saya/{report}/kirim-ulang', [MissingReportController::class, 'resubmit'])
         ->name('missing-reports.resubmit');
 
@@ -96,7 +111,7 @@ $adminLoginUri = '/'.ltrim((string) config('admin.login_uri'), '/');
 
 Route::middleware('role:guest')->group(function () use ($adminLoginUri): void {
     Route::get($adminLoginUri, [AdminAuthController::class, 'showLogin'])->name('admin.login');
-    Route::post($adminLoginUri, [AdminAuthController::class, 'login'])->name('admin.login.store');
+    Route::post($adminLoginUri, [AdminAuthController::class, 'login'])->middleware('throttle:auth')->name('admin.login.store');
 });
 
 Route::middleware('role:admin')->group(function (): void {
@@ -120,6 +135,7 @@ Route::middleware('role:admin')
         Route::put('/laporan-kehilangan/{report}', [AdminReportController::class, 'updateMissing'])->name('reports.missing.update');
         Route::get('/laporan-kehilangan/{report}/foto', [AdminReportController::class, 'photoMissing'])->name('reports.missing.photo');
         Route::post('/laporan-kehilangan/{report}/verifikasi', [AdminReportController::class, 'verifyMissing'])->name('reports.missing.verify');
+        Route::delete('/laporan-kehilangan/{report}', [AdminReportController::class, 'destroyMissing'])->name('reports.missing.destroy');
         Route::post('/laporan/{report}/selesaikan-pengembalian', [AdminReturnConfirmationController::class, 'resolve'])->name('reports.resolve-return');
         Route::get('/pengembalian/{confirmation}/bukti', [AdminReturnConfirmationController::class, 'proof'])->name('returns.proof');
         Route::post('/pengembalian/{confirmation}/setujui', [AdminReturnConfirmationController::class, 'approve'])->name('returns.approve');

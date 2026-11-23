@@ -7,7 +7,8 @@
         <div class="container">
             <div class="admin-page-head">
                 <div>
-                    <h1 class="admin-page-title">Edit laporan kehilangan Pending</h1>
+                    <h1 class="admin-page-title">Edit laporan kehilangan</h1>
+            <p class="page-intro">Perubahan Admin tetap tercatat pada riwayat laporan, termasuk status saat ini.</p>
                 </div>
                 <button type="button" class="btn btn-outline-secondary admin-back-button"
                     onclick="history.back()" aria-label="Kembali ke halaman sebelumnya" title="Kembali">

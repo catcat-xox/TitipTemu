@@ -19,20 +19,21 @@
 | ASM-02 | Backend Laravel dan database MySQL; frontend Blade + Bootstrap | Ditetapkan |
 | ASM-03 | Guest dapat mengakses informasi publik tanpa login | Ditetapkan dari konsep |
 | ASM-04 | User wajib login untuk membuat laporan kehilangan, laporan temuan, dan konfirmasi status | Ditetapkan dari konsep; diperjelas A18 |
-| ASM-05 | Admin memverifikasi kedua jenis laporan dan konfirmasi status | Ditetapkan dari konsep; diperjelas A18 |
+| ASM-05 | Admin memverifikasi publikasi kedua jenis laporan; konfirmasi “Barang ditemukan” pada laporan kehilangan langsung oleh pemilik, konfirmasi laporan temuan tetap diverifikasi Admin | Ditetapkan dari konsep; diperjelas A18, disesuaikan A28 |
 | ASM-06 | MVP mencakup dua alur: laporan kehilangan oleh pemilik dan laporan temuan oleh penemu | Ditetapkan 2026-11-22; diperjelas A18 |
 | ASM-07 | Dua menu publik: **Barang Hilang (laporan kehilangan pemilik)** dan **Barang Ditemukan (laporan temuan penemu)** | Ditetapkan A18; menggantikan keputusan lama |
 | ASM-13 | Kontak pemilik/penemu hanya lewat redirect `wa.me`; nomor HP tidak ditampilkan sebagai teks di halaman/respons publik | Ditetapkan 2026-11-22; diperjelas A18 |
 | ASM-14 | Akun Admin terpisah di tabel `admins`, login tersembunyi, dan beberapa akun Admin dapat berdiri sendiri | Ditetapkan 2026-11-22 |
-| ASM-08 | Daftar “Sudah” pada kedua menu menampilkan barang selama 30 hari sejak Admin menyetujui konfirmasi dan mempublikasikannya | Ditetapkan; diperjelas A18; zona waktu Asia/Makassar |
+| ASM-08 | Daftar “Sudah” pada kedua menu menampilkan barang selama 30 hari: sejak `found_at` saat pemilik mengonfirmasi laporan kehilangan (A28) atau sejak Admin menyetujui laporan temuan | Ditetapkan; diperjelas A18/A28; zona waktu Asia/Makassar |
 | ASM-09 | Barang yang lewat 30 hari disembunyikan dari publik dan berstatus `Archived`, bukan dihapus permanen dari database | Ditetapkan |
 | ASM-10 | Sistem memiliki peran Guest, User, dan Admin; Guest bukan akun terdaftar; User mencakup mahasiswa, dosen, dan staf aktif kampus | Ditetapkan |
-| ASM-11 | Satu laporan minimal memiliki satu foto, maksimal 3 foto; JPG/JPEG/PNG/WebP; maksimal 2 MB per foto | Ditetapkan |
+| ASM-11 | Satu laporan memiliki tepat satu foto; JPG/JPEG/PNG/WebP; maksimal 2 MB per foto | Ditetapkan; diselaraskan 2026-11-23 |
 | ASM-12 | Belum ada integrasi SSO akademik | Mengikuti baseline sebelumnya |
 | ASM-15 | Laporan kehilangan dan laporan temuan disimpan di **tabel terpisah** dan tidak ditautkan/dicocokkan | Ditetapkan A18 |
 | ASM-16 | Tiap menu publik memakai 2 card status → pencarian → card item; klik card tetap dalam jenis laporan aktif | Ditetapkan A18 |
 | ASM-17 | Foto dan no. HP pemilik/penemu wajib diisi tetapi privat; kontak hanya lewat `wa.me` | Ditetapkan A18 |
 | ASM-18 | Navbar User memakai dropdown **Buat Laporan**, **Akun** menampilkan daftar tanpa tombol buat laporan; sidebar Admin 5 menu dengan card status yang dapat diklik | Ditetapkan A18, disesuaikan A26 |
+| ASM-19 | Pemilik laporan kehilangan dapat membatalkan `pending`/`approved` dan menandai `approved` sebagai **Barang ditemukan** langsung; Admin dapat edit/hapus laporan kehilangan di semua status | Ditetapkan A28 |
 
 ## 2. Aktor dan hak akses
 ### 2.1 Guest
@@ -52,25 +53,26 @@
 - Menyetujui ketentuan pelaporan pada formulir yang dipakai.
 - Melihat daftar dan detail kedua jenis laporan miliknya melalui menu **Akun**, tanpa tombol buat laporan; pembuatan tetap lewat dropdown **Buat Laporan** di navbar.
 - Mengedit atau membatalkan laporan pada status menunggu verifikasi; laporan yang sudah disetujui tidak dapat diedit langsung.
+- **A28:** pemilik laporan kehilangan dapat membatalkan `pending`/`approved` dan menekan **Barang ditemukan** saat `approved` tanpa bukti/form atau verifikasi Admin.
 - Memperbaiki dan mengirim ulang laporan yang ditolak setelah membaca alasan Admin.
-- Mengajukan konfirmasi status “Sudah” pada laporan miliknya. Untuk laporan temuan memakai **nama pemilik** dan **foto bersama penemu–pemilik**; ketentuan laporan kehilangan masih terbuka (lihat bagian 16).
-- Melihat status pemeriksaan konfirmasi.
+- Mengajukan konfirmasi status “Sudah” pada laporan temuan miliknya dengan **nama pemilik** dan **foto bersama penemu–pemilik**; laporan kehilangan memakai aksi langsung A28.
+- Melihat status pemeriksaan konfirmasi laporan temuan.
 ### 2.3 Admin
 - Sistem mendukung beberapa akun Admin; tidak ada asumsi satu Admin.
 - Akun Admin disimpan di tabel `admins`, terpisah dari tabel `users`.
 - Login melalui jalur tersembunyi `ADMIN_LOGIN_URI`; tidak ada tautan Admin di navigasi publik.
 - Melihat laporan masuk.
 - Memeriksa dan menyetujui/menolak laporan dengan alasan wajib saat menolak.
-- Mengedit langsung laporan berstatus `Pending` dan mencatat perubahan pada riwayat.
+- Mengedit laporan temuan berstatus `Pending` dan mencatat perubahan pada riwayat. **A28:** mengedit laporan kehilangan pada semua status dengan status asal tetap tercatat.
 - Mengelola laporan dan publikasi.
-- Melihat antrean konfirmasi status dari kedua jenis laporan.
-- Memeriksa bukti yang privat.
-- Menyetujui/menolak konfirmasi dengan alasan wajib saat menolak.
+- Melihat antrean konfirmasi laporan temuan; konfirmasi “Barang ditemukan” laporan kehilangan tidak masuk antrean (A28).
+- Memeriksa bukti privat laporan temuan.
+- Menyetujui/menolak konfirmasi laporan temuan dengan alasan wajib saat menolak.
 - Menambahkan alasan penolakan.
 - Melihat log aktivitas dan histori status.
 - Memakai sidebar 5 menu: **Dashboard**, **Cari laporan**, **Barang Hilang**, **Barang Ditemukan**, **Keluar Admin** di bawah; status tidak masuk sidebar dan card status dapat diklik tanpa mengubah jenis aktif.
 - Menu **Barang Hilang**/**Barang Ditemukan** difilter menurut jenis laporan; **Cari laporan** tetap lintas jenis dan status.
-- Menghapus permanen laporan yang sudah selesai/arsip setelah konfirmasi.
+- Menghapus permanen laporan temuan yang sudah selesai/arsip setelah konfirmasi. **A28:** menghapus laporan kehilangan pada semua status setelah konfirmasi, termasuk foto privat dan riwayat status.
 
 ### 2.4 Data pendaftaran dan akun
 - Nama lengkap wajib.
@@ -97,7 +99,7 @@
 - Dropdown **Buat Laporan**: **Laporkan Kehilangan Barang** dan **Laporkan Barang Temuan**
 - **Akun** (profil, aktivitas, dan daftar kedua jenis laporan tanpa tombol buat laporan)
 - Detail laporan
-- Konfirmasi status “Sudah” untuk laporan miliknya
+- Konfirmasi status “Sudah” untuk laporan temuan miliknya; tombol **Batalkan**/**Barang ditemukan** untuk laporan kehilangan (A28)
 - Tombol ikon **Akun** di navbar, diikuti dropdown **Buat Laporan** di pinggir kanan; **Keluar** tersedia di halaman **Akun**, bukan navbar. Teks “Halo…” pada navbar publik dihapus
 - Logout
 ### 3.3 Admin
@@ -106,9 +108,9 @@
 - Dashboard dengan 2 card status yang dapat diklik; status tidak menjadi menu sidebar
 - Menu **Barang Hilang**/**Barang Ditemukan** difilter menurut jenis laporan
 - Cari laporan lintas jenis dan status
-- Detail laporan/verifikasi, edit status menunggu verifikasi, dan bukti privat
+- Detail laporan/verifikasi, edit laporan temuan `Pending`, edit laporan kehilangan di semua status (A28), dan bukti privat
 - Riwayat aktivitas
-- Penghapusan permanen laporan selesai/arsip
+- Penghapusan permanen laporan kehilangan di semua status (A28); laporan temuan tetap selesai/arsip
 ## 4. Functional Requirements
 | ID | Modul | Requirement | Prioritas |
 |---|---|---|---|
@@ -129,15 +131,15 @@
 | FR-15 | Publication | Laporan kehilangan yang disetujui muncul di **Barang Hilang → Barang Belum Ditemukan**; laporan temuan yang disetujui muncul di **Barang Ditemukan → Barang Belum Kembali** | Must |
 | FR-16 | User dashboard | User dapat melihat laporan yang dibuat sendiri dan statusnya | Must |
 | FR-17 | User dashboard | User tidak dapat melihat atau mengubah laporan milik User lain | Must |
-| FR-18 | Status confirmation | Pembuat laporan dapat mengirim konfirmasi status “Sudah” pada laporan miliknya | Must |
-| FR-19 | Status confirmation | Form konfirmasi laporan temuan membutuhkan nama pemilik, foto bersama penemu–pemilik, dan persetujuan pernyataan; ketentuan laporan kehilangan masih terbuka pada A18 | Must |
-| FR-20 | Status confirmation | Konfirmasi yang dikirim menunggu pemeriksaan Admin dan item tetap pada card “Belum” | Must |
-| FR-21 | Admin | Admin dapat melihat antrean konfirmasi status dari kedua jenis laporan | Must |
-| FR-22 | Admin | Admin dapat menyetujui atau menolak konfirmasi status | Must |
-| FR-23 | Admin | Admin wajib menyertakan alasan saat menolak laporan atau konfirmasi status | Must |
-| FR-24 | Status | Ketika konfirmasi disetujui, laporan keluar dari card “Belum” pada menunya | Must |
-| FR-25 | Status | Ketika konfirmasi disetujui, laporan tampil pada card “Sudah” di **menu yang sama**: kehilangan → Barang Sudah Ditemukan; temuan → Barang Sudah Kembali | Must |
-| FR-26 | Retention | Sistem menghentikan publikasi laporan pada kedua daftar “Sudah” setelah 30 hari | Must |
+| FR-18 | Status confirmation | Pembuat laporan temuan dapat mengirim konfirmasi status “Sudah”; **A28:** pemilik laporan kehilangan langsung menandai `approved` sebagai **Barang ditemukan** | Must |
+| FR-19 | Status confirmation | Form konfirmasi laporan temuan membutuhkan nama pemilik, foto bersama penemu–pemilik, dan persetujuan pernyataan; **A28:** laporan kehilangan tidak memakai form/bukti konfirmasi | Must |
+| FR-20 | Status confirmation | Konfirmasi laporan temuan menunggu pemeriksaan Admin dan item tetap pada card “Belum”; **A28:** konfirmasi laporan kehilangan langsung berstatus `found` | Must |
+| FR-21 | Admin | Admin dapat melihat antrean konfirmasi laporan temuan; **A28:** tidak ada antrean konfirmasi laporan kehilangan | Must |
+| FR-22 | Admin | Admin dapat menyetujui atau menolak konfirmasi laporan temuan | Must |
+| FR-23 | Admin | Admin wajib menyertakan alasan saat menolak laporan atau konfirmasi laporan temuan | Must |
+| FR-24 | Status | Laporan keluar dari card “Belum” saat konfirmasi laporan temuan disetujui atau saat pemilik mengonfirmasi laporan kehilangan (A28) | Must |
+| FR-25 | Status | Laporan tampil pada card “Sudah” di **menu yang sama**: kehilangan → Barang Sudah Ditemukan (langsung oleh pemilik, A28); temuan → Barang Sudah Kembali (setelah Admin) | Must |
+| FR-26 | Retention | Sistem menghentikan publikasi laporan pada kedua daftar “Sudah” setelah 30 hari; untuk kehilangan dihitung dari `found_at` (A28), temuan dari persetujuan Admin | Must |
 | FR-27 | Retention | Pengarsipan otomatis dilakukan tanpa memerlukan tindakan Admin manual | Must |
 | FR-28 | Privacy | Sistem tidak menampilkan data pribadi atau foto bukti privat ke Guest | Must |
 | FR-29 | Audit | Sistem mencatat keputusan Admin dan perubahan status penting | Should/Must untuk status inti |
@@ -147,9 +149,9 @@
 | FR-33 | Rules | User diwajibkan menyetujui pernyataan status “Sudah” sebelum mengirim konfirmasi | Must |
 | FR-34 | Auth | User wajib login sebelum membuat laporan kehilangan, laporan temuan, atau mengirim konfirmasi status; verifikasi email tidak diperlukan | Must |
 | FR-35 | Public contact | Detail publik menyediakan tombol WhatsApp yang mengarahkan ke `wa.me` tanpa menampilkan nomor HP pemilik/penemu | Must |
-| FR-36 | Admin | Admin dapat mengedit laporan pada status menunggu verifikasi; perubahan tercatat pada riwayat dengan Admin peninjau | Must |
+| FR-36 | Admin | Admin dapat mengedit laporan temuan `Pending`; **A28:** Admin dapat mengedit laporan kehilangan pada semua status dengan status asal tercatat | Must |
 | FR-37 | Privacy | Nama pemilik dan bukti privat hanya dapat diakses oleh User terkait dan Admin | Must |
-| FR-38 | Admin | Admin dapat menghapus permanen laporan yang sudah selesai/arsip setelah konfirmasi, termasuk berkas privat terkait | Must |
+| FR-38 | Admin | Admin dapat menghapus permanen laporan temuan selesai/arsip setelah konfirmasi; **A28:** Admin dapat menghapus laporan kehilangan di semua status, termasuk foto privat dan riwayat status | Must |
 | FR-39 | Auth | Admin terpisah tidak dapat mengakses area User dan sebaliknya; akun User lama ber-role admin tidak dapat login sebagai Admin | Must |
 | FR-40 | Admin | Admin dapat mencari laporan lintas jenis dan status melalui menu **Cari laporan** | Must |
 | FR-41 | Navigation | Navbar User menyediakan dropdown **Buat Laporan** berisi dua formulir; **Akun** menampilkan daftar tanpa tombol buat laporan | Must |
@@ -159,6 +161,8 @@
 | FR-45 | Admin filter | Menu Admin **Barang Hilang** dan **Barang Ditemukan** difilter menurut jenis laporan | Must |
 | FR-46 | Data | Laporan kehilangan dan laporan temuan disimpan di tabel terpisah tanpa penautan atau pencocokan | Must |
 | FR-47 | Public UI | Klik card status pada menu publik membawa ke tampilan/state berbeda di dalam jenis laporan aktif | Must |
+| FR-48 | User action (A28) | Pemilik laporan kehilangan dapat membatalkan `pending`/`approved` dan menandai `approved` sebagai **Barang ditemukan** dari kelola laporan serta ringkasan Akun | Must |
+| FR-49 | Admin filter (A28) | Status lama `found_pending` tidak ditawarkan sebagai filter Admin pada jenis kehilangan; data lama tetap disimpan | Must |
 
 ## 5. Alur proses sistem
 ### 5.1 Membuat laporan kehilangan (pemilik)
@@ -182,25 +186,24 @@
 2. Guest menekan tombol WhatsApp.
 3. Sistem membuat tautan `wa.me` dari nomor pemilik/penemu yang disimpan dan mengarahkan browser ke sana.
 4. Nomor HP tidak pernah dikirim sebagai teks pada halaman atau respons publik.
-### 5.4 Konfirmasi status “Sudah” dan arsip
-1. User membuka laporan miliknya yang aktif melalui menu **Akun**.
-2. User memilih konfirmasi status “Sudah”. Untuk laporan temuan, User mengisi nama pemilik, mengunggah foto bersama penemu–pemilik, menambah catatan opsional, dan menyetujui pernyataan. Ketentuan untuk laporan kehilangan masih terbuka pada A18.
-3. Sistem memvalidasi dan menyimpan konfirmasi dengan status menunggu pemeriksaan Admin; data konfirmasi tidak publik dan item tetap pada card “Belum”.
-4. Admin meninjau data dan bukti melalui halaman privat.
-5. Admin menyetujui atau menolak dengan alasan wajib saat menolak.
-6. Jika disetujui, laporan berpindah ke card “Sudah” **di menu yang sama** — kehilangan ke **Barang Sudah Ditemukan**, temuan ke **Barang Sudah Kembali** — dan timestamp persetujuan Admin menjadi awal periode 30 hari.
-7. Jika ditolak, laporan tetap pada card “Belum”; User dapat memperbaiki dan mengirim ulang maksimal 3 kali, lalu penyelesaian melalui Admin.
-8. Setelah 30 hari dari tanggal acuan, sistem mengarsipkan dan menghilangkan item dari kedua daftar “Sudah”.
-9. Admin dapat menghapus permanen laporan selesai/arsip setelah konfirmasi.
+### 5.4 Konfirmasi status “Sudah” dan arsip (A18, disesuaikan A28)
+1. **Laporan kehilangan (A28):** User pemilik menekan **Barang ditemukan** di kelola laporan atau ringkasan **Akun** saat status `approved`. Sistem langsung menulis `found`, `found_at = sekarang`, riwayat `found_by_owner`, dan memindahkan laporan ke **Barang Sudah Ditemukan**; tidak ada bukti, form, `found_pending`, atau verifikasi Admin.
+2. **Laporan kehilangan (A28):** User pemilik dapat menekan **Batalkan** saat `pending`/`approved`; sistem menulis `cancelled` dan riwayat `cancel_by_owner`.
+3. **Laporan temuan:** penemu mengisi nama pemilik, mengunggah foto bersama penemu–pemilik, menambah catatan opsional, dan menyetujui pernyataan. Sistem menyimpan konfirmasi menunggu pemeriksaan Admin; item tetap pada card “Belum”.
+4. Admin meninjau data dan bukti laporan temuan melalui halaman privat, lalu menyetujui atau menolak dengan alasan wajib saat menolak.
+5. Laporan berpindah ke card “Sudah” **di menu yang sama** — kehilangan ke **Barang Sudah Ditemukan**, temuan ke **Barang Sudah Kembali**.
+6. Periode 30 hari dihitung dari `found_at` untuk laporan kehilangan (A28) atau dari timestamp persetujuan Admin untuk laporan temuan. Setelah batas, sistem mengarsipkan dan menghilangkan item dari daftar “Sudah”.
+7. Penolakan konfirmasi hanya berlaku untuk laporan temuan; User dapat memperbaiki dan mengirim ulang maksimal 3 kali, lalu penyelesaian melalui Admin.
+8. **A28:** Admin dapat mengedit dan menghapus permanen laporan kehilangan pada semua status setelah konfirmasi, termasuk foto privat dan riwayat status. Laporan temuan tetap hanya dapat dihapus pada status `returned`/`archived`.
 ### 5.5 Admin memverifikasi laporan
 1. Admin login melalui jalur tersembunyi.
 2. Admin melihat Dashboard yang merangkum kedua jenis laporan; card status dapat diklik dan tetap dalam jenis aktif.
 3. Admin membuka detail, foto, dan data laporan.
-4. Admin dapat mengedit laporan pada status menunggu verifikasi; perubahan dicatat pada riwayat.
+4. Admin dapat mengedit laporan temuan pada status menunggu verifikasi; **A28:** Admin dapat mengedit laporan kehilangan pada semua status, dengan status asal tercatat pada riwayat.
 5. Admin menyetujui atau menolak dengan alasan wajib saat menolak.
 6. Sistem menyimpan keputusan, waktu, Admin yang mengambil tindakan, dan alasan penolakan.
-### 5.6 Admin memverifikasi konfirmasi status
-1. Admin membuka antrean konfirmasi dari menu terkait (atau **Cari laporan** lintas jenis).
+### 5.6 Admin memverifikasi konfirmasi status laporan temuan
+1. Admin membuka antrean konfirmasi laporan temuan dari menu terkait (atau **Cari laporan** lintas jenis); konfirmasi laporan kehilangan tidak masuk antrean sejak A28.
 2. Admin melihat data konfirmasi dan bukti yang aksesnya privat.
 3. Admin menyetujui atau menolak.
 4. Sistem mencatat keputusan, waktu, Admin, dan alasan penolakan wajib jika ditolak.
@@ -215,17 +218,17 @@ Berlaku untuk kedua formulir; yang berbeda hanya makna tanggal/lokasi dan nomor 
 | No. HP pemilik/penemu | Wajib; format nomor dapat dinormalisasi menjadi `wa.me`; bersifat privat | Ditetapkan 2026-11-22; diperjelas A18 |
 | Tanggal hilang / ditemukan | Wajib; tidak boleh tanggal masa depan | Rekomendasi; diperjelas A18 |
 | Lokasi hilang / ditemukan | Wajib; 3–150 karakter | Rekomendasi; diperjelas A18 |
-| Foto barang | Wajib; minimal 1 dan maksimal 3 foto | Ditetapkan |
+| Foto barang | Wajib; tepat satu file | Ditetapkan; diselaraskan 2026-11-23 |
 | Format foto | JPG/JPEG/PNG/WebP | Ditetapkan |
 | Ukuran foto | Maksimal 2 MB per foto | Ditetapkan |
 | Penyimpanan foto | Storage lokal Laravel; tidak publik sebelum laporan disetujui Admin | Ditetapkan |
 | Ketentuan | Checkbox persetujuan ketentuan pelaporan sesuai formulir wajib | Ditetapkan dari konsep; diperjelas A18 |
 | Kontak | No. HP pemilik/penemu tidak ditampilkan kepada publik; kontak lewat `wa.me` | Ditetapkan 2026-11-22; diperjelas A18 |
 
-Kategori tetap sesuai P0.4: Elektronik; Dompet & Uang; Dokumen & Kartu Identitas; Kunci; Tas; Pakaian & Aksesoris; Buku & Alat Tulis; Lainnya.
+Kategori tetap yang berlaku (lima pilihan): Elektronik; Dokumen; Aksesori; Pakaian; Lainnya.
 
-**Catatan selisih implementasi (2026-11-22):** implementasi saat ini menerima satu foto per laporan dan memakai lima pilihan kategori (Elektronik, Dokumen, Aksesori, Pakaian, Lainnya). Keputusan P0.4 tetap tercatat; penyelarasan memerlukan tugas tersendiri.
-## 7. Validasi form konfirmasi status “Sudah”
+**Penyelarasan 2026-11-23:** dokumen mengikuti implementasi untuk foto dan kategori — tepat satu foto per laporan dan lima pilihan kategori di atas. Keputusan P0.4 lama tentang maksimal tiga foto dan delapan kategori dicatat sebagai riwayat, bukan aturan aktif.
+## 7. Validasi form konfirmasi status “Sudah” (laporan temuan)
 | Field | Validasi awal | Status |
 |---|---|---|
 | Laporan terkait | Wajib; harus milik User yang login dan berstatus aktif (“Belum”) | Must |
@@ -236,7 +239,7 @@ Kategori tetap sesuai P0.4: Elektronik; Dompet & Uang; Dokumen & Kartu Identitas
 | Pernyataan pengembalian | Checkbox wajib | Ditetapkan dari konsep |
 | Catatan Admin | Wajib diisi ketika menolak | Ditetapkan |
 
-> **Terbuka A18:** validasi di atas mengikat konfirmasi status “Sudah” pada **laporan temuan**. Field/bukti untuk konfirmasi **laporan kehilangan** belum ditetapkan dan akan diputuskan sebelum tugas implementasi terkait.
+> Validasi di atas mengikat konfirmasi status “Sudah” pada **laporan temuan**. **A28:** validasi untuk konfirmasi **laporan kehilangan** sudah ditetapkan — pemilik menekan **Barang ditemukan** saat status `approved`, sistem langsung mencatat `found_at` dan riwayat `found_by_owner`; tidak ada field, bukti, form, `found_pending`, atau verifikasi Admin tambahan.
 ## 8. Aturan bisnis
 | ID | Aturan |
 |---|---|
@@ -248,28 +251,30 @@ Kategori tetap sesuai P0.4: Elektronik; Dompet & Uang; Dokumen & Kartu Identitas
 | BR-06 | Laporan baru menunggu verifikasi dan tidak dipublikasikan sebelum Admin menyetujui. |
 | BR-07 | Laporan kehilangan yang disetujui tampil di **Barang Hilang → Barang Belum Ditemukan**; laporan temuan yang disetujui tampil di **Barang Ditemukan → Barang Belum Kembali**. Status lain tidak tampil. |
 | BR-08 | Nomor HP pemilik maupun penemu tidak ditampilkan sebagai teks pada halaman/respons publik; kontak hanya lewat redirect `wa.me`. |
-| BR-09 | Konfirmasi status hanya dapat diajukan oleh User pembuat laporan. |
-| BR-10 | Konfirmasi status “Sudah” pada laporan temuan wajib menyertakan nama pemilik, foto bersama penemu–pemilik, dan persetujuan pernyataan; ketentuan laporan kehilangan masih terbuka pada A18. |
-| BR-11 | Nama pemilik dan bukti bersifat privat; hanya User terkait dan Admin yang dapat melihatnya. |
-| BR-12 | Konfirmasi status harus disetujui Admin sebelum perpindahan card. |
-| BR-13 | Setelah disetujui, laporan kehilangan pindah ke **Barang Sudah Ditemukan** dan laporan temuan ke **Barang Sudah Kembali**, tetap di menu yang sama. |
-| BR-14 | Kedua daftar “Sudah” tampil 30 hari sejak Admin menyetujui konfirmasi dan mempublikasikannya, zona waktu Asia/Makassar (WITA), lalu tidak tampil publik dan berstatus `Archived`. |
+| BR-09 | Konfirmasi status hanya dapat diajukan oleh User pembuat laporan; **A28:** aksi **Barang ditemukan** hanya untuk pemilik laporan kehilangan `approved`. |
+| BR-10 | Konfirmasi status “Sudah” laporan temuan wajib menyertakan nama pemilik, foto bersama penemu–pemilik, dan persetujuan pernyataan. **A28:** laporan kehilangan tidak memakai form/bukti konfirmasi. |
+| BR-11 | Nama pemilik dan bukti laporan temuan bersifat privat; hanya User terkait dan Admin yang dapat melihatnya. |
+| BR-12 | Konfirmasi laporan temuan harus disetujui Admin sebelum perpindahan card. **A28:** konfirmasi laporan kehilangan langsung berstatus `found` tanpa verifikasi Admin. |
+| BR-13 | Laporan kehilangan pindah ke **Barang Sudah Ditemukan** saat pemilik menekan **Barang ditemukan** (A28); laporan temuan pindah ke **Barang Sudah Kembali** setelah Admin menyetujui, tetap di menu yang sama. |
+| BR-14 | Kedua daftar “Sudah” tampil 30 hari: sejak `found_at` untuk laporan kehilangan (A28) atau sejak persetujuan Admin untuk laporan temuan, zona waktu Asia/Makassar (WITA), lalu tidak tampil publik dan berstatus `Archived`. |
 | BR-15 | Pengarsipan 30 hari tidak menghapus data secara permanen; data tetap disimpan dan bukti tetap privat. |
 | BR-16 | Bukti konfirmasi, nama pemilik, data pribadi, dan nomor HP pemilik/penemu bersifat terbatas dan bukan konten publik. |
-| BR-17 | Admin wajib menyertakan alasan saat menolak laporan atau konfirmasi status. |
-| BR-18 | Pembuat laporan dapat mengedit atau membatalkan laporan pada status menunggu verifikasi; laporan yang sudah disetujui tidak dapat diedit langsung. |
-| BR-19 | Admin dapat mengedit langsung laporan pada status menunggu verifikasi; perubahan dicatat pada riwayat dengan peninjau Admin. |
+| BR-17 | Admin wajib menyertakan alasan saat menolak laporan atau konfirmasi laporan temuan. |
+| BR-18 | Pembuat laporan dapat mengedit atau membatalkan laporan pada status menunggu verifikasi; laporan yang sudah disetujui tidak dapat diedit langsung. **A28:** pemilik laporan kehilangan dapat membatalkan `approved` dan menandainya **Barang ditemukan**. |
+| BR-19 | Admin dapat mengedit laporan temuan pada status menunggu verifikasi; **A28:** Admin dapat mengedit laporan kehilangan pada semua status dengan status asal tercatat pada riwayat. |
 | BR-20 | Pembuat laporan dapat memperbaiki dan mengirim ulang laporan yang ditolak setelah membaca alasan Admin. |
-| BR-21 | Konfirmasi status yang ditolak wajib memiliki alasan; pembuat laporan dapat memperbaiki dan mengirim ulang maksimal 3 kali, lalu penyelesaian melalui Admin. |
+| BR-21 | Konfirmasi laporan temuan yang ditolak wajib memiliki alasan; pembuat laporan dapat memperbaiki dan mengirim ulang maksimal 3 kali, lalu penyelesaian melalui Admin. |
 | BR-22 | Data laporan, data konfirmasi, dan riwayat status tidak dihapus permanen, kecuali Admin melakukan penghapusan manual sesuai BR-23. |
-| BR-23 | Admin dapat menghapus permanen laporan yang sudah selesai/arsip setelah konfirmasi; status lain tidak dapat dihapus. Penghapusan mencakup berkas foto dan bukti privat terkait. |
+| BR-23 | Admin dapat menghapus permanen laporan temuan selesai/arsip setelah konfirmasi. **A28:** Admin dapat menghapus laporan kehilangan pada semua status setelah konfirmasi; penghapusan mencakup foto privat dan riwayat status. Aturan lama tetap berlaku untuk laporan temuan. |
 | BR-24 | Akun Admin terpisah dari akun User dan masuk melalui jalur tersembunyi; beberapa akun Admin dapat berdiri sendiri. |
 | BR-25 | Klik card status pada menu publik mengarah ke state lain **di dalam jenis laporan aktif**, bukan ke menu atau jenis lain. |
 | BR-26 | Navbar User memakai dropdown **Buat Laporan** berisi dua formulir; **Akun** menampilkan daftar tanpa tombol buat laporan. Teks “Halo…” dihapus dari navbar publik, sedangkan di sidebar Admin dipertahankan sementara. Kolom status di tabel **Akun** dirata-tengahkan; tautan **Detail** di daftar pengelolaan berbentuk tombol dengan rute sesuai jenis. |
 | BR-27 | Sidebar Admin berisi 5 menu — Dashboard, Cari laporan, Barang Hilang, Barang Ditemukan, Keluar Admin di bawah. Status tidak masuk sidebar; card status dapat diklik dan tetap dalam jenis aktif. |
 | BR-28 | Menu Admin **Barang Hilang** dan **Barang Ditemukan** difilter menurut jenis laporan; **Cari laporan** tetap lintas jenis dan status. |
+| BR-29 (A28) | Status lama `found_pending` pada laporan kehilangan tidak dipakai untuk transisi baru; data lama tetap disimpan dan opsi filter Admin untuk status tersebut disembunyikan pada jenis kehilangan. |
+| BR-30 (A28) | Tombol **Barang ditemukan** tersedia hanya untuk laporan kehilangan `approved` di kelola laporan dan ringkasan Akun; tombol **Batalkan** tersedia untuk `pending`/`approved`. |
 ## 9. Status laporan dan transisi
-Kedua tabel memakai siklus setara — menunggu verifikasi → aktif (“Belum”) → konfirmasi “Sudah” → arsip. Konstanta internal laporan kehilangan (A19): `pending`, `approved`, `rejected`, `found_pending`, `found`, `archived`, `cancelled`; label publik mengikuti jenis laporan:
+Kedua tabel memakai siklus setara — menunggu verifikasi → aktif (“Belum”) → konfirmasi “Sudah” → arsip. **A28:** pada laporan kehilangan, konfirmasi “Sudah” terjadi langsung saat pemilik menekan **Barang ditemukan**; `found_pending` lama tidak dipakai untuk transisi baru. Konstanta internal laporan kehilangan (A19): `pending`, `approved`, `rejected`, `found_pending`, `found`, `archived`, `cancelled`; label publik mengikuti jenis laporan:
 
 | Jenis laporan | Menu | Card “Belum” | Card “Sudah” |
 |---|---|---|---|
@@ -280,28 +285,28 @@ Kedua tabel memakai siklus setara — menunggu verifikasi → aktif (“Belum”
 |---|---|---|
 | Menunggu verifikasi | Laporan baru | Tidak |
 | Aktif / Belum | Disetujui Admin | Card “Belum” pada menu sesuai jenis |
-| Konfirmasi Sudah | User mengirim konfirmasi, menunggu Admin | Tetap card “Belum” sampai keputusan Admin |
-| Sudah | Admin menyetujui konfirmasi | Card “Sudah” pada menu yang sama (30 hari) |
+| Konfirmasi Sudah | Khusus laporan temuan: penemu mengirim konfirmasi, menunggu Admin | Tetap card “Belum” sampai keputusan Admin |
+| Sudah | Kehilangan: langsung setelah konfirmasi pemilik (A28); temuan: setelah Admin menyetujui | Card “Sudah” pada menu yang sama (30 hari) |
 | Arsip | Lewat masa 30 hari | Tidak |
 | Ditolak | Admin menolak dengan alasan | Tidak |
-| Dibatalkan | Laporan menunggu verifikasi dibatalkan pembuatnya | Tidak |
+| Dibatalkan | Kehilangan `pending`/`approved` dibatalkan pemilik (A28); temuan `pending` dibatalkan pembuatnya | Tidak |
 
-Laporan yang sudah selesai/arsip dapat dihapus permanen oleh Admin setelah konfirmasi. Status lain tidak dapat dihapus.
+Admin dapat menghapus permanen laporan kehilangan pada semua status setelah konfirmasi (A28). Laporan temuan tetap hanya `returned`/`archived` setelah konfirmasi; status lain tidak dapat dihapus.
 
 **Transisi normal:** `Menunggu verifikasi → Aktif/Belum → Konfirmasi Sudah → Sudah → Arsip`.
 Penolakan laporan: `Menunggu verifikasi → Ditolak`, dengan alasan Admin; pembuat laporan dapat memperbaiki dan mengirim ulang.
 
-Penolakan konfirmasi: `Konfirmasi Sudah → Aktif/Belum`, dengan alasan Admin; pembuat laporan dapat memperbaiki dan mengirim ulang maksimal 3 kali, lalu penyelesaian melalui Admin.
+Penolakan konfirmasi laporan temuan: `Konfirmasi Sudah → Aktif/Belum`, dengan alasan Admin; pembuat laporan dapat memperbaiki dan mengirim ulang maksimal 3 kali, lalu penyelesaian melalui Admin.
 
-Pembatalan: `Menunggu verifikasi → Dibatalkan` oleh pembuat laporan. Kedua alur berjalan sendiri-sendiri pada tabel masing-masing.
+**A28 (kehilangan):** `Aktif/Belum → Sudah` langsung oleh pemilik; `Aktif/Belum → Dibatalkan` dan `Menunggu verifikasi → Dibatalkan` juga langsung oleh pemilik. Kedua alur berjalan sendiri-sendiri pada tabel masing-masing.
 ## 10. Aturan 30 hari
 - Masa tampil 30 hari berlaku untuk **kedua daftar “Sudah”**: **Barang Sudah Ditemukan** dan **Barang Sudah Kembali**.
-- Awal hitungan adalah timestamp saat Admin menyetujui konfirmasi status “Sudah” dan mempublikasikannya pada daftar terkait.
+- **A28:** awal hitungan laporan kehilangan adalah `found_at`, yaitu timestamp saat User pemilik menekan **Barang ditemukan**; laporan temuan tetap dihitung dari timestamp saat Admin menyetujui konfirmasi dan mempublikasikannya.
 - Zona waktu yang digunakan adalah Asia/Makassar (WITA).
-- Batas arsip dihitung dari timestamp persetujuan Admin ditambah 30 hari.
-- Sistem menyimpan timestamp persetujuan Admin dan menjalankan proses terjadwal untuk memeriksa masa tampil pada kedua tabel.
+- Batas arsip dihitung dari timestamp acuan masing-masing jenis (kehilangan: `found_at`; temuan: persetujuan Admin) ditambah 30 hari.
+- Sistem menyimpan timestamp acuan tersebut dan menjalankan proses terjadwal untuk memeriksa masa tampil pada kedua tabel. Dua command harian `reports:archive-returned` dan `missing-reports:archive-found` terdaftar pada scheduler Laravel pukul `00:05` WITA; `MissingReport::publicFound()` juga menyembunyikan laporan kehilangan setelah 30 hari. Entri cron `schedule:run` tetap merupakan konfigurasi server yang dipasang saat deployment, bukan perubahan kode.
 - Setelah batas lewat, laporan berstatus `Archived` dan tidak ditampilkan pada halaman publik.
-- Data laporan tetap disimpan di database, tidak dihapus permanen oleh proses arsip otomatis. Penghapusan permanen hanya dapat dilakukan manual oleh Admin pada laporan selesai/arsip setelah konfirmasi.
+- Data laporan tetap disimpan di database, tidak dihapus permanen oleh proses arsip otomatis. Penghapusan permanen dapat dilakukan manual oleh Admin setelah konfirmasi: laporan kehilangan pada semua status (A28), laporan temuan hanya `returned`/`archived`.
 - Foto/bukti privat tetap privat dan tidak ditampilkan kepada publik.
 ## 11. Informasi publik vs privat
 ### Publik
@@ -354,10 +359,10 @@ Pembatalan: `Menunggu verifikasi → Dibatalkan` oleh pembuat laporan. Kedua alu
 **Acceptance:** User hanya melihat laporan miliknya; status dan keputusan terlihat; laporan user lain tidak dapat diakses lewat URL langsung.
 ### US-05 — User mengonfirmasi status “Sudah”
 **Sebagai User pembuat laporan**, saya ingin mengonfirmasi barang sudah ditemukan/sudah kembali agar status laporan diperbarui.
-**Acceptance:** hanya pembuat laporan aktif; untuk laporan temuan, nama pemilik dan foto bersama penemu–pemilik wajib dan tidak tampil publik; pernyataan wajib dicentang; konfirmasi masuk antrean Admin; item belum pindah card sebelum disetujui Admin. Ketentuan laporan kehilangan masih terbuka pada A18.
-### US-06 — Admin menyetujui konfirmasi status
+**Acceptance:** hanya pemilik laporan terkait; **A28:** untuk laporan kehilangan `approved`, tombol **Barang ditemukan** di kelola laporan atau ringkasan **Akun** langsung menulis `found`, `found_at = sekarang`, dan riwayat `found_by_owner`, tanpa bukti/form/`found_pending` maupun verifikasi Admin; untuk laporan temuan, nama pemilik dan foto bersama penemu–pemilik wajib dan tidak tampil publik, pernyataan wajib dicentang, konfirmasi masuk antrean Admin, dan item belum pindah card sebelum disetujui Admin. Pemilik juga dapat membatalkan laporan kehilangan `pending`/`approved` (A28).
+### US-06 — Admin menyetujui konfirmasi status laporan temuan
 **Sebagai Admin**, saya ingin memeriksa bukti konfirmasi agar perpindahan card benar.
-**Acceptance:** Admin dapat menyetujui/menolak; keputusan tercatat; jika disetujui laporan pindah ke card “Sudah” di menu yang sama; jika ditolak item tetap di card “Belum”, alasan wajib tercatat, dan User dapat memperbaiki serta mengirim ulang maksimal 3 kali, lalu penyelesaian melalui Admin.
+**Acceptance:** Admin dapat menyetujui/menolak konfirmasi laporan temuan; keputusan tercatat; jika disetujui laporan pindah ke card “Sudah” di menu yang sama; jika ditolak item tetap di card “Belum”, alasan wajib tercatat, dan User dapat memperbaiki serta mengirim ulang maksimal 3 kali, lalu penyelesaian melalui Admin. Konfirmasi laporan kehilangan tidak masuk antrean Admin sejak A28.
 ### US-07 — Item pada daftar “Sudah” diarsipkan otomatis
 **Sebagai pengelola**, saya ingin item tidak lagi muncul setelah 30 hari agar kedua daftar “Sudah” tetap relevan.
 **Acceptance:** sistem menyimpan tanggal acuan; proses terjadwal mengarsipkan item yang melewati 30 hari pada kedua tabel; item Archived tidak tampil publik; data dan histori tidak dihapus oleh proses arsip, kecuali penghapusan manual Admin sesuai BR-23.
@@ -367,12 +372,12 @@ Pembatalan: `Menunggu verifikasi → Dibatalkan` oleh pembuat laporan. Kedua alu
 ### US-09 — Guest menghubungi pelapor
 **Sebagai Guest**, saya ingin menghubungi pemilik atau penemu lewat WhatsApp tanpa melihat nomor HP mereka.
 **Acceptance:** tombol tersedia pada detail laporan yang dipublikasikan; tautan mengarah ke `wa.me`; nomor HP tidak muncul pada HTML atau respons publik.
-### US-10 — Admin mengedit laporan Pending
-**Sebagai Admin**, saya ingin memperbaiki laporan `Pending` sebelum memutuskan agar data publik menjadi akurat.
-**Acceptance:** edit hanya tersedia untuk `Pending`; perubahan disimpan dan tercatat pada riwayat dengan peninjau Admin; laporan `Approved` tidak dapat diedit langsung.
-### US-11 — Admin menghapus laporan selesai
-**Sebagai Admin**, saya ingin menghapus permanen laporan yang sudah selesai atau diarsipkan agar data usang tidak menumpuk.
-**Acceptance:** penghapusan hanya untuk laporan selesai/`archived` dan memerlukan konfirmasi; data, foto, dan bukti privat terkait ikut dihapus; status lain ditolak.
+### US-10 — Admin mengedit laporan
+**Sebagai Admin**, saya ingin memperbaiki laporan sebelum memutuskan agar data publik menjadi akurat.
+**Acceptance:** edit laporan temuan hanya tersedia untuk `Pending`; **A28:** edit laporan kehilangan tersedia pada semua status; perubahan disimpan dan tercatat pada riwayat dengan peninjau Admin serta status asal; laporan temuan `Approved` tetap tidak dapat diedit langsung oleh User.
+### US-11 — Admin menghapus laporan
+**Sebagai Admin**, saya ingin menghapus permanen laporan usang agar data tidak menumpuk.
+**Acceptance:** penghapusan memerlukan konfirmasi; **A28:** laporan kehilangan dapat dihapus pada semua status beserta foto privat dan riwayat status; laporan temuan tetap hanya `returned`/`archived`. Status lain untuk laporan temuan ditolak.
 ### US-12 — User membuat laporan lewat dropdown
 **Sebagai User**, saya ingin memilih jenis laporan dari dropdown **Buat Laporan** di navbar dan memantau hasilnya di **Akun**.
 **Acceptance:** dropdown berisi **Laporkan Kehilangan Barang** dan **Laporkan Barang Temuan**; **Akun** tidak menampilkan tombol buat laporan; teks “Halo…” tidak muncul di navbar publik.
@@ -397,19 +402,19 @@ Pembatalan: `Menunggu verifikasi → Dibatalkan` oleh pembuat laporan. Kedua alu
 - Registrasi dan login User berfungsi; Admin masuk lewat jalur tersembunyi dengan akun terpisah.
 - User dapat melaporkan kehilangan dan temuan dengan no. HP pelapor, data barang, foto, serta menyetujui ketentuan; keduanya tersimpan di tabel terpisah dan tidak ditautkan.
 - Navbar User memakai dropdown **Buat Laporan**; **Akun** menampilkan daftar tanpa tombol buat laporan; teks “Halo…” tidak ada di navbar publik.
-- Admin dapat menyetujui/menolak laporan dan mengedit laporan pada status menunggu verifikasi.
+- Admin dapat menyetujui/menolak kedua jenis laporan, mengedit laporan temuan pada status menunggu verifikasi, dan mengedit laporan kehilangan pada semua status (A28).
 - Laporan kehilangan yang disetujui muncul di Barang Hilang; laporan temuan yang disetujui muncul di Barang Ditemukan.
 - User dapat melihat riwayat kedua jenis laporan miliknya.
 - User dapat mengedit atau membatalkan laporan pada status menunggu verifikasi; laporan yang sudah disetujui tidak dapat diedit langsung.
-- Penolakan laporan dan konfirmasi status selalu disertai alasan Admin.
+- Penolakan laporan dan konfirmasi laporan temuan selalu disertai alasan Admin; konfirmasi “Barang ditemukan” laporan kehilangan langsung oleh pemilik tanpa verifikasi Admin (A28).
 - User dapat memperbaiki dan mengirim ulang laporan yang ditolak, serta konfirmasi yang ditolak maksimal 3 kali sebelum penyelesaian melalui Admin.
-- User dapat mengirim konfirmasi status “Sudah” pada laporan miliknya; untuk laporan temuan memakai nama pemilik, foto bersama penemu–pemilik, dan persetujuan pernyataan.
+- User dapat mengirim konfirmasi status “Sudah” pada laporan temuan miliknya dengan nama pemilik, foto bersama penemu–pemilik, dan persetujuan pernyataan; laporan kehilangan memakai tombol **Barang ditemukan** langsung oleh pemilik (A28).
 - Nomor HP pemilik/penemu tidak tampil di halaman publik.
-- Admin dapat menyetujui/menolak konfirmasi; sidebar Admin berisi 5 menu dan card status dapat diklik tanpa mengubah jenis aktif.
-- Konfirmasi yang disetujui memindahkan item ke card “Sudah” di menu yang sama.
-- Item pada kedua daftar “Sudah” tidak tampil lagi setelah 30 hari.
+- Admin dapat menyetujui/menolak konfirmasi laporan temuan; sidebar Admin berisi 5 menu dan card status dapat diklik tanpa mengubah jenis aktif.
+- Laporan kehilangan memindahkan item ke card “Sudah” saat dikonfirmasi pemilik (A28); laporan temuan memindahkan item setelah konfirmasi disetujui Admin, keduanya di menu yang sama.
+- Item pada kedua daftar “Sudah” tidak tampil lagi setelah 30 hari (kehilangan sejak `found_at`, temuan sejak persetujuan Admin).
 - Akses privat, peran terpisah, jalur Admin tersembunyi, dan validasi file diterapkan.
-- Admin dapat menghapus permanen laporan `returned`/`archived` setelah konfirmasi; status lain tidak dapat dihapus.
+- Admin dapat menghapus permanen laporan kehilangan pada semua status setelah konfirmasi, termasuk foto dan riwayat (A28); laporan temuan tetap hanya `returned`/`archived`.
 - Dokumentasi instalasi, konfigurasi, dan penggunaan tersedia di repository.
 ## 16. Pertanyaan dan status keputusan
 Pertanyaan P0 yang sudah dijawab tetap dicatat di bawah ini. Pertanyaan non-P0 yang belum dijawab ditandai terbuka.
@@ -417,31 +422,31 @@ Pertanyaan P0 yang sudah dijawab tetap dicatat di bawah ini. Pertanyaan non-P0 y
 2. Lingkup akun: mahasiswa saja atau seluruh civitas akademika? **Sudah diputuskan: mahasiswa, dosen, dan staf aktif kampus.**
 3. Registrasi: data apa yang diminta dan apakah email kampus diverifikasi? **Sudah diputuskan: pendaftaran meminta nama lengkap, NIM/NIP, email, password, fakultas, dan program studi khusus mahasiswa; identitas tidak diverifikasi melalui database resmi kampus. Sesuai A11 (2026-11-22), email tidak perlu diverifikasi sebelum pelaporan.**
 4. Data form laporan barang temuan: setujukah dengan no. HP penemu, nama barang, kategori, deskripsi, tanggal dan lokasi ditemukan, foto, dan ketentuan? **Keputusan 2026-11-22: ya, seluruh field tersebut wajib; tanggal dan lokasi bermakna saat barang ditemukan.**
-5. Batas foto: jumlah maksimum, ukuran maksimum, dan format? **Sudah diputuskan: maksimal 3 foto; JPG/JPEG/PNG/WebP; maksimal 2 MB per foto.**
+5. Batas foto: jumlah maksimum, ukuran maksimum, dan format? **Keputusan 2026-11-23: satu foto per laporan; JPG/JPEG/PNG/WebP; maksimal 2 MB per foto. Keputusan lama “maksimal 3 foto” digantikan.**
 6. Ketentuan pelaporan: apa saja yang wajib disetujui User?
 7. Kontak penemu: ditampilkan, disembunyikan, atau komunikasi melalui Admin? **Keputusan 2026-11-22: nomor HP tidak ditampilkan; Guest menghubungi penemu lewat tombol WhatsApp (`wa.me`) yang dibuat server, tanpa WhatsApp API atau layanan berbayar.**
 8. Bukti pengembalian: foto seperti apa yang wajib diunggah, apakah hanya dilihat Admin, dan berapa batas format/ukurannya? **Keputusan 2026-11-22: wajib foto bersama penemu–pemilik dan nama pemilik; dapat dilihat User terkait dan Admin, bukan publik. Batas implementasi: 1–3 file JPG/JPEG/PNG/WebP, maksimal 2 MB per file.**
-9. Apakah laporan boleh diedit/dibatalkan oleh User? Pada status apa? **Sudah diputuskan: pemilik dapat mengedit/membatalkan laporan `Pending`; laporan `Approved` tidak dapat diedit langsung.**
+9. Apakah laporan boleh diedit/dibatalkan oleh User? Pada status apa? **Keputusan lama: pemilik dapat mengedit/membatalkan laporan `Pending`; laporan `Approved` tidak dapat diedit langsung. A28 (2026-11-23): pemilik laporan kehilangan juga dapat membatalkan `Approved` dan menandainya **Barang ditemukan**; tetap tidak dapat mengedit langsung laporan `Approved`. Perubahan ini tidak berlaku untuk laporan temuan.**
 10. Jika konfirmasi pengembalian ditolak, apakah laporan tetap Barang Hilang dan User boleh mengajukan ulang? **Sudah diputuskan: laporan tetap Barang Hilang, alasan wajib dicatat, dan pengiriman ulang maksimal 3 kali; setelah itu penyelesaian melalui Admin.**
-11. 30 hari dihitung sejak User mengisi tanggal kembali atau sejak Admin menyetujui? **Sudah diputuskan: sejak Admin menyetujui konfirmasi pengembalian dan mempublikasikannya, zona waktu Asia/Makassar.**
+11. 30 hari dihitung sejak User mengisi tanggal kembali atau sejak Admin menyetujui? **Laporan temuan: sejak Admin menyetujui konfirmasi pengembalian dan mempublikasikannya. A28 untuk laporan kehilangan: sejak User pemilik menekan **Barang ditemukan** (`found_at`). Zona waktu Asia/Makassar (WITA).**
 12. Setelah 30 hari apakah diarsipkan (data tetap ada) atau dihapus permanen? **Sudah diputuskan: diarsipkan dan disembunyikan; data tetap disimpan, foto bukti tetap privat.**
-13. Apakah Admin dapat menghapus laporan atau hanya menolak/arsip? **Keputusan 2026-11-22: Admin dapat menghapus permanen laporan `returned`/`archived` setelah konfirmasi. Arsip otomatis 30 hari tetap berlaku dan data lain tidak dihapus.**
+13. Apakah Admin dapat menghapus laporan atau hanya menolak/arsip? **Keputusan lama 2026-11-22: Admin dapat menghapus permanen laporan `returned`/`archived` setelah konfirmasi. A28 (2026-11-23) menggantinya untuk laporan kehilangan: Admin dapat mengedit dan menghapus pada semua status dengan konfirmasi, termasuk foto privat dan riwayat. Aturan lama tetap berlaku untuk laporan temuan; arsip otomatis 30 hari dan retensi data tidak berubah.**
 14. Unit penerapan yang pasti: fakultas, prodi, atau seluruh kampus? **Sudah diputuskan: seluruh lingkungan kampus.**
 15. Apakah diperlukan fitur tambahan seperti lokasi titik/gedung, kontak melalui Admin, atau notifikasi status? **Keputusan 2026-11-22: kontak publik memakai WhatsApp (`wa.me`) yang dibuat server, bukan melalui Admin dan tanpa nomor HP tampil; lokasi titik/gedung serta notifikasi status masih terbuka.**
-16. Apakah Admin dapat mengelola kategori, atau kategori tetap saja? **Terbuka; yang sudah ditetapkan: delapan kategori tetap untuk laporan.**
+16. Apakah Admin dapat mengelola kategori, atau kategori tetap saja? **Admin belum dapat mengelola kategori; yang berlaku: lima kategori tetap — Elektronik, Dokumen, Aksesori, Pakaian, Lainnya (diselaraskan 2026-11-23).**
 17. Tanggal pengembalian wajib diisi atau dicatat otomatis, dan catatan pengembalian wajib atau opsional? **Terbuka.**
-18. Field dan bukti konfirmasi untuk transisi laporan kehilangan ke **Barang Sudah Ditemukan**? **Terbuka A18; perlu diputuskan sebelum tugas implementasi terkait.**
-19. Apakah URI publik `/barang/lost` dan `/barang/found` diganti mengikuti pemetaan baru? **Sementara tetap dipakai agar tautan lama tidak rusak; mengganti URI perlu keputusan terpisah.**
+18. Field dan bukti konfirmasi untuk transisi laporan kehilangan ke **Barang Sudah Ditemukan**? **Selesai A28 (2026-11-23): tidak ada field/bukti/form tersendiri. Pemilik menekan **Barang ditemukan** saat `approved`; sistem mencatat `found_at` dan riwayat `found_by_owner`, lalu status langsung `found`.**
+19. Apakah URI publik `/barang/lost` dan `/barang/found` diganti mengikuti pemetaan baru? **Ya, kanoniknya `/barang/hilang` dan `/barang/ditemukan` sejak 2026-11-23. URI lama tetap melayani redirect 301 agar tautan lama tidak rusak.**
 20. Apakah teks “Halo…” di sidebar Admin ikut dihapus? **Keputusan A18: dipertahankan dulu; hapus hanya jika hasil akhir tampilan terasa penuh.**
 ## 17. Revisi
 | Versi | Perubahan |
 |---|---|
 | 1.1 | Baseline lama berisi laporan barang hilang dan ditemukan terpisah, klaim digital, serta proses pertemuan langsung. |
 | 2.0 | Disederhanakan sesuai konsep TitipTemu: laporan kehilangan, verifikasi Admin, konfirmasi pengembalian oleh pemilik laporan dengan foto, perpindahan ke Barang Ditemukan, dan pengarsipan publik 30 hari. |
-| 2.1 | P0.6 ditetapkan: 30 hari sejak Admin menyetujui konfirmasi pengembalian dan mempublikasikannya, zona waktu Asia/Makassar, lalu `Archived` tanpa penghapusan permanen; foto bukti tetap privat. |
+| 2.1 | P0.6 ditetapkan: 30 hari sejak Admin menyetujui konfirmasi pengembalian dan mempublikasikannya, zona waktu Asia/Makassar, lalu `Archived` tanpa penghapusan permanen; foto bukti tetap privat. **Catatan A28 (2026-11-23):** aturan ini tetap berlaku untuk laporan temuan; laporan kehilangan dihitung sejak `found_at` saat pemilik mengonfirmasi. |
 | 2.2 | P0.1 ditetapkan: Barang Ditemukan hanya berisi laporan kehilangan yang berhasil dikembalikan setelah konfirmasi disetujui Admin; laporan barang temuan baru tidak termasuk. |
 | 2.3 | P0.2 ditetapkan: cakupan seluruh lingkungan kampus; mahasiswa, dosen, dan staf aktif dapat mendaftar; Guest membaca publik tanpa akun. Ketentuan verifikasi email dari keputusan P0.3 dicabut pada A11 (2026-11-22). |
-| 2.4 | P0.4 ditetapkan: field laporan, kategori tetap, maksimal 3 foto JPG/JPEG/PNG/WebP, maksimal 2 MB per foto, storage lokal Laravel, dan publikasi foto setelah persetujuan Admin. |
+| 2.4 | P0.4 ditetapkan: field laporan, kategori tetap, maksimal 3 foto JPG/JPEG/PNG/WebP, maksimal 2 MB per foto, storage lokal Laravel, dan publikasi foto setelah persetujuan Admin. Ketentuan jumlah foto dan kategori digantikan pada 2.13. |
 | 2.5 | P0.5 ditetapkan: kontak privat, edit/batal Pending, Approved tidak diedit langsung, alasan penolakan wajib, pengiriman ulang, batas 3 kali konfirmasi, serta retensi data dan riwayat. |
 | 2.6 | P0.8 selesai: seluruh keputusan P0 diterapkan, status/versi diselaraskan, label draft yang sudah diputuskan difinalkan, dan daftar pertanyaan terbuka non-P0 disamakan dengan PRD serta ARCHITECTURE. |
 | 2.7 | 2026-11-22: diselaraskan dengan alur yang disetujui pemilik — pelaporan barang temuan, no. HP penemu dan kontak WhatsApp, Admin terpisah tersembunyi, nama pemilik dan foto bersama yang privat, edit Admin hanya pada `Pending`, penghapusan permanen `returned`/`archived`, FR/US/NFR baru, serta catatan selisih implementasi. |
@@ -449,3 +454,5 @@ Pertanyaan P0 yang sudah dijawab tetap dicatat di bawah ini. Pertanyaan non-P0 y
 | 2.9 | 2026-11-22 (A12): no. HP opsional dan privat pada pendaftaran/biodata **Akun**; label program studi memakai format kurung; teks bantuan pemilihan foto profil dihapus. |
 | 2.10 | 2026-11-22 (A13): no. HP Akun menjadi wajib pada pendaftaran/biodata; teks `(opsional)` dihapus dari labelnya. |
 | 2.11 | 2026-11-22 (A18): baseline dua alur — **Barang Hilang = laporan kehilangan pemilik**, **Barang Ditemukan = laporan temuan penemu**. Tabel terpisah, dua card status per menu (Belum/Sudah), 30 hari pada daftar “Sudah”, foto dan no. HP wajib tetapi privat, tanpa penautan antarlaporan, dropdown **Buat Laporan**, sidebar Admin 5 menu, dan card status yang tetap dalam jenis aktif. Keputusan lama dicabut. |
+| 2.12 | 2026-11-23 (A28): konfirmasi **Barang ditemukan** pada laporan kehilangan langsung oleh pemilik (`approved → found`, `found_at`, riwayat `found_by_owner`, 30 hari sejak `found_at`) tanpa bukti/form/`found_pending` baru dan tanpa verifikasi Admin; pembatalan pemilik `pending`/`approved`; Admin tetap memverifikasi publikasi awal serta dapat edit/hapus laporan kehilangan di semua status. Aturan lama difinalkan hanya untuk laporan temuan; data `found_pending` lama tetap ada sebagai historis. |
+| 2.13 | 2026-11-23: penjadwalan harian arsip 30 hari laporan kehilangan, URI publik kanonik `/barang/hilang` dan `/barang/ditemukan` dengan redirect 301 dari URI lama, penghapusan catatan usang bukti konfirmasi kehilangan, dan penyelarasan spesifikasi foto/kategori ke implementasi (satu foto, lima kategori). |

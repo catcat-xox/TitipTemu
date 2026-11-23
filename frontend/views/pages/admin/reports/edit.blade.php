@@ -6,7 +6,7 @@
     <section class="page-hero">
         <div class="container">
             <a class="back-link" href="{{ route('admin.reports.show', $report) }}">← Kembali ke tinjauan</a>
-            <h1 class="mt-3">Edit laporan Pending</h1>
+            <h1 class="mt-3">Edit laporan yang menunggu pemeriksaan</h1>
             <p class="page-intro">Perubahan yang Anda simpan langsung diterapkan dan tercatat pada riwayat verifikasi.</p>
         </div>
     </section>

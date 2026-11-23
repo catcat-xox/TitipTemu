@@ -19,12 +19,14 @@
         @include('partials.admin-sidebar')
 
         <div class="admin-main">
-            <main id="konten" class="admin-content">
+            <main id="konten" class="admin-content" tabindex="-1">
                 @include('partials.flash')
 
                 @yield('content')
             </main>
         </div>
     </div>
+
+    @include('partials.confirm-modal')
 </body>
 </html>

@@ -31,10 +31,10 @@
                     <table class="table align-middle mb-0">
                         <caption class="visually-hidden">Daftar laporan kehilangan milik saya</caption>
                         <thead><tr>
-                            <th scope="col">Barang</th>
-                            <th scope="col">Tanggal hilang</th>
-                            <th scope="col">Status</th>
-                            <th scope="col"><span class="visually-hidden">Aksi</span></th>
+                            <th scope="col" class="text-center">Barang</th>
+                            <th scope="col" class="text-center">Tanggal hilang</th>
+                            <th scope="col" class="text-center">Status</th>
+                            <th scope="col" class="text-center"><span class="visually-hidden">Aksi</span></th>
                         </tr></thead>
                         <tbody>
                             @foreach ($reports as $report)
@@ -44,7 +44,7 @@
                                     <td>
                                         <span class="status-badge status-{{ $report->status }}">{{ $statusLabels[$report->status] ?? ucfirst(str_replace('_', ' ', $report->status)) }}</span>
                                         @if ($report->status === 'rejected' && $report->latestRejection)
-                                            <div class="small text-danger mt-1">Alasan Admin: {{ $report->latestRejection->reason }}</div>
+                                            <div class="small text-danger mt-1">Alasan tim kami: {{ $report->latestRejection->reason }}</div>
                                         @endif
                                     </td>
                                     <td>
@@ -52,8 +52,12 @@
                                             @if (in_array($report->status, ['pending', 'rejected'], true))
                                                 <a class="btn btn-sm btn-outline-secondary" href="{{ route('missing-reports.edit', $report) }}">Ubah</a>
                                             @endif
-                                            @if ($report->status === 'pending')
-                                                <form method="POST" action="{{ route('missing-reports.cancel', $report) }}">
+                                            @if (in_array($report->status, ['pending', 'approved'], true))
+                                                <form method="POST" action="{{ route('missing-reports.cancel', $report) }}"
+                                                    data-tt-confirm="Batalkan laporan kehilangan ini? Laporan tidak lagi ditampilkan."
+                                                    data-tt-confirm-title="Batalkan laporan kehilangan?"
+                                                    data-tt-confirm-label="Ya, batalkan"
+                                                    data-tt-confirm-variant="primary">
                                                     @csrf
                                                     <button class="btn btn-sm btn-outline-secondary" type="submit">Batalkan</button>
                                                 </form>
@@ -65,7 +69,17 @@
                                                 </form>
                                             @endif
                                             @if ($report->isPublic())
-                                                <a class="btn btn-sm btn-outline-primary" href="{{ route('reports.show', ['lost', $report]) }}">Detail</a>
+                                                <a class="btn btn-sm btn-outline-primary" href="{{ route('reports.show', ['hilang', $report]) }}">Detail</a>
+                                            @endif
+                                            @if ($report->status === 'approved')
+                                                <form method="POST" action="{{ route('missing-reports.found', $report) }}"
+                                                    data-tt-confirm="Tandai barang ini sudah ditemukan? Laporan akan dipindah ke Barang Sudah Ditemukan selama 30 hari."
+                                                    data-tt-confirm-title="Tandai barang sudah ditemukan?"
+                                                    data-tt-confirm-label="Ya, tandai ditemukan"
+                                                    data-tt-confirm-variant="success">
+                                                    @csrf
+                                                    <button class="btn btn-sm btn-primary" type="submit">Barang ditemukan</button>
+                                                </form>
                                             @endif
                                         </div>
                                     </td>

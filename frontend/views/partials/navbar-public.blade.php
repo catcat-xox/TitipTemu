@@ -1,8 +1,8 @@
 @php
     $navigation = [
         ['route' => 'home', 'label' => 'Beranda'],
-        ['route' => 'reports.index', 'params' => ['lost'], 'label' => 'Barang Hilang'],
-        ['route' => 'reports.index', 'params' => ['found'], 'label' => 'Barang Ditemukan'],
+        ['route' => 'reports.index', 'params' => ['hilang'], 'label' => 'Barang Hilang'],
+        ['route' => 'reports.index', 'params' => ['ditemukan'], 'label' => 'Barang Ditemukan'],
         ['route' => 'guide', 'label' => 'Panduan'],
     ];
 @endphp
@@ -14,7 +14,7 @@
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navigasiPublik" aria-controls="navigasiPublik"
-                aria-expanded="false" aria-label="Buka navigasi">
+                aria-expanded="false" aria-label="Navigasi utama">
                 <span class="navbar-toggler-icon"></span>
             </button>
 

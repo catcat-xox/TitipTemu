@@ -20,8 +20,8 @@ class InterfaceRefinementTest extends TestCase
 
         $adminLoginUri = '/'.ltrim((string) config('admin.login_uri'), '/');
         $guestPages = [
-            route('reports.index', 'lost'),
-            route('reports.index', 'found'),
+            route('reports.index', 'hilang'),
+            route('reports.index', 'ditemukan'),
             route('guide'),
             route('login'),
             route('register'),
@@ -90,7 +90,7 @@ class InterfaceRefinementTest extends TestCase
         );
     }
 
-    public function test_account_report_tables_center_the_status_column(): void
+    public function test_account_report_tables_center_the_status_and_date_columns(): void
     {
         $user = User::factory()->create();
         MissingReport::factory()->for($user)->create(['item_name' => 'Kunci hilang']);
@@ -99,7 +99,9 @@ class InterfaceRefinementTest extends TestCase
         $html = $this->actingAs($user)->get(route('user.dashboard'))->assertOk()->getContent();
 
         $this->assertSame(2, substr_count($html, '<th scope="col" class="text-center">Status</th>'));
-        $this->assertSame(2, substr_count($html, '<td class="text-center">'));
+        $this->assertSame(1, substr_count($html, '<th scope="col" class="text-center">Tanggal hilang</th>'));
+        $this->assertSame(1, substr_count($html, '<th scope="col" class="text-center">Tanggal ditemukan</th>'));
+        $this->assertSame(4, substr_count($html, '<td class="text-center">'));
     }
 
     public function test_registration_form_has_required_phone_field_with_plain_label(): void
@@ -157,7 +159,7 @@ class InterfaceRefinementTest extends TestCase
         ]);
         LostReport::factory()->approved()->create();
 
-        foreach (['/', route('reports.index', 'lost'), route('reports.index', 'found')] as $uri) {
+        foreach (['/', route('reports.index', 'hilang'), route('reports.index', 'ditemukan')] as $uri) {
             $html = $this->get($uri)->assertOk()->getContent();
 
             $this->assertStringContainsString(
@@ -181,11 +183,11 @@ class InterfaceRefinementTest extends TestCase
         LostReport::factory()->returnedAt(now()->subDays(2))->create();
 
         foreach ([
-            'lost' => [
+            'hilang' => [
                 'search' => 'Cari Barang Hilang',
                 'labels' => ['Barang Belum Ditemukan', 'Barang Sudah Ditemukan'],
             ],
-            'found' => [
+            'ditemukan' => [
                 'search' => 'Cari Barang Ditemukan',
                 'labels' => ['Barang Belum Kembali', 'Barang Sudah Kembali'],
             ],

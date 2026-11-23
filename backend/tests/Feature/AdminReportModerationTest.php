@@ -152,7 +152,7 @@ class AdminReportModerationTest extends TestCase
 
         $this->actingAs($owner, 'web')->get(route('reports.mine'))
             ->assertOk()
-            ->assertSee('Alasan Admin: Deskripsi perlu diperjelas.');
+            ->assertSee('Alasan tim kami: Deskripsi perlu diperjelas.');
 
         $this->actingAs($owner, 'web')->post(route('reports.resubmit', $report))
             ->assertRedirect(route('reports.mine'));

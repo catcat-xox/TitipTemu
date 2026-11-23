@@ -1,8 +1,8 @@
 @php
     $footerNavigation = [
         ['route' => 'home', 'label' => 'Beranda'],
-        ['route' => 'reports.index', 'params' => ['lost'], 'label' => 'Barang Hilang'],
-        ['route' => 'reports.index', 'params' => ['found'], 'label' => 'Barang Ditemukan'],
+        ['route' => 'reports.index', 'params' => ['hilang'], 'label' => 'Barang Hilang'],
+        ['route' => 'reports.index', 'params' => ['ditemukan'], 'label' => 'Barang Ditemukan'],
         ['route' => 'guide', 'label' => 'Panduan'],
     ];
 @endphp

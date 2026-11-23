@@ -37,9 +37,14 @@ final class ReturnProof
 
         abort_unless(Storage::disk(self::DISK)->exists($path), 404);
 
-        return response()->file(
+        $response = response()->file(
             Storage::disk(self::DISK)->path($path),
             ['Content-Type' => Storage::disk(self::DISK)->mimeType($path) ?: 'application/octet-stream'],
         );
+
+        $response->headers->set('Cache-Control', 'private, no-store, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+
+        return $response;
     }
 }

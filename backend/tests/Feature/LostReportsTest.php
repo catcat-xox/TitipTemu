@@ -28,7 +28,7 @@ class LostReportsTest extends TestCase
             'terms_accepted_at' => now(),
         ]);
 
-        $response = $this->get(route('reports.index', 'found'));
+        $response = $this->get(route('reports.index', 'ditemukan'));
 
         $response->assertOk();
         $response->assertSee('Dompet biru');
@@ -49,7 +49,7 @@ class LostReportsTest extends TestCase
             'terms_accepted_at' => now(),
         ]);
 
-        $this->get(route('reports.index', 'found'))
+        $this->get(route('reports.index', 'ditemukan'))
             ->assertOk()
             ->assertDontSee('Laporan privat');
     }

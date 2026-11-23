@@ -64,6 +64,50 @@ class ProfilePhotoTest extends TestCase
         Storage::disk('local')->assertExists($user->profile_photo_path);
     }
 
+    public function test_account_photo_url_is_versioned_and_changes_after_update(): void
+    {
+        Storage::fake('local');
+
+        $user = User::factory()->create(['profile_photo_path' => 'profile-photos/lama.jpg']);
+        Storage::disk('local')->put('profile-photos/lama.jpg', 'foto lama');
+
+        $oldUrl = route('user.profile-photo', ['v' => md5('profile-photos/lama.jpg')]);
+        $before = $this->actingAs($user, 'web')->get(route('user.dashboard'))->assertOk()->getContent();
+
+        $this->assertStringContainsString($oldUrl, $before);
+
+        $this->actingAs($user, 'web')->put(route('user.profile.update'), [
+            'name' => $user->name,
+            'phone' => $user->phone,
+            'nim_nip' => $user->nim_nip,
+            'user_type' => $user->user_type,
+            'faculty' => $user->faculty,
+            'study_program' => $user->study_program,
+            'profile_photo' => UploadedFile::fake()->image('profil-baru.jpg'),
+        ])->assertRedirect(route('user.dashboard'));
+
+        $user->refresh();
+        $newUrl = route('user.profile-photo', ['v' => md5($user->profile_photo_path)]);
+        $after = $this->actingAs($user, 'web')->get(route('user.dashboard'))->assertOk()->getContent();
+
+        $this->assertNotSame($oldUrl, $newUrl);
+        $this->assertStringContainsString($newUrl, $after);
+        $this->assertStringNotContainsString($oldUrl, $after);
+    }
+
+    public function test_profile_photo_response_disables_browser_caching(): void
+    {
+        Storage::fake('local');
+
+        $user = User::factory()->create(['profile_photo_path' => 'profile-photos/demo.jpg']);
+        Storage::disk('local')->put('profile-photos/demo.jpg', 'konten foto');
+
+        $this->actingAs($user, 'web')->get(route('user.profile-photo', ['v' => md5('profile-photos/demo.jpg')]))
+            ->assertOk()
+            ->assertHeader('Cache-Control', 'max-age=0, no-store, private')
+            ->assertHeader('Pragma', 'no-cache');
+    }
+
     public function test_owner_cannot_clear_required_phone_from_biodata(): void
     {
         $user = User::factory()->create(['phone' => '0812-3456-7890']);

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Admin;
 use App\Models\LostReport;
 use App\Models\MissingReport;
+use App\Models\MissingReportStatusHistory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -32,6 +33,7 @@ class MissingReportManagementTest extends TestCase
         $this->get(route('missing-reports.edit', $report))->assertRedirect(route('login'));
         $this->put(route('missing-reports.update', $report), [])->assertRedirect(route('login'));
         $this->post(route('missing-reports.cancel', $report))->assertRedirect(route('login'));
+        $this->post(route('missing-reports.found', $report))->assertRedirect(route('login'));
         $this->post(route('missing-reports.resubmit', $report))->assertRedirect(route('login'));
 
         $admin = Admin::factory()->create();
@@ -59,7 +61,7 @@ class MissingReportManagementTest extends TestCase
         Storage::disk('local')->assertExists($report->photo_path);
         $this->assertSame(0, LostReport::count());
 
-        foreach (['/', route('reports.index', 'lost'), route('reports.index', 'found')] as $uri) {
+        foreach (['/', route('reports.index', 'hilang'), route('reports.index', 'ditemukan')] as $uri) {
             $this->get($uri)->assertOk()->assertDontSee('081234567890');
         }
     }
@@ -152,7 +154,7 @@ class MissingReportManagementTest extends TestCase
         ]);
 
         $html = $this->actingAs($owner)->get(route('missing-reports.mine'))->assertOk()->getContent();
-        $detailUrl = route('reports.show', ['lost', $report]);
+        $detailUrl = route('reports.show', ['hilang', $report]);
 
         $this->assertStringContainsString($detailUrl, $html);
         $this->assertStringContainsString(
@@ -168,9 +170,12 @@ class MissingReportManagementTest extends TestCase
         $owner = User::factory()->create();
         $stranger = User::factory()->create();
         $pending = MissingReport::factory()->for($owner)->create();
+        $approved = MissingReport::factory()->for($owner)->approved()->create();
 
         $this->actingAs($stranger)->get(route('missing-reports.edit', $pending))->assertForbidden();
         $this->actingAs($stranger)->post(route('missing-reports.cancel', $pending))->assertForbidden();
+        $this->actingAs($stranger)->post(route('missing-reports.found', $approved))->assertForbidden();
+        $this->assertSame(MissingReport::STATUS_APPROVED, $approved->fresh()->status);
 
         $this->actingAs($owner)->get(route('missing-reports.edit', $pending))->assertOk();
         $this->actingAs($owner)->put(route('missing-reports.update', $pending), $this->payload([
@@ -178,14 +183,112 @@ class MissingReportManagementTest extends TestCase
         ]))->assertRedirect(route('missing-reports.mine'));
         $this->assertSame('Kunci diperbarui', $pending->fresh()->item_name);
 
-        $approved = MissingReport::factory()->for($owner)->approved()->create();
         $this->actingAs($owner)->get(route('missing-reports.edit', $approved))->assertForbidden();
-        $this->actingAs($owner)->post(route('missing-reports.cancel', $approved))->assertForbidden();
+        $this->actingAs($owner)->post(route('missing-reports.cancel', $approved))
+            ->assertRedirect(route('missing-reports.mine'))
+            ->assertSessionHas('success');
+        $this->assertSame(MissingReport::STATUS_CANCELLED, $approved->fresh()->status);
+        $this->assertDatabaseHas('missing_report_status_histories', [
+            'missing_report_id' => $approved->id,
+            'actor_id' => $owner->id,
+            'admin_id' => null,
+            'action' => 'cancel_by_owner',
+            'from_status' => MissingReport::STATUS_APPROVED,
+            'to_status' => MissingReport::STATUS_CANCELLED,
+        ]);
 
         $rejected = MissingReport::factory()->for($owner)->rejected()->create();
         $this->actingAs($owner)->post(route('missing-reports.resubmit', $rejected))
             ->assertRedirect(route('missing-reports.mine'));
         $this->assertSame(MissingReport::STATUS_PENDING, $rejected->fresh()->status);
+    }
+
+    public function test_owner_can_mark_approved_missing_report_found_and_start_thirty_day_window(): void
+    {
+        $owner = User::factory()->create();
+        $report = MissingReport::factory()->for($owner)->approved()->create([
+            'item_name' => 'Kunci ditemukan langsung',
+        ]);
+
+        $mineHtml = $this->actingAs($owner)->get(route('missing-reports.mine'))->assertOk()->getContent();
+        $dashboardHtml = $this->actingAs($owner)->get(route('user.dashboard'))->assertOk()->getContent();
+
+        $this->assertStringContainsString(route('missing-reports.found', $report), $mineHtml);
+        $this->assertStringContainsString('Barang ditemukan', $mineHtml);
+        $this->assertStringContainsString(route('missing-reports.found', $report), $dashboardHtml);
+        $this->assertStringContainsString(route('missing-reports.cancel', $report), $dashboardHtml);
+
+        $mineDetailPos = strpos($mineHtml, route('reports.show', ['hilang', $report]));
+        $mineFoundPos = strpos($mineHtml, route('missing-reports.found', $report));
+        $this->assertNotFalse($mineDetailPos);
+        $this->assertGreaterThan($mineDetailPos, $mineFoundPos, 'Tombol Barang ditemukan harus berada paling kanan setelah Detail.');
+
+        $dashboardAllPos = strrpos($dashboardHtml, '>Lihat semua</a>');
+        $dashboardFoundPos = strpos($dashboardHtml, route('missing-reports.found', $report));
+        $this->assertNotFalse($dashboardAllPos);
+        $this->assertGreaterThan($dashboardAllPos, $dashboardFoundPos, 'Tombol Barang ditemukan harus berada paling kanan setelah Lihat semua.');
+
+        $this->actingAs($owner)->post(route('missing-reports.found', $report))
+            ->assertRedirect(route('missing-reports.mine'))
+            ->assertSessionHas('success');
+
+        $report->refresh();
+        $this->assertSame(MissingReport::STATUS_FOUND, $report->status);
+        $this->assertNotNull($report->found_at);
+        $this->assertTrue($report->archiveDueAt()->equalTo($report->found_at->copy()->addDays(30)));
+        $this->assertDatabaseHas('missing_report_status_histories', [
+            'missing_report_id' => $report->id,
+            'actor_id' => $owner->id,
+            'admin_id' => null,
+            'action' => 'found_by_owner',
+            'from_status' => MissingReport::STATUS_APPROVED,
+            'to_status' => MissingReport::STATUS_FOUND,
+        ]);
+
+        $this->get(route('reports.index', ['hilang', 'status' => 'sudah']))
+            ->assertSee($report->item_name);
+        $this->get(route('reports.show', ['hilang', $report]))->assertOk();
+    }
+
+    public function test_owner_found_action_is_only_available_for_approved_reports(): void
+    {
+        $owner = User::factory()->create();
+        $approved = MissingReport::factory()->for($owner)->approved()->create(['item_name' => 'Approved unik']);
+        $pending = MissingReport::factory()->for($owner)->create(['item_name' => 'Pending unik']);
+        $found = MissingReport::factory()->for($owner)->foundAt(now()->subDay())->create(['item_name' => 'Found unik']);
+
+        $mineHtml = $this->actingAs($owner)->get(route('missing-reports.mine'))->assertOk()->getContent();
+        $dashboardHtml = $this->actingAs($owner)->get(route('user.dashboard'))->assertOk()->getContent();
+
+        $this->assertSame(1, substr_count($mineHtml, route('missing-reports.found', $approved)));
+        $this->assertSame(0, substr_count($mineHtml, route('missing-reports.found', $pending)));
+        $this->assertSame(0, substr_count($mineHtml, route('missing-reports.found', $found)));
+        $this->assertSame(1, substr_count($dashboardHtml, route('missing-reports.found', $approved)));
+        $this->assertSame(0, substr_count($dashboardHtml, route('missing-reports.found', $found)));
+        $this->assertSame(1, substr_count($mineHtml, route('missing-reports.cancel', $approved)));
+        $this->assertSame(1, substr_count($mineHtml, route('missing-reports.cancel', $pending)));
+        $this->assertSame(0, substr_count($mineHtml, route('missing-reports.cancel', $found)));
+    }
+
+    public function test_owner_cannot_mark_non_approved_missing_report_as_found(): void
+    {
+        $owner = User::factory()->create();
+        $reports = [
+            MissingReport::factory()->for($owner)->create(),
+            MissingReport::factory()->for($owner)->rejected()->create(),
+            MissingReport::factory()->for($owner)->foundPending()->create(),
+            MissingReport::factory()->for($owner)->foundAt(now())->create(),
+            MissingReport::factory()->for($owner)->archived()->create(),
+            MissingReport::factory()->for($owner)->create(['status' => MissingReport::STATUS_CANCELLED]),
+        ];
+
+        foreach ($reports as $report) {
+            $originalStatus = $report->status;
+            $this->actingAs($owner)->post(route('missing-reports.found', $report))->assertForbidden();
+            $this->assertSame($originalStatus, $report->fresh()->status);
+        }
+
+        $this->assertSame(0, MissingReportStatusHistory::where('action', 'found_by_owner')->count());
     }
 
     private function payload(array $overrides = []): array

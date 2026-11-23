@@ -17,18 +17,18 @@ class PublicReportTest extends TestCase
         $missing = MissingReport::factory()->approved()->create(['item_name' => 'Kunci hilang']);
         $found = LostReport::factory()->approved()->create(['item_name' => 'Dompet ditemukan']);
 
-        $this->get(route('reports.index', 'lost'))
+        $this->get(route('reports.index', 'hilang'))
             ->assertOk()
             ->assertSee($missing->item_name)
             ->assertDontSee($found->item_name);
-        $this->get(route('reports.index', 'found'))
+        $this->get(route('reports.index', 'ditemukan'))
             ->assertOk()
             ->assertSee($found->item_name)
             ->assertDontSee($missing->item_name);
-        $this->get(route('reports.show', ['lost', $missing]))
+        $this->get(route('reports.show', ['hilang', $missing]))
             ->assertOk()
             ->assertSee($missing->item_name);
-        $this->get(route('reports.show', ['found', $found]))
+        $this->get(route('reports.show', ['ditemukan', $found]))
             ->assertOk()
             ->assertSee($found->item_name);
     }
@@ -51,7 +51,7 @@ class PublicReportTest extends TestCase
                 'item_name' => 'Privat temuan '.$status,
             ]);
 
-            foreach (['lost', 'found'] as $type) {
+            foreach (['hilang', 'ditemukan'] as $type) {
                 $this->get(route('reports.index', [$type, 'status' => 'belum']))
                     ->assertOk()
                     ->assertDontSee($missing->item_name)
@@ -62,8 +62,8 @@ class PublicReportTest extends TestCase
                     ->assertDontSee($found->item_name);
             }
 
-            $this->get(route('reports.show', ['lost', $missing]))->assertNotFound();
-            $this->get(route('reports.show', ['found', $found]))->assertNotFound();
+            $this->get(route('reports.show', ['hilang', $missing]))->assertNotFound();
+            $this->get(route('reports.show', ['ditemukan', $found]))->assertNotFound();
         }
     }
 
@@ -74,32 +74,32 @@ class PublicReportTest extends TestCase
         $foundBelum = LostReport::factory()->approved()->create(['item_name' => 'Dompet belum kembali']);
         $foundSudah = LostReport::factory()->returnedAt(now()->subDays(2))->create(['item_name' => 'Dompet sudah kembali']);
 
-        $this->get(route('reports.index', 'lost'))
+        $this->get(route('reports.index', 'hilang'))
             ->assertSee('Barang Belum Ditemukan')
             ->assertSee('Barang Sudah Ditemukan')
-            ->assertSee(route('reports.index', ['lost', 'status' => 'belum']), false)
-            ->assertSee(route('reports.index', ['lost', 'status' => 'sudah']), false)
+            ->assertSee(route('reports.index', ['hilang', 'status' => 'belum']), false)
+            ->assertSee(route('reports.index', ['hilang', 'status' => 'sudah']), false)
             ->assertSee($missingBelum->item_name)
             ->assertDontSee($missingSudah->item_name)
             ->assertDontSee($foundBelum->item_name)
             ->assertDontSee($foundSudah->item_name);
 
-        $this->get(route('reports.index', ['lost', 'status' => 'sudah']))
+        $this->get(route('reports.index', ['hilang', 'status' => 'sudah']))
             ->assertSee($missingSudah->item_name)
             ->assertDontSee($missingBelum->item_name)
             ->assertDontSee($foundSudah->item_name);
 
-        $this->get(route('reports.index', 'found'))
+        $this->get(route('reports.index', 'ditemukan'))
             ->assertSee('Barang Belum Kembali')
             ->assertSee('Barang Sudah Kembali')
-            ->assertSee(route('reports.index', ['found', 'status' => 'belum']), false)
-            ->assertSee(route('reports.index', ['found', 'status' => 'sudah']), false)
+            ->assertSee(route('reports.index', ['ditemukan', 'status' => 'belum']), false)
+            ->assertSee(route('reports.index', ['ditemukan', 'status' => 'sudah']), false)
             ->assertSee($foundBelum->item_name)
             ->assertDontSee($foundSudah->item_name)
             ->assertDontSee($missingBelum->item_name)
             ->assertDontSee($missingSudah->item_name);
 
-        $this->get(route('reports.index', ['found', 'status' => 'sudah']))
+        $this->get(route('reports.index', ['ditemukan', 'status' => 'sudah']))
             ->assertSee($foundSudah->item_name)
             ->assertDontSee($foundBelum->item_name)
             ->assertDontSee($missingSudah->item_name);
@@ -112,15 +112,15 @@ class PublicReportTest extends TestCase
         $staleFound = LostReport::factory()->returnedAt(now()->subDays(31))->create(['item_name' => 'Dompet lama']);
         $freshFound = LostReport::factory()->returnedAt(now()->subDays(29))->create(['item_name' => 'Dompet baru']);
 
-        $this->get(route('reports.index', ['lost', 'status' => 'sudah']))
+        $this->get(route('reports.index', ['hilang', 'status' => 'sudah']))
             ->assertDontSee($staleMissing->item_name)
             ->assertSee($freshMissing->item_name);
-        $this->get(route('reports.show', ['lost', $staleMissing]))->assertNotFound();
+        $this->get(route('reports.show', ['hilang', $staleMissing]))->assertNotFound();
 
-        $this->get(route('reports.index', ['found', 'status' => 'sudah']))
+        $this->get(route('reports.index', ['ditemukan', 'status' => 'sudah']))
             ->assertDontSee($staleFound->item_name)
             ->assertSee($freshFound->item_name);
-        $this->get(route('reports.show', ['found', $staleFound]))->assertNotFound();
+        $this->get(route('reports.show', ['ditemukan', $staleFound]))->assertNotFound();
     }
 
     public function test_approved_report_only_appears_in_the_belum_card_of_its_own_type(): void
@@ -128,15 +128,15 @@ class PublicReportTest extends TestCase
         $missing = MissingReport::factory()->approved()->create(['item_name' => 'Barang hilang unik']);
         $found = LostReport::factory()->approved()->create(['item_name' => 'Barang temuan unik']);
 
-        foreach (['lost', 'found'] as $type) {
+        foreach (['hilang', 'ditemukan'] as $type) {
             $this->get(route('reports.index', [$type, 'status' => 'sudah']))
                 ->assertDontSee($missing->item_name)
                 ->assertDontSee($found->item_name);
         }
 
-        $this->get(route('reports.show', ['found', $missing]))
+        $this->get(route('reports.show', ['ditemukan', $missing]))
             ->assertDontSee($missing->item_name);
-        $this->get(route('reports.show', ['lost', $found]))
+        $this->get(route('reports.show', ['hilang', $found]))
             ->assertDontSee($found->item_name);
     }
 
@@ -167,20 +167,20 @@ class PublicReportTest extends TestCase
             'lost_at' => now()->subDays(4),
         ]);
 
-        $this->get(route('reports.index', ['lost', 'q' => 'Dompet']))
+        $this->get(route('reports.index', ['hilang', 'q' => 'Dompet']))
             ->assertSee($missingMatch->item_name)
             ->assertDontSee($missingOther->item_name);
-        $this->get(route('reports.index', ['lost', 'category' => 'Kunci']))
+        $this->get(route('reports.index', ['hilang', 'category' => 'Kunci']))
             ->assertSee($missingOther->item_name)
             ->assertDontSee($missingMatch->item_name);
-        $this->get(route('reports.index', ['lost', 'lost_date' => $missingMatch->lost_at->toDateString()]))
+        $this->get(route('reports.index', ['hilang', 'lost_date' => $missingMatch->lost_at->toDateString()]))
             ->assertSee($missingMatch->item_name)
             ->assertDontSee($missingOther->item_name);
 
-        $this->get(route('reports.index', ['found', 'q' => 'Topbiru']))
+        $this->get(route('reports.index', ['ditemukan', 'q' => 'Topbiru']))
             ->assertSee($foundMatch->item_name)
             ->assertDontSee($foundOther->item_name);
-        $this->get(route('reports.index', ['found', 'lost_date' => $foundMatch->lost_at->toDateString()]))
+        $this->get(route('reports.index', ['ditemukan', 'lost_date' => $foundMatch->lost_at->toDateString()]))
             ->assertSee($foundMatch->item_name)
             ->assertDontSee($foundOther->item_name);
     }
@@ -191,7 +191,7 @@ class PublicReportTest extends TestCase
             MissingReport::factory()->approved()->create(['item_name' => 'Barang Hilang '.$number]);
         }
 
-        $this->get(route('reports.index', 'lost'))
+        $this->get(route('reports.index', 'hilang'))
             ->assertOk()
             ->assertSee('class="pagination"', false)
             ->assertSee('class="page-item', false)
@@ -215,7 +215,7 @@ class PublicReportTest extends TestCase
             'contact_phone' => '0812-3333-4444',
         ]);
 
-        foreach ([['lost', $missing], ['found', $found]] as [$type, $report]) {
+        foreach ([['hilang', $missing], ['ditemukan', $found]] as [$type, $report]) {
             $this->get(route('reports.show', [$type, $report]))
                 ->assertOk()
                 ->assertDontSee('RAHASIA-123')

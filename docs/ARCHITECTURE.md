@@ -14,7 +14,7 @@ Gunakan **satu aplikasi web monolitik Laravel** dengan pemisahan MVC sesuai konv
 - **Controllers:** koordinasi HTTP, proses awal validasi, dan pemilihan respons; jangan menumpuk logika bisnis dalam controller yang terlalu besar.
 - **Form Requests** (atau objek permintaan tervalidasi yang setara): validasi permintaan dan aturan otorisasi jika sesuai.
 - **Models:** relasi penyimpanan dan akses data dengan cakupan yang tepat.
-- **Services/actions:** operasi bisnis seperti pengiriman laporan kehilangan/temuan, verifikasi, konfirmasi status “Sudah”, dan pengarsipan jika kompleksitasnya membutuhkan.
+- **Services/actions:** operasi bisnis seperti pengiriman laporan kehilangan/temuan, verifikasi, konfirmasi status “Sudah”, dan pengarsipan jika kompleksitasnya membutuhkan. Sejak A28, `MissingReportOwnerService` menangani pembatalan dan konfirmasi **Barang ditemukan** oleh pemilik; `MissingReportModerationService` tetap menangani verifikasi Admin dan audit edit.
 - **Policies/middleware:** otorisasi peran, kepemilikan, dan Admin.
 - **Views:** Laravel Blade + Bootstrap yang dirender di server (disetujui). Bangun sistem desain modern bergaya startup di atas Bootstrap; hindari tampilan yang hanya menggunakan gaya bawaan Bootstrap.
 - **MySQL:** penyimpanan relasional melalui migration dan ORM Laravel.
@@ -26,7 +26,7 @@ Gunakan **satu aplikasi web monolitik Laravel** dengan pemisahan MVC sesuai konv
 4. **Pelaporan temuan** — membuat dan memvalidasi laporan penemu dengan no. HP penemu dan tanggal/lokasi ditemukan, unggah foto, disimpan di tabel `lost_reports` yang sudah ada.
 5. **Kontak WhatsApp** — membuat tautan `wa.me` di server tanpa menampilkan nomor HP pemilik/penemu pada halaman/respons publik.
 6. **Verifikasi Admin** — Dashboard dengan card status yang dapat diklik, menu **Barang Hilang**/**Barang Ditemukan** yang difilter menurut jenis, **Cari laporan** lintas jenis dan status, persetujuan/penolakan beralasan, edit laporan pada status menunggu verifikasi, catatan verifikasi, riwayat, dan penghapusan permanen terbatas.
-7. **Konfirmasi status “Sudah”** — pengiriman oleh pembuat laporan; untuk laporan temuan memakai nama pemilik dan foto bersama penemu–pemilik yang privat, tinjauan Admin, persetujuan/penolakan. Ketentuan laporan kehilangan masih terbuka pada A18.
+7. **Konfirmasi status “Sudah”** — pengiriman oleh pembuat laporan; untuk laporan temuan memakai nama pemilik dan foto bersama penemu–pemilik yang privat, tinjauan Admin, persetujuan/penolakan. Untuk laporan kehilangan, A28 menghapus bukti/form terpisah: pemilik menandai **Barang ditemukan** langsung dan Admin tidak memverifikasi konfirmasi ini.
 8. **Siklus arsip publik** — daftar “Sudah” pada kedua menu menampilkan item selama 30 hari sejak persetujuan Admin, lalu dijadwalkan untuk diarsipkan/disembunyikan; data tetap disimpan.
 9. **Jejak audit** — catat keputusan penting Admin, edit, penghapusan, dan perubahan status pada kedua tabel.
 
@@ -34,7 +34,7 @@ Gunakan **satu aplikasi web monolitik Laravel** dengan pemisahan MVC sesuai konv
 - Aplikasi Laravel berada di `backend/`; tampilan Blade dan aset sumber (CSS, JavaScript, gambar) berada di `frontend/`.
 - Layout terpisah: `layouts/public.blade.php` untuk Guest/User, `layouts/admin.blade.php` untuk panel Admin, dan `layouts/admin-auth.blade.php` untuk login Admin. `layouts/app.blade.php` serta `partials/navbar.blade.php`/`footer.blade.php` hanya alias kompatibilitas dan tidak dipakai halaman baru. Partial publik dan Admin berada di `frontend/views/partials/`, halaman di `frontend/views/pages/`.
 - Token desain (`--tt-*`) dan gaya komponen berada di `frontend/css/app.css`. Bootstrap 5.3 dimuat melalui Vite.
-- Tautan navigasi memakai named route dan hanya ditampilkan jika rutenya sudah tersedia. State aktif Barang Hilang/Barang Ditemukan dibedakan dari parameter `type`, bukan hanya nama route. Pemetaan A18: `lost` = **Barang Hilang** (laporan kehilangan pemilik), `found` = **Barang Ditemukan** (laporan temuan penemu). URI publik sementara tetap `/barang/lost` dan `/barang/found` agar tautan lama tidak rusak; penggantian URI memerlukan keputusan terpisah.
+- Tautan navigasi memakai named route dan hanya ditampilkan jika rutenya sudah tersedia. State aktif Barang Hilang/Barang Ditemukan dibedakan dari parameter `type`, bukan hanya nama route. Pemetaan A18: `hilang` = **Barang Hilang** (laporan kehilangan pemilik), `ditemukan` = **Barang Ditemukan** (laporan temuan penemu). URI publik kanonik adalah `/barang/hilang` dan `/barang/ditemukan`; `/barang/lost` dan `/barang/found` melayani redirect permanen (301) disertai query string agar tautan lama tetap berfungsi.
 - Beranda sengaja ringkas: daftar publik dan penjelasan peran dihapus, diganti empat kartu laporan terbaru dalam satu baris, masing-masing dengan tombol “Lihat detail”. Sejak A25, keempat kartu diambil dari laporan **kehilangan** maupun **temuan** yang sudah diverifikasi dan diurutkan dari yang paling baru, dengan tautan ke daftar masing-masing. Setelah A18, **Barang Hilang** berarti laporan **kehilangan** pemilik dan **Barang Ditemukan** berarti laporan **temuan** penemu.
 - Kartu item di beranda dan daftar publik memakai tinggi penuh kolom Bootstrap serta `.report-card`/`.report-card-body` sebagai flex column. Tombol **Lihat detail** dibungkus `mt-auto pt-2` sehingga sejajar di bagian bawah semua kartu dalam satu baris, mengikuti kartu terpanjang.
 - Dashboard Admin tidak memakai topbar: judul “Dashboard Admin” menjadi konten teratas tanpa subjudul, tombol panah kembali berada di kanan atas sejajar dengan judul, kartu status tersusun dalam satu baris pada layar lebar, dan filter status menyediakan opsi **Semua**. Label kartu status disingkat menjadi **MENUNGGU** dan **PENGEMBALIAN**, sementara filter/badge memakai label lengkap. Halaman **Tinjau laporan** memakai pola judul + tombol panah yang sama tanpa “Area Admin”. **A18:** kartu status dapat diklik dan filternya tetap berada dalam jenis laporan aktif; status tidak menjadi menu sidebar.
@@ -60,13 +60,13 @@ ERD dan field final harus divalidasi dalam tugas tersendiri. Entitas yang mungki
 - `admins`: akun Admin terpisah (nama, email, password ter-hash) dengan guard `admin`; beberapa akun dapat berdiri sendiri.
 - `lost_reports`: **tabel laporan temuan yang sudah ada** — User penemu, nama barang, kategori, deskripsi publik, tanggal dan lokasi **ditemukan**, foto, **no. HP penemu**, status, timestamp konfirmasi/arsip. Dipetakan ke menu **Barang Ditemukan**.
 - `missing_reports`: **tabel laporan kehilangan** (nama final ditetapkan A19): User pemilik, nama barang, kategori, deskripsi publik, tanggal dan lokasi **hilang**, foto, **no. HP pemilik (wajib)**, status, `found_at` sebagai awal 30 hari, dan `archived_at`. Dipetakan ke menu **Barang Hilang**. Tidak ada foreign key atau kolom penaut ke `lost_reports`. Riwayat statusnya memakai `missing_report_status_histories` yang juga terpisah dari `report_status_histories`.
-- `return_confirmations`: bukti konfirmasi status “Sudah” untuk laporan temuan — referensi laporan, User pengirim, **nama pemilik**, **foto bersama penemu–pemilik** pada storage privat, catatan opsional, status peninjauan, **Admin peninjau**, alasan penolakan wajib jika ditolak, timestamp. Skema konfirmasi untuk laporan kehilangan belum ditetapkan pada A18 (terbuka).
+- `return_confirmations`: bukti konfirmasi status “Sudah” untuk laporan temuan — referensi laporan, User pengirim, **nama pemilik**, **foto bersama penemu–pemilik** pada storage privat, catatan opsional, status peninjauan, **Admin peninjau**, alasan penolakan wajib jika ditolak, timestamp. **A28:** laporan kehilangan tidak memakai tabel/form konfirmasi terpisah; cukup aksi pemilik pada `missing_reports` ditambah `missing_report_status_histories`.
 - Kategori laporan menurut P0.4: Elektronik, Dompet & Uang, Dokumen & Kartu Identitas, Kunci, Tas, Pakaian & Aksesoris, Buku & Alat Tulis, dan Lainnya. (Lihat catatan selisih implementasi di bawah.)
 - `report_status_histories` atau catatan audit: status sebelumnya/baru, pelaku User, **pelaku Admin**, alasan/catatan, waktu; mencatat perubahan pada kedua jenis laporan.
 
 Hindari menyimpan data sensitif yang tidak diperlukan. NIM/NIP, email, no. HP Akun, dan data fakultas/program studi bersifat privat. Jangan tampilkan nomor HP pemilik/penemu, no. HP Akun, nama pemilik, ciri unik verifikasi, atau bukti privat pada halaman/endpoint publik. Nomor HP pemilik/penemu hanya dipakai server untuk membuat tautan `wa.me`.
 ## 6. Siklus status
-Kedua tabel memakai siklus yang setara: `Menunggu verifikasi → Aktif/Belum → Konfirmasi Sudah → Sudah → Arsip`. Konstanta internal laporan kehilangan (A19): `pending`, `approved`, `rejected`, `found_pending`, `found`, `archived`, `cancelled`; label publik tetap mengikuti A18. Status `found` dicatat pada `found_at`. Field/bukti konfirmasi transisi ke `found` masih terbuka.
+Kedua tabel memakai siklus yang setara: `Menunggu verifikasi → Aktif/Belum → Konfirmasi Sudah → Sudah → Arsip`. Konstanta internal laporan kehilangan (A19): `pending`, `approved`, `rejected`, `found_pending`, `found`, `archived`, `cancelled`; label publik tetap mengikuti A18. **A28:** untuk laporan kehilangan, transisi `approved → found` dilakukan langsung oleh pemilik, mencatat `found_at` dan riwayat `found_by_owner`, lalu 30 hari dihitung dari `found_at`; tidak ada `found_pending`, bukti, atau verifikasi Admin untuk transisi ini. Dua data demo `found_pending` lama tetap disimpan tetapi tidak dipakai untuk transisi baru dan tidak ditawarkan sebagai filter Admin jenis kehilangan. Laporan temuan tetap `approved → return_pending → returned` dengan bukti dan verifikasi Admin. Admin dapat mengedit/menghapus laporan kehilangan pada semua status (A28), sedangkan aturan lama tetap berlaku untuk laporan temuan.
 
 | Jenis laporan | Menu | Card “Belum” | Card “Sudah” |
 |---|---|---|---|
@@ -87,7 +87,7 @@ Kedua tabel memakai siklus yang setara: `Menunggu verifikasi → Aktif/Belum →
 - Foto laporan kedua jenis dan bukti konfirmasi disimpan pada storage lokal Laravel dengan kebijakan visibilitas terpisah.
 - Foto laporan wajib 1–3 file menurut P0.4, format JPG/JPEG/PNG/WebP, maksimal 2 MB per file. Implementasi saat ini menerima satu file per laporan.
 - Foto laporan tidak boleh ditampilkan publik sebelum laporan disetujui Admin.
-- **Foto bersama penemu–pemilik** wajib 1–3 file JPG/JPEG/PNG/WebP, maksimal 2 MB per file, dan disimpan pada storage privat. Ini berlaku untuk konfirmasi laporan temuan; ketentuan laporan kehilangan masih terbuka pada A18.
+- **Foto bersama penemu–pemilik** wajib 1–3 file JPG/JPEG/PNG/WebP, maksimal 2 MB per file, dan disimpan pada storage privat. Ini berlaku untuk konfirmasi laporan temuan. Sesuai A28, laporan kehilangan tidak memakai bukti bersama; cukup aksi pemilik pada `missing_reports` dan catatan di `missing_report_status_histories`.
 - Jangan simpan bukti privat di direktori yang dapat diakses publik atau membuat URL publik untuknya.
 - Penghapusan permanen oleh Admin juga menghapus berkas foto laporan dan bukti privat terkait, dengan validasi path untuk mencegah path traversal.
 ## 8. Arsip 30 hari
@@ -110,7 +110,7 @@ Kedua tabel memakai siklus yang setara: `Menunggu verifikasi → Aktif/Belum →
 - Jalur login Admin berasal dari konfigurasi `ADMIN_LOGIN_URI` dan tidak ditautkan pada navigasi, footer, atau halaman publik lain.
 - Nomor HP pemilik maupun penemu tidak boleh muncul pada HTML/respons publik. Kontak dibuat sebagai redirect `wa.me` di server; jangan memakai WhatsApp API, kredensial eksternal, atau layanan berbayar.
 - Nama pemilik dan bukti privat hanya melalui endpoint privat yang memeriksa peran Admin atau kepemilikan User.
-- Penghapusan permanen hanya untuk laporan selesai/`archived` dan harus melalui konfirmasi struktural di sisi server.
+- Penghapusan permanen laporan temuan hanya untuk status `returned`/`archived`; sesuai A28, laporan kehilangan dapat dihapus Admin pada semua status setelah konfirmasi. Semua penghapusan harus melalui konfirmasi struktural di sisi server.
 ## 10. Strategi pengujian
 - Unit test untuk aturan perubahan status/logika bisnis dan perhitungan tanggal arsip.
 - Feature test untuk visibilitas Guest pada kedua menu dan card status, autentikasi User dan Admin terpisah, jalur login tersembunyi, kepemilikan, pengiriman kedua jenis laporan pada tabel terpisah, kontak WhatsApp tanpa eksposur nomor, verifikasi Admin, edit laporan pada status menunggu verifikasi, pengiriman konfirmasi status dengan data privat, sidebar/menu Admin sesuai A18, penghapusan permanen terbatas, dan visibilitas arsip pada kedua daftar “Sudah”.
@@ -140,14 +140,14 @@ Keputusan P0 yang telah disetujui berlaku. Pertanyaan non-P0 yang masih terbuka:
 - Batas foto bukti pengembalian: 1–3 file JPG/JPEG/PNG/WebP, maksimal 2 MB per file (sudah diterapkan).
 - Teks ketentuan pelaporan yang wajib disetujui User.
 - Apakah notifikasi status termasuk MVP.
-- **A18:** field/bukti konfirmasi untuk transisi laporan kehilangan ke **Barang Sudah Ditemukan** belum ditetapkan.
-- **A18:** URI publik sementara tetap `/barang/lost` dan `/barang/found`; penggantian perlu keputusan terpisah.
+- **A28:** laporan kehilangan tidak memiliki field/bukti konfirmasi terpisah untuk transisi ke **Barang Sudah Ditemukan**; pemilik menandai langsung lewat aksi `found`, dengan batas tampil 30 hari sejak `found_at`.
+- **A18, diselesaikan 2026-11-23:** URI publik kanonik `/barang/hilang` dan `/barang/ditemukan`; URI lama `/barang/lost` dan `/barang/found` menjadi redirect 301.
 - **A18/A19:** nama tabel/model laporan kehilangan adalah `missing_reports` / `MissingReport`, riwayatnya `missing_report_status_histories`, dan konstanta status internal tercantum pada bagian 6.
 
 ## 13. Autentikasi yang disetujui
 - Autentikasi memakai session guard `web` untuk User dan guard `admin` terpisah untuk Admin; keduanya memakai controller, Form Request, CSRF, dan hashing bawaan Laravel.
 - Tidak ada starter kit atau dependensi autentikasi tambahan.
-- Field registrasi User mengikuti P0.3 dan A13: nama lengkap, no. HP wajib, NIM/NIP, email, password, fakultas, dan program studi khusus mahasiswa. No. HP Akun bersifat privat, divisualisasikan pada formulir daftar/ubah profil serta kartu profil, dan tidak dirender pada halaman publik. Foto profil bersifat opsional, dapat ditambahkan saat registrasi atau diubah lewat menu **Akun**, disimpan privat pada disk `local` di direktori `profile-photos/`, dan hanya disajikan kepada pemiliknya melalui `/akun/foto-profil`. Label pendukung memakai format kurung, misalnya **Program studi (wajib diisi mahasiswa)** dan **Foto profil (opsional)**, tanpa teks bantuan tambahan di bawah pemilihan file.
+- Field registrasi User mengikuti P0.3 dan A13: nama lengkap, no. HP wajib, NIM/NIP, email, password, fakultas, dan program studi khusus mahasiswa. No. HP Akun bersifat privat, divisualisasikan pada formulir daftar/ubah profil serta kartu profil, dan tidak dirender pada halaman publik. Foto profil bersifat opsional, dapat ditambahkan saat registrasi atau diubah lewat menu **Akun**, disimpan privat pada disk `local` di direktori `profile-photos/`, dan hanya disajikan kepada pemiliknya melalui `/akun/foto-profil`. Sejak A27, URL gambar memakai version query dari `profile_photo_path` dan responsnya mengirim header anti-cache agar foto lama tidak tersimpan di browser. Label pendukung memakai format kurung, misalnya **Program studi (wajib diisi mahasiswa)** dan **Foto profil (opsional)**, tanpa teks bantuan tambahan di bawah pemilihan file.
 - Verifikasi email tidak dipakai sebagai syarat melaporkan barang temuan atau mengirim konfirmasi (A11). Kolom `email_verified_at` tetap ada sebagai kompatibilitas data, tetapi tidak mengatur akses. Identitas kampus dicatat, tetapi tidak diverifikasi melalui database resmi kampus.
 - Akun Admin disimpan di tabel `admins` melalui model `App\Models\Admin` dan provider `admins`; kolom `users.role` lama tetap ada untuk kompatibilitas data, tetapi tidak dipakai sebagai jalur masuk Admin.
 - Login Admin berada di jalur yang dibaca dari `ADMIN_LOGIN_URI` (nilai contoh `/admin-login`) dan tidak ditautkan dari halaman publik.
@@ -156,9 +156,11 @@ Keputusan P0 yang telah disetujui berlaku. Pertanyaan non-P0 yang masih terbuka:
 - Rute User dilindungi middleware `auth` + `role:user`; rute Admin memakai middleware `auth:admin` khusus. Guest diarahkan ke login yang sesuai; peran yang salah menerima `403` atau redirect ke login yang tepat.
 - User dan Admin tidak dapat saling mengakses area masing-masing.
 
-## 14. Catatan selisih implementasi (2026-11-22)
-Dokumen ini mencatat keputusan produk yang disetujui. Saat dokumentasi diselaraskan, ditemukan selisih berikut antara keputusan lama dan kode yang berjalan. Selisih ini **tidak** diubah diam-diam dan memerlukan tugas tersendiri bila ingin diselaraskan:
-- Jumlah foto laporan: keputusan P0.4 maksimal 3 foto; implementasi menerima satu file per laporan.
-- Daftar kategori: keputusan P0.4 delapan kategori; implementasi memakai lima (Elektronik, Dokumen, Aksesori, Pakaian, Lainnya).
+## 14. Penyelarasan spesifikasi dan implementasi (2026-11-23)
+Dokumen ini mencatat keputusan produk yang disetujui. Dua selisih lama antara keputusan P0.4 dan kode yang berjalan telah diselesaikan atas instruksi pemilik dengan memilih **dokumen mengikuti implementasi**:
+- Jumlah foto laporan: **satu file per laporan**, format JPG/JPEG/PNG/WebP, maksimal 2 MB per file. Keputusan lama “maksimal 3 foto” digantikan.
+- Daftar kategori: **lima pilihan tetap** — Elektronik, Dokumen, Aksesori, Pakaian, Lainnya. Keputusan lama “delapan kategori” digantikan.
 
-Selisih teks lama pada kartu peran User di beranda telah selesai pada A8: bagian “Peran pengguna” dihapus. Beranda kini menampilkan empat laporan terbaru dengan tombol “Lihat detail” (A9, disesuaikan A25). Setelah A18, “Barang Hilang” berarti laporan **kehilangan** pemilik; pemetaan lama catatan ini sudah digantikan. Sejak A25, keempat laporan beranda diambil dari kedua kanal dan diurutkan dari yang paling baru. Spesifikasi A18 telah diimplementasikan lewat A19–A26.
+Kedua aturan berlaku untuk formulir laporan kehilangan maupun laporan temuan, termasuk halaman tinjau/ubah Admin. Tidak ada perubahan kode, migrasi, atau perilaku aplikasi yang diperlukan untuk penyelarasan ini.
+
+Selisih teks lama pada kartu peran User di beranda telah selesai pada A8: bagian “Peran pengguna” dihapus. Beranda kini menampilkan empat laporan terbaru dengan tombol “Lihat detail” (A9, disesuaikan A25). Setelah A18, “Barang Hilang” berarti laporan **kehilangan** pemilik; pemetaan lama catatan ini sudah digantikan. Sejak A25, keempat laporan beranda diambil dari kedua kanal dan diurutkan dari yang paling baru. Spesifikasi A18 telah diimplementasikan lewat A19–A28.

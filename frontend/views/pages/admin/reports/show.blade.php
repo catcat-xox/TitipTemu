@@ -24,7 +24,10 @@
                 @endif
                 @if (in_array($report->status, ['returned', 'archived'], true))
                     <form method="POST" action="{{ route('admin.reports.destroy', $report) }}"
-                        onsubmit="return confirm('Hapus permanen laporan ini beserta buktinya? Tindakan ini tidak dapat dibatalkan.');">
+                        data-tt-confirm="Hapus permanen laporan ini beserta buktinya? Tindakan ini tidak dapat dibatalkan."
+                        data-tt-confirm-title="Hapus permanen laporan?"
+                        data-tt-confirm-label="Ya, hapus permanen"
+                        data-tt-confirm-variant="danger">
                         @csrf
                         @method('DELETE')
                         <button class="btn btn-outline-danger" type="submit">Hapus permanen</button>
@@ -46,7 +49,7 @@
                 <div class="col-lg-7">
                     <div class="surface-card p-4">
                         <span class="status-badge status-{{ $report->status }}">{{ $statusLabels[$report->status] ?? $report->status }}</span>
-                        <h1 class="mt-3 h2">{{ $report->item_name }}</h1>
+                        <h2 class="mt-3 h2">{{ $report->item_name }}</h2>
                         <p>{{ $report->description }}</p>
                         <dl class="detail-list">
                             <div><dt>Kategori</dt><dd>{{ $report->category }}</dd></div>

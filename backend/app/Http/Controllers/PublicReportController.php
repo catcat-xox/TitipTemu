@@ -12,18 +12,18 @@ use Illuminate\View\View;
 
 class PublicReportController extends Controller
 {
-    private const TYPES = ['lost', 'found'];
+    private const TYPES = ['hilang', 'ditemukan'];
 
     private const STATES = ['belum', 'sudah'];
 
     private const LABELS = [
-        'lost' => [
+        'hilang' => [
             'title' => 'Barang Hilang',
             'belum' => 'Barang Belum Ditemukan',
             'sudah' => 'Barang Sudah Ditemukan',
             'contact' => 'Hubungi pemilik via WhatsApp',
         ],
-        'found' => [
+        'ditemukan' => [
             'title' => 'Barang Ditemukan',
             'belum' => 'Barang Belum Kembali',
             'sudah' => 'Barang Sudah Kembali',
@@ -47,7 +47,7 @@ class PublicReportController extends Controller
                 'lost_at' => $report->lost_at,
                 'created_at' => $report->created_at,
                 'photo_url' => route('missing-reports.photo', $report),
-                'show_url' => route('reports.show', ['lost', $report]),
+                'show_url' => route('reports.show', ['hilang', $report]),
             ]);
 
         $latestFound = LostReport::query()
@@ -64,7 +64,7 @@ class PublicReportController extends Controller
                 'lost_at' => $report->lost_at,
                 'created_at' => $report->created_at,
                 'photo_url' => route('reports.photo', $report),
-                'show_url' => route('reports.show', ['found', $report]),
+                'show_url' => route('reports.show', ['ditemukan', $report]),
             ]);
 
         $latestReports = $latestMissing
@@ -83,7 +83,7 @@ class PublicReportController extends Controller
         $state = $request->string('status')->toString();
         $state = in_array($state, self::STATES, true) ? $state : 'belum';
 
-        $query = $type === 'lost'
+        $query = $type === 'hilang'
             ? MissingReport::query()->when(
                 $state === 'belum',
                 fn ($query) => $query->publicUnfound(),
@@ -109,7 +109,7 @@ class PublicReportController extends Controller
 
         $reports = $query->paginate(12)->withQueryString();
 
-        $baseQuery = $type === 'lost'
+        $baseQuery = $type === 'hilang'
             ? MissingReport::query()->when(
                 $state === 'belum',
                 fn ($query) => $query->publicUnfound(),
@@ -124,7 +124,7 @@ class PublicReportController extends Controller
         $categories = (clone $baseQuery)->distinct()->orderBy('category')->pluck('category');
         $counts = [
             'belum' => (clone $baseQuery)->count(),
-            'sudah' => $type === 'lost'
+            'sudah' => $type === 'hilang'
                 ? MissingReport::query()->publicFound()->count()
                 : LostReport::query()->publicReturned()->count(),
         ];
@@ -143,7 +143,7 @@ class PublicReportController extends Controller
     {
         abort_unless(in_array($type, self::TYPES, true), 404);
 
-        $model = $type === 'lost'
+        $model = $type === 'hilang'
             ? MissingReport::query()->findOrFail($report)
             : LostReport::query()->findOrFail($report);
 
@@ -157,6 +157,29 @@ class PublicReportController extends Controller
             'state' => $state,
             'labels' => self::LABELS[$type],
         ]);
+    }
+
+    public function legacyIndex(Request $request): RedirectResponse
+    {
+        return $this->legacyRedirect($request, route('reports.index', ['type' => $request->route('type')]));
+    }
+
+    public function legacyShow(Request $request): RedirectResponse
+    {
+        return $this->legacyRedirect(
+            $request,
+            route('reports.show', [
+                'type' => $request->route('type'),
+                'report' => $request->route('report'),
+            ])
+        );
+    }
+
+    private function legacyRedirect(Request $request, string $target): RedirectResponse
+    {
+        $query = $request->getQueryString();
+
+        return redirect()->to($query ? $target.'?'.$query : $target, 301);
     }
 
     public function contact(LostReport $report): RedirectResponse

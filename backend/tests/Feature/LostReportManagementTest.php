@@ -102,7 +102,7 @@ class LostReportManagementTest extends TestCase
             ->assertRedirect(route('reports.mine'));
 
         $this->assertSame('cancelled', $report->fresh()->status);
-        $this->get(route('reports.index', 'found'))->assertDontSee($report->item_name);
+        $this->get(route('reports.index', 'ditemukan'))->assertDontSee($report->item_name);
     }
 
     public function test_rejected_report_can_be_resubmitted_without_changes(): void
@@ -133,13 +133,13 @@ class LostReportManagementTest extends TestCase
     {
         $report = LostReport::factory()->create();
 
-        $this->get(route('reports.index', 'found'))->assertDontSee($report->item_name);
-        $this->get(route('reports.show', ['found', $report]))->assertNotFound();
+        $this->get(route('reports.index', 'ditemukan'))->assertDontSee($report->item_name);
+        $this->get(route('reports.show', ['ditemukan', $report]))->assertNotFound();
 
         $report->update(['status' => 'approved']);
 
-        $this->get(route('reports.index', 'found'))->assertSee($report->item_name);
-        $this->get(route('reports.show', ['found', $report]))->assertOk();
+        $this->get(route('reports.index', 'ditemukan'))->assertSee($report->item_name);
+        $this->get(route('reports.show', ['ditemukan', $report]))->assertOk();
     }
 
     public function test_management_detail_link_uses_found_type_and_button_style(): void
@@ -150,10 +150,10 @@ class LostReportManagementTest extends TestCase
         ]);
 
         $html = $this->actingAs($owner)->get(route('reports.mine'))->assertOk()->getContent();
-        $detailUrl = route('reports.show', ['found', $report]);
+        $detailUrl = route('reports.show', ['ditemukan', $report]);
 
         $this->assertStringContainsString($detailUrl, $html);
-        $this->assertStringNotContainsString(route('reports.show', ['lost', $report]), $html);
+        $this->assertStringNotContainsString(route('reports.show', ['hilang', $report]), $html);
         $this->assertStringContainsString(
             '<a class="btn btn-sm btn-outline-primary" href="'.$detailUrl.'">Detail</a>',
             $html

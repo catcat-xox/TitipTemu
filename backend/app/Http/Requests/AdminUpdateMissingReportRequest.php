@@ -12,7 +12,6 @@ class AdminUpdateMissingReportRequest extends UpdateMissingReportRequest
         $report = $this->route('report');
 
         return $report instanceof MissingReport
-            && $this->user('admin') instanceof Admin
-            && $report->status === MissingReport::STATUS_PENDING;
+            && $this->user('admin') instanceof Admin;
     }
 }

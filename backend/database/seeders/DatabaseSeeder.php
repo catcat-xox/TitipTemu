@@ -40,5 +40,6 @@ class DatabaseSeeder extends Seeder
         $this->call(LostReportDemoSeeder::class);
         $this->call(WandiStatusDemoSeeder::class);
         $this->call(MissingReportDemoSeeder::class);
+        $this->call(WandiMissingStatusDemoSeeder::class);
     }
 }

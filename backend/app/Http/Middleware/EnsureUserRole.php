@@ -20,7 +20,7 @@ class EnsureUserRole
         $user = $request->user('web');
         $admin = $request->user('admin');
         $isGuest = $user === null && $admin === null;
-        $isUser = $user !== null && $user->role !== 'admin';
+        $isUser = $user !== null && $user->isUser();
 
         $allowed = false;
         foreach ($roles as $role) {

@@ -31,10 +31,10 @@
                     <table class="table align-middle mb-0">
                         <caption class="visually-hidden">Daftar laporan barang temuan milik saya</caption>
                         <thead><tr>
-                            <th scope="col">Barang</th>
-                            <th scope="col">Tanggal</th>
-                            <th scope="col">Status</th>
-                            <th scope="col"><span class="visually-hidden">Aksi</span></th>
+                            <th scope="col" class="text-center">Barang</th>
+                            <th scope="col" class="text-center">Tanggal</th>
+                            <th scope="col" class="text-center">Status</th>
+                            <th scope="col" class="text-center"><span class="visually-hidden">Aksi</span></th>
                         </tr></thead>
                         <tbody>
                             @foreach ($reports as $report)
@@ -44,7 +44,7 @@
                                     <td>
                                         <span class="status-badge status-{{ $report->status }}">{{ $statusLabels[$report->status] ?? ucfirst(str_replace('_', ' ', $report->status)) }}</span>
                                         @if ($report->status === 'rejected' && $report->latestRejection)
-                                            <div class="small text-danger mt-1">Alasan Admin: {{ $report->latestRejection->reason }}</div>
+                                            <div class="small text-danger mt-1">Alasan tim kami: {{ $report->latestRejection->reason }}</div>
                                         @endif
                                         @if ($report->status === 'approved' && $report->latestReturnRejection)
                                             <div class="small text-danger mt-1">Bukti ditolak: {{ $report->latestReturnRejection->rejection_reason }}</div>
@@ -71,7 +71,7 @@
                                                 <a class="btn btn-sm btn-outline-primary" href="{{ route('reports.return.create', $report) }}">Konfirmasi kembali</a>
                                             @endif
                                             @if ($report->isPublic())
-                                                <a class="btn btn-sm btn-outline-primary" href="{{ route('reports.show', ['found', $report]) }}">Detail</a>
+                                                <a class="btn btn-sm btn-outline-primary" href="{{ route('reports.show', ['ditemukan', $report]) }}">Detail</a>
                                             @endif
                                         </div>
                                     </td>

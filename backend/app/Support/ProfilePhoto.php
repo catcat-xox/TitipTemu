@@ -41,9 +41,14 @@ final class ProfilePhoto
         abort_unless(self::isValidPath($path), 404);
         abort_unless(Storage::disk(self::PRIVATE_DISK)->exists($path), 404);
 
-        return response()->file(
+        $response = response()->file(
             Storage::disk(self::PRIVATE_DISK)->path($path),
             ['Content-Type' => Storage::disk(self::PRIVATE_DISK)->mimeType($path) ?: 'application/octet-stream'],
         );
+
+        $response->headers->set('Cache-Control', 'private, no-store, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+
+        return $response;
     }
 }

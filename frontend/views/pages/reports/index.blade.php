@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
 @php
-    $isLost = $type === 'lost';
+    $isLost = $type === 'hilang';
     $title = $labels['title'];
 @endphp
 
@@ -60,7 +60,7 @@
                 <div class="empty-state">
                     <span class="icon-box" aria-hidden="true">⌕</span>
                     <h2>Belum ada laporan yang sesuai</h2>
-                    <p>Coba gunakan kata kunci atau filter lain, atau pilih card status lainnya.</p>
+                    <p>Coba gunakan kata kunci atau filter lain, atau pilih kartu status lainnya.</p>
                 </div>
             @else
                 <div class="row g-4">

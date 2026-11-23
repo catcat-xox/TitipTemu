@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMissingReportRequest;
 use App\Http\Requests\UpdateMissingReportRequest;
 use App\Models\MissingReport;
+use App\Services\MissingReportOwnerService;
 use App\Support\MissingReportPhoto;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -60,6 +61,12 @@ class MissingReportController extends Controller
 
     public function update(UpdateMissingReportRequest $request, MissingReport $report): RedirectResponse
     {
+        $this->assertOwnedReport($report);
+        abort_unless(
+            in_array($report->status, [MissingReport::STATUS_PENDING, MissingReport::STATUS_REJECTED], true),
+            403,
+        );
+
         $data = $request->safe()->except(['photo']);
         if ($request->hasFile('photo')) {
             $data['photo_path'] = MissingReportPhoto::store($request->file('photo'));
@@ -78,15 +85,20 @@ class MissingReportController extends Controller
         );
     }
 
-    public function cancel(MissingReport $report): RedirectResponse
+    public function cancel(MissingReport $report, MissingReportOwnerService $service): RedirectResponse
     {
-        $this->assertOwnedReport($report);
-        abort_unless($report->status === MissingReport::STATUS_PENDING, 403);
-
-        $report->update(['status' => MissingReport::STATUS_CANCELLED]);
+        $service->cancel($report, auth()->user());
 
         return redirect()->route('missing-reports.mine')
             ->with('success', 'Laporan kehilangan dibatalkan dan tidak lagi ditampilkan.');
+    }
+
+    public function found(MissingReport $report, MissingReportOwnerService $service): RedirectResponse
+    {
+        $service->markFound($report, auth()->user());
+
+        return redirect()->route('missing-reports.mine')
+            ->with('success', 'Barang ditandai sudah ditemukan dan tampil di Barang Sudah Ditemukan selama 30 hari.');
     }
 
     public function resubmit(MissingReport $report): RedirectResponse

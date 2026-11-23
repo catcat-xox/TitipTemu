@@ -36,10 +36,15 @@ final class ReportPhoto
                 continue;
             }
 
-            return response()->file(
+            $response = response()->file(
                 Storage::disk($disk)->path($path),
                 ['Content-Type' => Storage::disk($disk)->mimeType($path) ?: 'application/octet-stream'],
             );
+
+            $response->headers->set('Cache-Control', 'private, no-store, max-age=0');
+            $response->headers->set('Pragma', 'no-cache');
+
+            return $response;
         }
 
         abort(404);

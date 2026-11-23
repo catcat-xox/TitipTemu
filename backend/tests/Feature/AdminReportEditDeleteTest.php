@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Admin;
 use App\Models\LostReport;
+use App\Models\MissingReport;
+use App\Models\MissingReportStatusHistory;
 use App\Models\ReportStatusHistory;
 use App\Models\ReturnConfirmation;
 use App\Models\User;
@@ -41,7 +43,7 @@ class AdminReportEditDeleteTest extends TestCase
 
         $this->actingAs($admin, 'admin')->get(route('admin.reports.edit', $report))
             ->assertOk()
-            ->assertSee('Edit laporan Pending');
+            ->assertSee('Edit laporan yang menunggu pemeriksaan');
 
         $this->actingAs($admin, 'admin')->put(route('admin.reports.update', $report), $this->payload([
             'item_name' => 'Nama Baru',
@@ -106,6 +108,127 @@ class AdminReportEditDeleteTest extends TestCase
         $this->assertDatabaseMissing('return_confirmations', ['id' => $confirmation->id]);
         $this->assertSame(0, ReportStatusHistory::where('lost_report_id', $report->id)->count());
         Storage::disk('local')->assertMissing('return-proofs/bukti.jpg');
+    }
+
+    public function test_guest_and_user_cannot_edit_or_delete_missing_reports(): void
+    {
+        $report = MissingReport::factory()->create();
+        $user = User::factory()->create();
+
+        $this->get(route('admin.reports.missing.edit', $report))->assertRedirect(route('admin.login'));
+        $this->put(route('admin.reports.missing.update', $report), [])->assertRedirect(route('admin.login'));
+        $this->delete(route('admin.reports.missing.destroy', $report))->assertRedirect(route('admin.login'));
+
+        $this->actingAs($user)->get(route('admin.reports.missing.edit', $report))->assertRedirect(route('admin.login'));
+        $this->actingAs($user)->put(route('admin.reports.missing.update', $report), [])->assertRedirect(route('admin.login'));
+        $this->actingAs($user)->delete(route('admin.reports.missing.destroy', $report))->assertRedirect(route('admin.login'));
+
+        $this->assertDatabaseHas('missing_reports', ['id' => $report->id]);
+    }
+
+    public function test_admin_can_edit_missing_report_in_every_status_and_audit_the_original_status(): void
+    {
+        $admin = Admin::factory()->create();
+
+        foreach ($this->missingStatuses() as $status) {
+            $report = MissingReport::factory()->create([
+                'status' => $status,
+                'item_name' => 'Nama lama '.$status,
+            ]);
+
+            $this->actingAs($admin, 'admin')->get(route('admin.reports.missing.edit', $report))
+                ->assertOk()
+                ->assertSee('Edit laporan kehilangan');
+
+            $this->actingAs($admin, 'admin')->put(route('admin.reports.missing.update', $report), $this->payload([
+                'item_name' => 'Nama baru '.$status,
+            ]))->assertRedirect(route('admin.reports.missing.show', $report));
+
+            $this->assertSame('Nama baru '.$status, $report->fresh()->item_name);
+            $this->assertSame($status, $report->fresh()->status);
+            $this->assertDatabaseHas('missing_report_status_histories', [
+                'missing_report_id' => $report->id,
+                'actor_id' => null,
+                'admin_id' => $admin->id,
+                'action' => 'admin_edited',
+                'from_status' => $status,
+                'to_status' => $status,
+            ]);
+        }
+    }
+
+    public function test_admin_can_delete_missing_report_in_every_status_with_photo_and_history(): void
+    {
+        Storage::fake('local');
+        $admin = Admin::factory()->create();
+
+        foreach ($this->missingStatuses() as $status) {
+            $photoPath = 'missing-reports/hapus-'.$status.'.jpg';
+            $report = MissingReport::factory()->create([
+                'status' => $status,
+                'photo_path' => $photoPath,
+            ]);
+            Storage::disk('local')->put($photoPath, 'foto-privat-'.$status);
+            MissingReportStatusHistory::create([
+                'missing_report_id' => $report->id,
+                'actor_id' => null,
+                'admin_id' => $admin->id,
+                'action' => 'admin_edited',
+                'from_status' => $status,
+                'to_status' => $status,
+            ]);
+
+            $this->actingAs($admin, 'admin')->delete(route('admin.reports.missing.destroy', $report))
+                ->assertRedirect(route('admin.dashboard', ['jenis' => 'lost', 'status' => 'all']))
+                ->assertSessionHas('success');
+
+            $this->assertDatabaseMissing('missing_reports', ['id' => $report->id]);
+            $this->assertSame(0, MissingReportStatusHistory::where('missing_report_id', $report->id)->count());
+            Storage::disk('local')->assertMissing($photoPath);
+        }
+    }
+
+    public function test_admin_review_page_always_offers_edit_and_delete_for_missing_reports(): void
+    {
+        $admin = Admin::factory()->create();
+
+        foreach ($this->missingStatuses() as $status) {
+            $report = MissingReport::factory()->create(['status' => $status]);
+
+            $html = $this->actingAs($admin, 'admin')->get(route('admin.reports.missing.show', $report))
+                ->assertOk()
+                ->getContent();
+
+            $this->assertStringContainsString(route('admin.reports.missing.edit', $report), $html);
+            $this->assertStringContainsString(route('admin.reports.missing.destroy', $report), $html);
+            $this->assertStringContainsString('Hapus laporan', $html);
+            $this->assertStringContainsString('Edit laporan', $html);
+
+            if ($status === 'pending') {
+                $this->assertStringContainsString('Keputusan verifikasi', $html);
+            } else {
+                $this->assertStringContainsString(
+                    'Penemuan barang dikonfirmasi langsung oleh pemilik tanpa verifikasi tambahan.',
+                    $html
+                );
+            }
+        }
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function missingStatuses(): array
+    {
+        return [
+            MissingReport::STATUS_PENDING,
+            MissingReport::STATUS_APPROVED,
+            MissingReport::STATUS_REJECTED,
+            MissingReport::STATUS_FOUND_PENDING,
+            MissingReport::STATUS_FOUND,
+            MissingReport::STATUS_ARCHIVED,
+            MissingReport::STATUS_CANCELLED,
+        ];
     }
 
     private function payload(array $overrides = []): array

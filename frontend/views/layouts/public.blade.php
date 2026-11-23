@@ -16,12 +16,13 @@
 
     @include('partials.navbar-public')
 
-    <main id="konten" class="flex-grow-1">
+    <main id="konten" class="flex-grow-1" tabindex="-1">
         @include('partials.flash')
 
         @yield('content')
     </main>
 
     @include('partials.footer-public')
+    @include('partials.confirm-modal')
 </body>
 </html>

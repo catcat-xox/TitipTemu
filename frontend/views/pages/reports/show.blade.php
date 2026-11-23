@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
 @php
-    $isLost = $type === 'lost';
+    $isLost = $type === 'hilang';
 @endphp
 
 @section('title', $report->item_name . ' — TitipTemu')

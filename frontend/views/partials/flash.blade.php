@@ -1,5 +1,5 @@
 @if (session('status') || session('success') || session('error') || $errors->any())
-    <div class="tt-toast-stack" data-tt-toast-lifetime="3000" aria-live="polite" aria-label="Pemberitahuan">
+    <div class="tt-toast-stack" data-tt-toast-lifetime="3000" role="region" aria-live="polite" aria-label="Pemberitahuan">
         @if (session('status'))
             <div class="tt-toast tt-toast--info" data-tt-toast role="status">
                 <span class="tt-toast__icon" aria-hidden="true">i</span>

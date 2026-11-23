@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
 @section('title', 'Daftar — TitipTemu')
-@section('description', 'Buat akun TitipTemu untuk melaporkan barang hilang.') 
+@section('description', 'Buat akun TitipTemu untuk melaporkan barang hilang maupun barang temuan.')
 
 @section('content')
     <section class="auth-section">
@@ -106,7 +106,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label" for="password">Password</label>
+                                <label class="form-label" for="password">Kata sandi</label>
                                 <input id="password" name="password" type="password"
                                     autocomplete="new-password"
                                     class="form-control @error('password') is-invalid @enderror"
@@ -117,9 +117,15 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label" for="password_confirmation">Konfirmasi password</label>
+                                <label class="form-label" for="password_confirmation">Konfirmasi kata sandi</label>
                                 <input id="password_confirmation" name="password_confirmation" type="password"
-                                    autocomplete="new-password" class="form-control" required>
+                                    autocomplete="new-password"
+                                    class="form-control {{ $errors->has('password_confirmation') ? 'is-invalid' : '' }}"
+                                    aria-invalid="{{ $errors->has('password_confirmation') ? 'true' : 'false' }}"
+                                    aria-describedby="{{ $errors->has('password_confirmation') ? 'error-password_confirmation' : '' }}" required>
+                                @error('password_confirmation')
+                                    <div class="invalid-feedback" id="error-password_confirmation">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100">Buat akun</button>

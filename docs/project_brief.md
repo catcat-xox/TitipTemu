@@ -68,7 +68,7 @@ Guest merupakan pengunjung tanpa login, bukan jenis akun terdaftar. Sistem memil
 
 ### C. Batasan proyek
 
-Pada tahap MVP, proyek berfokus pada website. Pengembangan aplikasi mobile native, integrasi WhatsApp API, notifikasi SMS, pencocokan barang menggunakan AI maupun aturan sederhana, penautan laporan pemilik dan penemu, dan integrasi SSO akademik belum termasuk ruang lingkup utama. Field/bukti konfirmasi laporan kehilangan serta penggantian URI publik masih terbuka pada A18.
+Pada tahap MVP, proyek berfokus pada website. Pengembangan aplikasi mobile native, integrasi WhatsApp API, notifikasi SMS, pencocokan barang menggunakan AI maupun aturan sederhana, penautan laporan pemilik dan penemu, dan integrasi SSO akademik belum termasuk ruang lingkup utama. Sesuai A28, laporan kehilangan tidak memakai field/bukti konfirmasi terpisah. URI publik kanonik adalah `/barang/hilang` dan `/barang/ditemukan`; URI lama `/barang/lost` dan `/barang/found` tetap melayani redirect 301.
 
 ## 4. Alur Kerja Sistem
 
@@ -99,7 +99,7 @@ Pada tahap MVP, proyek berfokus pada website. Pengembangan aplikasi mobile nativ
 
 1. User membuka laporan miliknya yang masih aktif lewat menu **Akun**.
 2. User memilih konfirmasi status “Sudah”.
-3. Untuk laporan temuan, User mengisi **nama pemilik**, mengunggah **foto bersama penemu–pemilik**, dan menyetujui pernyataan. Ketentuan untuk laporan kehilangan masih terbuka pada A18.
+3. Untuk laporan temuan, User mengisi **nama pemilik**, mengunggah **foto bersama penemu–pemilik**, dan menyetujui pernyataan. Untuk laporan kehilangan, A28 menetapkan bahwa pemilik menandai **Barang ditemukan** langsung tanpa bukti atau formulir tambahan.
 4. Sistem menyimpan konfirmasi dengan status menunggu pemeriksaan Admin; data privat tidak tampil di publik dan item tetap pada card “Belum”.
 5. Admin memeriksa konfirmasi dan bukti melalui halaman privat.
 6. Admin menyetujui atau menolak dengan alasan wajib saat menolak.

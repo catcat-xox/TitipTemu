@@ -37,11 +37,13 @@
                 <div class="row g-3 align-items-end">
                     <div class="col-md-6 col-lg-4">
                         <label class="form-label" for="jenis">Jenis laporan</label>
-                        <select class="form-select" id="jenis" name="jenis" onchange="this.form.submit()">
+                        <select class="form-select" id="jenis" name="jenis" onchange="this.form.submit()"
+                            aria-describedby="hint-jenis">
                             @foreach ($jenisLabels as $value => $label)
                                 <option value="{{ $value }}" @selected($currentJenis === $value)>{{ $label }}</option>
                             @endforeach
                         </select>
+                        <div class="form-text" id="hint-jenis">Perubahan jenis langsung diterapkan.</div>
                     </div>
                     <div class="col-md-6 col-lg-4">
                         <label class="form-label" for="status">Status laporan</label>
@@ -69,15 +71,15 @@
                         <caption class="visually-hidden">Laporan {{ $jenisLabels[$currentJenis] }} dengan status {{ $currentStatusLabel }}</caption>
                         <thead>
                             <tr>
-                                <th scope="col">Barang</th>
-                                <th scope="col">Jenis</th>
-                                <th scope="col">Kategori</th>
-                                <th scope="col">Lokasi</th>
-                                <th scope="col">Tanggal</th>
-                                <th scope="col">Pelapor</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Dikirim</th>
-                                <th scope="col"><span class="visually-hidden">Aksi</span></th>
+                                <th scope="col" class="text-center">Barang</th>
+                                <th scope="col" class="text-center">Jenis</th>
+                                <th scope="col" class="text-center">Kategori</th>
+                                <th scope="col" class="text-center">Lokasi</th>
+                                <th scope="col" class="text-center">Tanggal</th>
+                                <th scope="col" class="text-center">Pelapor</th>
+                                <th scope="col" class="text-center">Status</th>
+                                <th scope="col" class="text-center">Dikirim</th>
+                                <th scope="col" class="text-center"><span class="visually-hidden">Aksi</span></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -87,26 +89,43 @@
                                     <td>{{ $report['kind_label'] }}</td>
                                     <td>{{ $report['category'] }}</td>
                                     <td>{{ $report['location'] }}</td>
-                                    <td>{{ $report['lost_at']->translatedFormat('d M Y') }}</td>
+                                    <td class="text-nowrap">{{ $report['lost_at']->translatedFormat('d M Y') }}</td>
                                     <td>{{ $report['user_name'] }}</td>
-                                    <td>
+                                    <td class="text-nowrap">
                                         <span class="status-badge status-{{ $report['status'] }}">{{ $report['status_label'] }}</span>
                                     </td>
-                                    <td>{{ $report['created_at']->translatedFormat('d M Y H:i') }}</td>
+                                    <td class="text-nowrap">{{ $report['created_at']->translatedFormat('d M Y H:i') }}</td>
                                     <td class="text-end">
-                                        <div class="d-flex flex-nowrap gap-2 justify-content-end">
-                                            <a class="btn btn-sm btn-outline-primary" href="{{ $report['show_url'] }}">Tinjau</a>
-                                            @if ($report['status'] === 'pending')
-                                                <a class="btn btn-sm btn-outline-secondary" href="{{ $report['edit_url'] }}">Edit</a>
-                                            @endif
-                                            @if ($report['delete_url'])
-                                                <form method="POST" action="{{ $report['delete_url'] }}"
-                                                    onsubmit="return confirm('Hapus permanen laporan ini beserta buktinya? Tindakan ini tidak dapat dibatalkan.');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="btn btn-sm btn-outline-danger" type="submit">Hapus</button>
-                                                </form>
-                                            @endif
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button"
+                                                data-bs-toggle="dropdown" data-tt-action-menu
+                                                aria-expanded="false"
+                                                aria-label="Aksi untuk {{ $report['item_name'] }}">
+                                                Aksi
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end tt-action-menu">
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ $report['show_url'] }}">Tinjau</a>
+                                                </li>
+                                                @if ($report['edit_url'])
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ $report['edit_url'] }}">Edit</a>
+                                                    </li>
+                                                @endif
+                                                @if ($report['delete_url'])
+                                                    <li>
+                                                        <form method="POST" action="{{ $report['delete_url'] }}"
+                                                            data-tt-confirm="Hapus permanen laporan ini beserta buktinya? Tindakan ini tidak dapat dibatalkan."
+                                                            data-tt-confirm-title="Hapus permanen laporan?"
+                                                            data-tt-confirm-label="Ya, hapus permanen"
+                                                            data-tt-confirm-variant="danger">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button class="dropdown-item text-danger" type="submit">Hapus</button>
+                                                        </form>
+                                                    </li>
+                                                @endif
+                                            </ul>
                                         </div>
                                     </td>
                                 </tr>

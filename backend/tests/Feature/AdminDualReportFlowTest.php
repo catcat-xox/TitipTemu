@@ -36,6 +36,7 @@ class AdminDualReportFlowTest extends TestCase
     {
         $admin = Admin::factory()->create();
         MissingReport::factory()->create(['item_name' => 'Kunci Hilang']);
+        MissingReport::factory()->foundPending()->create(['item_name' => 'Kunci found pending lama']);
         LostReport::factory()->create(['item_name' => 'Kunci Ditemukan']);
 
         $lostHtml = $this->actingAs($admin, 'admin')
@@ -43,9 +44,15 @@ class AdminDualReportFlowTest extends TestCase
             ->assertOk()
             ->getContent();
         $this->assertStringContainsString('Kunci Hilang', $lostHtml);
+        $this->assertStringContainsString('Kunci found pending lama', $lostHtml);
         $this->assertStringNotContainsString('Kunci Ditemukan', $lostHtml);
+        $this->assertStringNotContainsString(
+            e(route('admin.dashboard', ['jenis' => 'lost', 'status' => MissingReport::STATUS_FOUND_PENDING])),
+            $lostHtml
+        );
+        $this->assertStringNotContainsString('>Penemuan diperiksa</option>', $lostHtml);
         $this->assertStringContainsString('table-admin-compact', $lostHtml);
-        $this->assertStringContainsString('d-flex flex-nowrap gap-2 justify-content-end', $lostHtml);
+        $this->assertStringContainsString('data-tt-action-menu', $lostHtml);
         $this->assertStringContainsString('justify-content-lg-end', $lostHtml);
         $this->assertLessThan(
             strpos($lostHtml, '>Terapkan</button>'),

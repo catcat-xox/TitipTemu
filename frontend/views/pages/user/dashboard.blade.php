@@ -32,12 +32,13 @@
 
     <section class="section">
         <div class="container">
+            <h1 class="visually-hidden">Akun</h1>
             <div class="surface-card profile-card p-3 p-md-4 mb-4">
                 <div class="row g-3 align-items-center">
                     <div class="col-12 col-md-9 d-flex align-items-center gap-3">
                         <div class="profile-avatar flex-shrink-0" aria-hidden="true">
                             @if ($user->profile_photo_path)
-                                <img src="{{ route('user.profile-photo') }}" alt="">
+                                <img src="{{ route('user.profile-photo', ['v' => md5($user->profile_photo_path)]) }}" alt="">
                             @else
                                 {{ mb_substr($user->name, 0, 1) }}
                             @endif
@@ -80,7 +81,7 @@
             </div>
             @if ($missingReports->isEmpty())
                 <div class="empty-state">
-                    <h2>Belum ada laporan kehilangan</h2>
+                    <h4>Belum ada laporan kehilangan</h4>
                     <p>Gunakan menu <strong>Buat Laporan</strong> di navbar untuk menambah laporan kehilangan.</p>
                 </div>
             @else
@@ -88,24 +89,60 @@
                     <table class="table align-middle mb-0">
                         <caption class="visually-hidden">Daftar laporan kehilangan milik saya</caption>
                         <thead><tr>
-                            <th scope="col">Barang</th>
-                            <th scope="col">Tanggal hilang</th>
+                            <th scope="col" class="text-center">Barang</th>
+                            <th scope="col" class="text-center">Tanggal hilang</th>
                             <th scope="col" class="text-center">Status</th>
-                            <th scope="col"><span class="visually-hidden">Aksi</span></th>
+                            <th scope="col" class="text-center"><span class="visually-hidden">Aksi</span></th>
                         </tr></thead>
                         <tbody>
                             @foreach ($missingReports as $report)
                                 <tr>
                                     <td><strong>{{ $report->item_name }}</strong><br><small>{{ $report->category }}</small></td>
-                                    <td>{{ $report->lost_at->translatedFormat('d M Y') }}</td>
+                                    <td class="text-center">{{ $report->lost_at->translatedFormat('d M Y') }}</td>
                                     <td class="text-center">
                                         <span class="status-badge status-{{ $report->status }}">{{ $missingStatusLabels[$report->status] ?? ucfirst(str_replace('_', ' ', $report->status)) }}</span>
                                         @if ($report->status === 'rejected' && $report->latestRejection)
-                                            <div class="small text-danger mt-1">Alasan Admin: {{ $report->latestRejection->reason }}</div>
+                                            <div class="small text-danger mt-1">Alasan tim kami: {{ $report->latestRejection->reason }}</div>
                                         @endif
                                     </td>
                                     <td class="text-end">
-                                        <a class="btn btn-sm btn-outline-primary" href="{{ route('missing-reports.mine') }}">Lihat semua</a>
+                                        @if ($report->status === 'approved')
+                                            <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button"
+                                                        data-bs-toggle="dropdown" data-tt-action-menu
+                                                        aria-expanded="false"
+                                                        aria-label="Aksi untuk {{ $report->item_name }}">
+                                                        Aksi
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end tt-action-menu">
+                                                        <li>
+                                                            <form method="POST" action="{{ route('missing-reports.cancel', $report) }}"
+                                                                data-tt-confirm="Batalkan laporan kehilangan ini? Laporan tidak lagi ditampilkan."
+                                                                data-tt-confirm-title="Batalkan laporan kehilangan?"
+                                                                data-tt-confirm-label="Ya, batalkan"
+                                                                data-tt-confirm-variant="primary">
+                                                                @csrf
+                                                                <button class="dropdown-item" type="submit">Batalkan</button>
+                                                            </form>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="{{ route('missing-reports.mine') }}">Lihat semua</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <form method="POST" action="{{ route('missing-reports.found', $report) }}"
+                                                    data-tt-confirm="Tandai barang ini sudah ditemukan? Laporan akan dipindah ke Barang Sudah Ditemukan selama 30 hari."
+                                                    data-tt-confirm-title="Tandai barang sudah ditemukan?"
+                                                    data-tt-confirm-label="Ya, tandai ditemukan"
+                                                    data-tt-confirm-variant="success">
+                                                    @csrf
+                                                    <button class="btn btn-sm btn-primary" type="submit">Barang ditemukan</button>
+                                                </form>
+                                            </div>
+                                        @else
+                                            <a class="btn btn-sm btn-outline-primary" href="{{ route('missing-reports.mine') }}">Lihat semua</a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -121,7 +158,7 @@
             </div>
             @if ($reports->isEmpty())
                 <div class="empty-state">
-                    <h2>Belum ada laporan temuan</h2>
+                    <h4>Belum ada laporan temuan</h4>
                     <p>Gunakan menu <strong>Buat Laporan</strong> di navbar untuk menambah laporan temuan.</p>
                 </div>
             @else
@@ -129,20 +166,20 @@
                     <table class="table align-middle mb-0">
                         <caption class="visually-hidden">Aktivitas laporan barang temuan milik saya</caption>
                         <thead><tr>
-                            <th scope="col">Barang</th>
-                            <th scope="col">Tanggal ditemukan</th>
+                            <th scope="col" class="text-center">Barang</th>
+                            <th scope="col" class="text-center">Tanggal ditemukan</th>
                             <th scope="col" class="text-center">Status</th>
-                            <th scope="col"><span class="visually-hidden">Aksi</span></th>
+                            <th scope="col" class="text-center"><span class="visually-hidden">Aksi</span></th>
                         </tr></thead>
                         <tbody>
                             @foreach ($reports as $report)
                                 <tr>
                                     <td><strong>{{ $report->item_name }}</strong><br><small>{{ $report->category }}</small></td>
-                                    <td>{{ $report->lost_at->translatedFormat('d M Y') }}</td>
+                                    <td class="text-center">{{ $report->lost_at->translatedFormat('d M Y') }}</td>
                                     <td class="text-center">
                                         <span class="status-badge status-{{ $report->status }}">{{ $statusLabels[$report->status] ?? ucfirst(str_replace('_', ' ', $report->status)) }}</span>
                                         @if ($report->status === 'rejected' && $report->latestRejection)
-                                            <div class="small text-danger mt-1">Alasan Admin: {{ $report->latestRejection->reason }}</div>
+                                            <div class="small text-danger mt-1">Alasan tim kami: {{ $report->latestRejection->reason }}</div>
                                         @endif
                                         @if ($report->status === 'approved' && $report->latestReturnRejection)
                                             <div class="small text-danger mt-1">Bukti ditolak: {{ $report->latestReturnRejection->rejection_reason }}</div>

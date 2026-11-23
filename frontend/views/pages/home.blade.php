@@ -19,7 +19,7 @@
                     </p>
                     <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
                         <a href="#cara-kerja" class="btn btn-primary btn-lg">Lihat cara kerja</a>
-                        <a href="{{ route('reports.index', 'lost') }}" class="btn btn-outline-secondary btn-lg">Lihat barang hilang</a>
+                        <a href="{{ route('reports.index', 'hilang') }}" class="btn btn-outline-secondary btn-lg">Lihat barang hilang</a>
                     </div>
 
                     <ul class="hero-points">
@@ -48,34 +48,33 @@
                 </div>
 
                 <div class="col-lg-6">
-                    <div class="hero-card" aria-label="Alur pengelolaan laporan">
-                        <div class="hero-card-head">Alur laporan</div>
+                    <div class="hero-card" role="group" aria-label="Alur pengelolaan laporan">
+                        <div class="hero-card-head">Alur Laporan</div>
                         <ol class="flow-list">
                             <li>
                                 <span class="flow-index" aria-hidden="true">01</span>
                                 <div>
-                                    <strong>Laporkan kehilangan atau temuan</strong>
-                                    <p>Pemilik melaporkan barang yang hilang; penemu melaporkan barang yang ditemukan.</p>
+                                    <strong>Kirim laporan barang</strong>
+                                    <p>Laporkan barang yang hilang jika kamu pemiliknya, atau laporkan barang temuan jika kamu menemukannya.</p>
                                 </div>
                             </li>
                             <li>
                                 <span class="flow-index" aria-hidden="true">02</span>
                                 <div>
-                                    <strong>Diperiksa tim kami</strong>
-                                    <p>Setelah lolos pemeriksaan, laporan muncul pada card “Belum” di menu masing-masing.</p>
+                                    <strong>Proses pemeriksaan</strong>
+                                    <p>Laporan yang masuk akan kami periksa terlebih dahulu sebelum tayang di daftar <strong>Barang Belum Ditemukan</strong> atau <strong>Barang Belum Kembali</strong>.</p>
                                 </div>
                             </li>
                             <li>
                                 <span class="flow-index" aria-hidden="true">03</span>
                                 <div>
-                                    <strong>Konfirmasi status “Sudah”</strong>
-                                    <p>Setelah disetujui Admin, barang pindah ke card “Sudah” di menu yang sama.</p>
+                                    <strong>Konfirmasi pengembalian</strong>
+                                    <p>Pemilik dapat menandai barang hilang miliknya sudah ketemu. Untuk barang temuan, konfirmasi serah terima kami periksa dahulu sebelum masuk ke daftar <strong>Barang Sudah Kembali</strong>.</p>
                                 </div>
                             </li>
                         </ol>
                         <div class="hero-card-note">
-                            Barang pada daftar “Sudah” tampil sekitar 30 hari sejak persetujuan
-                            Admin, lalu tidak ditampilkan lagi. Datanya tetap kami simpan.
+                            Laporan pada daftar <strong>Sudah</strong> tetap tampil selama 30 hari, lalu disembunyikan. Riwayat datanya tetap tersimpan.
                         </div>
                     </div>
                 </div>
@@ -88,12 +87,12 @@
             <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
                 <div>
                     <span class="eyebrow">Laporan terbaru</span>
-                    <h2 id="judul-laporan-terbaru" class="mt-2 mb-1">Laporan terbaru dari kedua kanal</h2>
-                    <p class="text-muted mb-0">Laporan kehilangan dan temuan yang sudah diverifikasi, diambil dari yang paling baru.</p>
+                    <h2 id="judul-laporan-terbaru" class="mt-2 mb-1">Cek laporan terkini</h2>
+                    <p class="text-muted mb-0">Daftar laporan barang hilang dan temuan terbaru yang telah diperiksa.</p>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
-                    <a class="btn btn-outline-primary" href="{{ route('reports.index', 'lost') }}">Barang hilang</a>
-                    <a class="btn btn-outline-primary" href="{{ route('reports.index', 'found') }}">Barang ditemukan</a>
+                    <a class="btn btn-outline-primary" href="{{ route('reports.index', 'hilang') }}">Barang hilang</a>
+                    <a class="btn btn-outline-primary" href="{{ route('reports.index', 'ditemukan') }}">Barang ditemukan</a>
                 </div>
             </div>
 
@@ -139,8 +138,8 @@
                 <span class="eyebrow">Cara kerja</span>
                 <h2 id="judul-cara-kerja">Dari laporan hingga bertemu lagi</h2>
                 <p>
-                    Setiap perubahan penting kami periksa dan catat. Laporan tidak langsung
-                    muncul di daftar publik.
+                    Tiga langkah sederhana. Laporan baru kami cek dulu sebelum tampil,
+                    supaya informasi yang Anda lihat tetap bisa dipercaya.
                 </p>
             </div>
 
@@ -148,11 +147,12 @@
                 <div class="col-md-4">
                     <div class="surface-card">
                         <span class="step-number">1</span>
-                        <h3>Laporkan dengan lengkap</h3>
+                        <h3>Ceritakan barangnya</h3>
                         <p>
-                            Pemilik atau penemu mengisi nomor HP, nama barang, kategori,
-                            deskripsi, tanggal dan lokasi hilang atau ditemukan, foto, serta
-                            menyetujui ketentuan.
+                            Pemilik lapor barang yang hilang, penemu lapor barang yang
+                            ditemukan. Sebutkan nama dan kategori barang, kapan serta di
+                            mana kejadiannya, lalu tambahkan foto dan nomor HP yang bisa
+                            dihubungi.
                         </p>
                     </div>
                 </div>
@@ -160,10 +160,11 @@
                 <div class="col-md-4">
                     <div class="surface-card">
                         <span class="step-number">2</span>
-                        <h3>Tunggu pemeriksaan</h3>
+                        <h3>Kami cek dulu</h3>
                         <p>
-                            Laporan masih menunggu pemeriksaan dan belum ditampilkan. Setelah
-                            isinya kami periksa, laporan kami setujui atau kami kembalikan untuk diperbaiki.
+                            Laporan belum tampil selagi menunggu pemeriksaan. Setelah isinya
+                            kami cek, laporan kami tampilkan atau kami kembalikan untuk
+                            diperbaiki.
                         </p>
                     </div>
                 </div>
@@ -171,11 +172,11 @@
                 <div class="col-md-4">
                     <div class="surface-card">
                         <span class="step-number">3</span>
-                        <h3>Konfirmasi status “Sudah”</h3>
+                        <h3>Kabari saat sudah ketemu</h3>
                         <p>
-                            Pelapor mengirim konfirmasi bahwa barang sudah ditemukan atau
-                            sudah kembali. Setelah kami periksa, item berpindah ke card “Sudah”
-                            di menu yang sama.
+                            Untuk barang hilang, pemilik langsung menandai barangnya sudah
+                            ditemukan. Untuk barang temuan, konfirmasinya kami cek dulu.
+                            Setelahnya laporan pindah ke bagian “Sudah”.
                         </p>
                     </div>
                 </div>

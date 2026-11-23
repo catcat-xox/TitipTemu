@@ -81,7 +81,7 @@ class LayoutSeparationTest extends TestCase
             ->assertRedirect(route('admin.dashboard'));
         $this->actingAs($admin, 'admin')->get(route('guide'))
             ->assertRedirect(route('admin.dashboard'));
-        $this->actingAs($admin, 'admin')->get(route('reports.index', ['lost']))
+        $this->actingAs($admin, 'admin')->get(route('reports.index', ['hilang']))
             ->assertRedirect(route('admin.dashboard'));
         $this->actingAs($admin, 'admin')->get(route('login'))
             ->assertRedirect(route('admin.dashboard'));

@@ -11,15 +11,15 @@ final class MissingReportModerationService
 {
     public function recordAdminEdit(MissingReport $report, Admin $admin, ?string $note = null): void
     {
-        abort_unless($report->status === MissingReport::STATUS_PENDING, 403);
+        $status = $report->status;
 
         MissingReportStatusHistory::create([
             'missing_report_id' => $report->id,
             'actor_id' => null,
             'admin_id' => $admin->id,
             'action' => 'admin_edited',
-            'from_status' => MissingReport::STATUS_PENDING,
-            'to_status' => MissingReport::STATUS_PENDING,
+            'from_status' => $status,
+            'to_status' => $status,
             'note' => blank($note) ? 'Admin memperbarui isi laporan.' : $note,
         ]);
     }

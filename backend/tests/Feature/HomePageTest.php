@@ -69,11 +69,11 @@ class HomePageTest extends TestCase
         }
         $response->assertDontSee('Barang Hilang 5');
         $response->assertDontSee('Barang Hilang 6');
-        $response->assertSee('Laporan terbaru dari kedua kanal');
+        $response->assertSee('Cek laporan terkini');
         $response->assertSee('Barang Belum Ditemukan');
         $response->assertSee('Barang Belum Kembali');
-        $response->assertSee(route('reports.index', 'lost'), false);
-        $response->assertSee(route('reports.index', 'found'), false);
+        $response->assertSee(route('reports.index', 'hilang'), false);
+        $response->assertSee(route('reports.index', 'ditemukan'), false);
         $response->assertSee('<div class="mt-auto pt-2">', false);
         $response->assertSee('Lihat detail');
         $response->assertDontSee('Barang yang baru kembali');
@@ -86,8 +86,8 @@ class HomePageTest extends TestCase
 
     public function test_only_one_inventory_link_is_active_on_each_list_page(): void
     {
-        $lost = $this->get(route('reports.index', 'lost'))->assertOk();
-        $found = $this->get(route('reports.index', 'found'))->assertOk();
+        $lost = $this->get(route('reports.index', 'hilang'))->assertOk();
+        $found = $this->get(route('reports.index', 'ditemukan'))->assertOk();
 
         $this->assertSame(1, substr_count((string) $lost->getContent(), 'class="nav-link active"'));
         $this->assertSame(1, substr_count((string) $found->getContent(), 'class="nav-link active"'));

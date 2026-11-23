@@ -15,7 +15,7 @@
 <body class="admin-auth-body">
     <a class="skip-link" href="#konten">Lewati ke konten utama</a>
 
-    <main id="konten" class="admin-auth-main">
+    <main id="konten" class="admin-auth-main" tabindex="-1">
         <div class="admin-auth-brand">
             @include('partials.admin-brand')
         </div>

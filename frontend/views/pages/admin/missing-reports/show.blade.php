@@ -19,9 +19,16 @@
                 </button>
             </div>
             <div class="d-flex flex-wrap gap-2 mt-3">
-                @if ($report->status === 'pending')
-                    <a class="btn btn-outline-primary" href="{{ route('admin.reports.missing.edit', $report) }}">Edit laporan</a>
-                @endif
+                <a class="btn btn-outline-primary" href="{{ route('admin.reports.missing.edit', $report) }}">Edit laporan</a>
+                <form method="POST" action="{{ route('admin.reports.missing.destroy', $report) }}"
+                    data-tt-confirm="Hapus permanen laporan kehilangan ini beserta foto dan riwayatnya? Tindakan ini tidak dapat dibatalkan."
+                    data-tt-confirm-title="Hapus permanen laporan kehilangan?"
+                    data-tt-confirm-label="Ya, hapus permanen"
+                    data-tt-confirm-variant="danger">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-outline-danger" type="submit">Hapus laporan</button>
+                </form>
             </div>
         </div>
     </section>
@@ -38,7 +45,7 @@
                 <div class="col-lg-7">
                     <div class="surface-card p-4">
                         <span class="status-badge status-{{ $report->status }}">{{ $statusLabels[$report->status] ?? $report->status }}</span>
-                        <h1 class="mt-3 h2">{{ $report->item_name }}</h1>
+                        <h2 class="mt-3 h2">{{ $report->item_name }}</h2>
                         <p>{{ $report->description }}</p>
                         <dl class="detail-list">
                             <div><dt>Kategori</dt><dd>{{ $report->category }}</dd></div>
@@ -91,7 +98,7 @@
                     @else
                         <div class="surface-card p-4">
                             <h2 class="h4">Verifikasi selesai</h2>
-                            <p class="mb-0">Laporan ini sudah memiliki keputusan Admin. Status lanjutan mengikuti alur penemuan barang.</p>
+                            <p class="mb-0">Laporan ini sudah memiliki keputusan Admin. Penemuan barang dikonfirmasi langsung oleh pemilik tanpa verifikasi tambahan.</p>
                         </div>
                     @endif
                 </div>

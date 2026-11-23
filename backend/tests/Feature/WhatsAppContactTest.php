@@ -18,7 +18,7 @@ class WhatsAppContactTest extends TestCase
             'contact_phone' => '0812-3456-7890',
         ]);
 
-        $this->get(route('reports.show', ['found', $report]))
+        $this->get(route('reports.show', ['ditemukan', $report]))
             ->assertOk()
             ->assertSee('Hubungi penemu via WhatsApp')
             ->assertSee(route('reports.contact', $report))
@@ -33,7 +33,7 @@ class WhatsAppContactTest extends TestCase
             'contact_phone' => '0812-3456-7890',
         ]);
 
-        $this->get(route('reports.show', ['lost', $report]))
+        $this->get(route('reports.show', ['hilang', $report]))
             ->assertOk()
             ->assertSee('Hubungi pemilik via WhatsApp')
             ->assertSee(route('missing-reports.contact', $report))

@@ -677,7 +677,8 @@ a:hover {
     text-align: center;
 }
 
-.empty-state h2 {
+.empty-state h2,
+.empty-state h4 {
     font-size: 1.35rem;
     margin-top: 1rem;
 }
@@ -1119,6 +1120,13 @@ a:hover {
     .surface-card {
         padding: 1.25rem;
     }
+
+    .table-responsive .btn-sm,
+    .tt-action-menu .dropdown-item,
+    .admin-back-button {
+        min-height: 44px;
+        min-width: 44px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1216,13 +1224,35 @@ a:hover {
     padding-top: 1.25rem;
 }
 
-.table-admin-compact th,
-.table-admin-compact td {
+.table-admin-compact th {
     white-space: nowrap;
+}
+
+.table-admin-compact td {
+    min-width: 0;
+    white-space: normal;
 }
 
 .table-admin-compact .status-badge {
     display: inline-block;
+}
+
+.tt-action-menu {
+    border: 1px solid var(--tt-line);
+    border-radius: var(--tt-radius-sm);
+    box-shadow: var(--tt-shadow);
+    font-size: 0.9rem;
+    padding: 0.35rem;
+}
+
+.tt-action-menu .dropdown-item {
+    border-radius: 0.55rem;
+    font-family: inherit;
+    padding: 0.45rem 0.7rem;
+}
+
+.tt-action-menu form {
+    margin: 0;
 }
 
 .admin-main {
@@ -1382,4 +1412,85 @@ a:hover {
         height: auto;
         overflow: visible;
     }
+}
+
+/* Confirmation modal */
+.tt-confirm-modal .modal-content {
+    border: 1px solid var(--tt-line);
+    border-radius: var(--tt-radius);
+    box-shadow: var(--tt-shadow);
+    overflow: hidden;
+}
+
+.tt-confirm-modal__body {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.75rem 1.75rem 1rem;
+}
+
+.tt-confirm-modal__icon {
+    align-items: center;
+    background: #eaf0ff;
+    border-radius: 50%;
+    color: var(--tt-brand);
+    display: inline-flex;
+    height: 3rem;
+    justify-content: center;
+    margin-bottom: 0.35rem;
+    width: 3rem;
+}
+
+.tt-confirm-modal__icon svg {
+    height: 1.6rem;
+    width: 1.6rem;
+}
+
+.tt-confirm-modal[data-tt-variant="success"] .tt-confirm-modal__icon {
+    background: var(--tt-accent-soft);
+    color: var(--tt-accent);
+}
+
+.tt-confirm-modal[data-tt-variant="danger"] .tt-confirm-modal__icon {
+    background: #fdecec;
+    color: #c62828;
+}
+
+.tt-confirm-modal__title {
+    margin: 0;
+}
+
+.tt-confirm-modal__message {
+    color: var(--tt-muted);
+    font-size: 0.96rem;
+    margin: 0;
+}
+
+.tt-confirm-modal__footer {
+    border-top: 1px solid var(--tt-line);
+    gap: 0.5rem;
+    padding: 1rem 1.75rem 1.25rem;
+}
+
+.tt-confirm-modal[data-tt-variant="success"] .tt-confirm-modal__accept {
+    --bs-btn-active-bg: #0c7568;
+    --bs-btn-active-border-color: #0c7568;
+    --bs-btn-bg: var(--tt-accent);
+    --bs-btn-border-color: var(--tt-accent);
+    --bs-btn-focus-shadow-rgb: 15, 143, 127;
+    --bs-btn-hover-bg: #0c7568;
+    --bs-btn-hover-border-color: #0c7568;
+    box-shadow: 0 10px 24px -14px rgba(15, 143, 127, 0.9);
+}
+
+.tt-confirm-modal[data-tt-variant="danger"] .tt-confirm-modal__accept {
+    --bs-btn-active-bg: #a51f1f;
+    --bs-btn-active-border-color: #a51f1f;
+    --bs-btn-bg: #c62828;
+    --bs-btn-border-color: #c62828;
+    --bs-btn-focus-shadow-rgb: 198, 40, 40;
+    --bs-btn-hover-bg: #a51f1f;
+    --bs-btn-hover-border-color: #a51f1f;
+    box-shadow: 0 10px 24px -14px rgba(198, 40, 40, 0.9);
 }

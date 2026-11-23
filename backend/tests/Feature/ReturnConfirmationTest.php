@@ -57,14 +57,14 @@ class ReturnConfirmationTest extends TestCase
             'to_status' => 'return_pending',
         ]);
 
-        $this->get(route('reports.index', 'found'))
+        $this->get(route('reports.index', 'ditemukan'))
             ->assertOk()
             ->assertSee('Dompet Kembali')
             ->assertDontSee('Siti Pemilik');
-        $this->get(route('reports.index', 'lost'))
+        $this->get(route('reports.index', 'hilang'))
             ->assertOk()
             ->assertDontSee('Dompet Kembali');
-        $this->get(route('reports.show', ['found', $report]))
+        $this->get(route('reports.show', ['ditemukan', $report]))
             ->assertOk()
             ->assertDontSee('Siti Pemilik');
     }
@@ -158,11 +158,11 @@ class ReturnConfirmationTest extends TestCase
 
         Auth::guard('admin')->logout();
 
-        $this->get(route('reports.index', ['found', 'status' => 'sudah']))
+        $this->get(route('reports.index', ['ditemukan', 'status' => 'sudah']))
             ->assertOk()
             ->assertSee('Sepatu Kembali')
             ->assertDontSee('Rahasia Pemilik');
-        $this->get(route('reports.index', 'lost'))
+        $this->get(route('reports.index', 'hilang'))
             ->assertOk()
             ->assertDontSee('Sepatu Kembali');
     }
