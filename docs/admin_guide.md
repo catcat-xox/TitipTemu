@@ -81,7 +81,7 @@ Batas tampil 30 hari dihitung otomatis:
 
 Command `reports:archive-returned` dan `missing-reports:archive-found` dijalankan harian pukul `00:05` WITA oleh scheduler Laravel. Setelah lewat batas, status berubah menjadi arsip dan laporan tidak tampil publik. Data, bukti, dan riwayat tetap tersimpan. Pengarsipan bukan penghapusan permanen.
 
-Jika cron server belum dipasang, status publik tetap disembunyikan oleh batas waktu, tetapi status basis data baru berubah saat command dijalankan. Lihat `docs/DEPLOYMENT.md`.
+Jika cron server belum dipasang, status publik tetap disembunyikan oleh batas waktu, tetapi status basis data baru berubah saat command dijalankan. Lihat `docs/deployment.md`.
 
 ## 8. Penghapusan permanen
 

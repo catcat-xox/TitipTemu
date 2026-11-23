@@ -70,8 +70,8 @@ Dokumen ini memetakan kriteria PRD v2.11 dan Requirement v2.11 ke implementasi s
 |---|---|---|---|
 | Responsif dan konsisten | NFR-01, NFR-09, RULES §2 | Token desain, Bootstrap 5, tabel responsif, target sentuh mobile, teks Bahasa Indonesia. | `InterfaceRefinementTest`, tinjauan P8.2 |
 | Aksesibilitas dasar | RULES §2 | Label, `aria-invalid`/`aria-describedby`, skip link dengan `tabindex="-1"`, heading tunggal, fokus terlihat. | Tinjauan P8.2 |
-| Struktur dapat dipelihara | NFR-10, NFR-11 | Controller fokus, service domain, partial Blade, dokumentasi arsitektur. | `ARCHITECTURE.md`, `RULES.md` |
-| Prosedur backup dan deployment | NFR-08, NFR-11 | `docs/DEPLOYMENT.md`, panduan User/Admin, daftar lisensi. | Dokumentasi P8.5–P8.7 |
+| Struktur dapat dipelihara | NFR-10, NFR-11 | Controller fokus, service domain, partial Blade, dokumentasi arsitektur. | `architecture.md`, `rules.md` |
+| Prosedur backup dan deployment | NFR-08, NFR-11 | `docs/deployment.md`, panduan User/Admin, daftar lisensi. | Dokumentasi P8.5–P8.7 |
 | Pemeriksaan otomatis | RULES §8 | `php artisan test`, Pint, `npm run build`, `route:list`, `schedule:list`, `git diff --check`. | Lihat hasil di bawah |
 
 ## 8. Hasil verifikasi aktual
@@ -87,7 +87,7 @@ Pemeriksaan dijalankan dari `backend/` dan `frontend/` pada 2026-11-23 setelah s
 | `php artisan schedule:list` | Lulus; `reports:archive-returned` dan `missing-reports:archive-found` terjadwal harian pukul `00:05`. |
 | `git diff --check` | Tidak ada whitespace error; hanya notifikasi konversi CRLF/LF pada file yang disunting. |
 
-Rincian perubahan dan status ada pada `docs/TASKS.md` riwayat 1.40. Tidak ada migrasi, penghapusan data, perubahan dependensi, atau perubahan konfigurasi server yang dilakukan.
+Rincian perubahan dan status ada pada `docs/tasks.md` riwayat 1.40. Tidak ada migrasi, penghapusan data, perubahan dependensi, atau perubahan konfigurasi server yang dilakukan.
 
 ## 9. Status dan catatan residual
 

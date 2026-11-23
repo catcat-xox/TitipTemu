@@ -1,4 +1,4 @@
-# ARCHITECTURE.md — TitipTemu
+# architecture.md — TitipTemu
 
 **Status:** Dasar teknis MVP dan keputusan produk P0 telah disetujui; alur kerja diselaraskan dengan keputusan pemilik A18 (2026-11-22); keputusan lama sebelum A18 dicabut; pertanyaan non-P0 yang tersisa tetap terbuka.
 

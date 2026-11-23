@@ -65,7 +65,7 @@ Sesuai permintaan pemilik, seluruh perubahan Anggota 3 dicatat pada berkas ini.
 - P4.6: menambahkan `tests/Feature/LostReportManagementTest.php` dan
   `database/factories/LostReportFactory.php` untuk validasi, unggahan foto, batas ukuran
   dan format, kepemilikan, pembatalan, pengiriman ulang, dan visibilitas laporan.
-- `TASKS.md` diperbarui: P3.6, P4.5, dan P4.6 ditandai selesai beserta catatan
+- `tasks.md` diperbarui: P3.6, P4.5, dan P4.6 ditandai selesai beserta catatan
   keputusan dan riwayat perubahan 1.8.
 
 ### Pemeriksaan
@@ -123,7 +123,7 @@ untuk konfirmasi. Tahap 6 belum dimulai.
 
 - Foto lama yang sudah tersimpan pada disk `public` tidak dipindahkan pada tugas ini
   karena operasi data tersebut memerlukan keputusan terpisah. Foto baru memakai disk privat.
-- Aturan P6 yang masih terbuka di `ARCHITECTURE.md` tidak diubah pada tugas ini;
+- Aturan P6 yang masih terbuka di `architecture.md` tidak diubah pada tugas ini;
   keputusan implementasinya dicatat pada bagian Tahap 6 berikut.
 
 ## 2026-11-21 — P6.1–P6.7
@@ -133,7 +133,7 @@ untuk konfirmasi. Tahap 7 belum dimulai.
 
 ### Keputusan implementasi
 
-- Aturan yang masih terbuka di `ARCHITECTURE.md:113-116` diisi dengan nilai konservatif:
+- Aturan yang masih terbuka di `architecture.md:113-116` diisi dengan nilai konservatif:
   bukti JPG/JPEG/PNG/WebP, 1–3 file, maksimal 2 MB per file, disk privat `local`,
   tanggal pengembalian dicatat otomatis, catatan pemilik opsional, dan tanpa notifikasi
   status baru.

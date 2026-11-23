@@ -9,9 +9,9 @@ Baca dokumen berikut sebelum mulai coding dan tinjau kembali bagian yang relevan
 2. `docs/project_brief.md`
 3. `docs/prd.md`
 4. `docs/requirement.md`
-5. `docs/ARCHITECTURE.md`
-6. `docs/RULES.md`
-7. `docs/TASKS.md`
+5. `docs/architecture.md`
+6. `docs/rules.md`
+7. `docs/tasks.md`
 
 Jika ada dokumen yang tidak ditemukan atau isinya bertentangan, laporkan perbedaannya. Jangan menyelesaikannya diam-diam dengan asumsi sendiri.
 
@@ -29,7 +29,7 @@ Jika ada dokumen yang tidak ditemukan atau isinya bertentangan, laporkan perbeda
 ## Alur kerja agent: satu tugas untuk setiap persetujuan pemilik
 Pemilik akan meminta OpenCode mengerjakan tugas satu per satu. Untuk setiap tugas:
 1. Periksa `git status`, branch aktif, dan file yang relevan; lindungi pekerjaan pengguna yang sudah ada.
-2. Baca rincian tugas dan kriteria penerimaan di `TASKS.md`, lalu dokumen produk/teknis yang berkaitan.
+2. Baca rincian tugas dan kriteria penerimaan di `tasks.md`, lalu dokumen produk/teknis yang berkaitan.
 3. Sebelum coding, sampaikan secara singkat ID/nama tugas, rencana, file yang kemungkinan diubah, dan cara verifikasi.
 4. Kerjakan hanya tugas yang diminta dan dependensi yang diperlukan. Jangan memulai tugas berikutnya.
 5. Agent boleh menjalankan perintah, menerapkan kode, menguji, mendiagnosis, dan memperbaiki bug/regresi akibat tugas ini secara mandiri. Ulangi pemeriksaan seperlunya.
@@ -44,13 +44,13 @@ Agent boleh mengambil keputusan implementasi berisiko rendah yang wajar dan sesu
 Minta keputusan pemilik dan hentikan bagian pekerjaan yang terdampak jika diperlukan keputusan tentang perilaku produk, persyaratan, privasi, hak akses, perubahan status, dependensi/teknologi utama, deployment/infrastruktur, layanan eksternal/kredensial, operasi penghapusan data, atau perubahan aturan pengembangan. Bagian lain dari tugas aktif boleh dilanjutkan jika tidak bergantung pada keputusan yang belum ada.
 
 ## Larangan tanpa persetujuan eksplisit
-- Memulai tugas berikutnya di `TASKS.md` setelah tugas aktif.
+- Memulai tugas berikutnya di `tasks.md` setelah tugas aktif.
 - Mengubah cakupan produk, alur pengguna, hak akses, kebijakan privasi, retensi/aturan 30 hari, atau perubahan status yang disetujui.
 - Mengganti Laravel, MySQL, Blade, atau Bootstrap maupun menambahkan framework/arsitektur utama.
 - Menghapus data/file secara destruktif, menghilangkan pekerjaan pengguna, atau mereset data.
 - Commit, push, force-push, merge, rebase, reset, atau berpindah branch.
 - Menambahkan layanan berbayar/eksternal atau menggunakan kredensial.
-- Mengubah secara besar `AGENTS.md`, `ARCHITECTURE.md`, `RULES.md`, atau `TASKS.md`.
+- Mengubah secara besar `AGENTS.md`, `architecture.md`, `rules.md`, atau `tasks.md`.
 
 ## Git dan rahasia
 - Jangan menimpa atau membuang perubahan yang belum di-commit. Periksa status sebelum dan sesudah pekerjaan.

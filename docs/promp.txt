@@ -1,11 +1,11 @@
-Kerjakan Task 1 pada `docs/TASKS.md` sesuai seluruh aturan dan dokumentasi proyek. Selesaikan sampai tuntas, lakukan testing, perbaiki error, lalu berhenti dan tunggu instruksi saya untuk task berikutnya.
+Kerjakan Task 1 pada `docs/tasks.md` sesuai seluruh aturan dan dokumentasi proyek. Selesaikan sampai tuntas, lakukan testing, perbaiki error, lalu berhenti dan tunggu instruksi saya untuk task berikutnya.
 sebelum lanjut saya ingin membuatnya menjadi 2 folder utama, yaitu frontend dan backend. jika file yang baru di buat merupakan bagian dari backend, pindah kan ke dalam folder backend.
 lanjutkan P1.2 (konfigurasi environment, aplikasi, dan koneksi MySQL), termasuk penyesuaian perintah setup untuk struktur backend/ + frontend/. Selesaikan sampai tuntas, lakukan testing, perbaiki error, lalu berhenti dan tunggu instruksi saya untuk task berikutnya.
 untuk p0.6: Tetapkan masa 30 hari sejak laporan Barang Ditemukan disetujui Admin dan dipublikasikan, menggunakan zona waktu Asia/Makassar (WITA). Setelah 30 hari, laporan otomatis disembunyikan dari publik dan berstatus Diarsipkan. Data laporan tetap disimpan di database, tidak dihapus permanen. Foto bukti pengembalian tetap privat.; dan lanjutkan p1.3 
 lanjut selesaikan P1.4
 selesaikan task P1.5
 selesaikan task P1.6
-lanjutkan tahap 2 pada `docs/TASKS.md` sesuai seluruh aturan dan dokumentasi proyek. Selesaikan sampai tuntas, lakukan testing, perbaiki error, lalu berhenti dan tunggu instruksi saya untuk task berikutnya.
+lanjutkan tahap 2 pada `docs/tasks.md` sesuai seluruh aturan dan dokumentasi proyek. Selesaikan sampai tuntas, lakukan testing, perbaiki error, lalu berhenti dan tunggu instruksi saya untuk task berikutnya.
 lanjut selesaikan task P2.1
 selesaikan task P2.2
 selesaikan task P2.3

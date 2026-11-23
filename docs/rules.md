@@ -1,6 +1,6 @@
-# RULES.md — Aturan Pengembangan TitipTemu
+# rules.md — Aturan Pengembangan TitipTemu
 
-Aturan ini berlaku untuk semua tugas implementasi. Ikuti `AGENTS.md`, `ARCHITECTURE.md`, PRD, dan Requirement. Jika dokumen saling bertentangan, berhenti dan laporkan; jangan menebak.
+Aturan ini berlaku untuk semua tugas implementasi. Ikuti `AGENTS.md`, `architecture.md`, PRD, dan Requirement. Jika dokumen saling bertentangan, berhenti dan laporkan; jangan menebak.
 
 ## 1. Stack dan arsitektur
 - Laravel monolith + MySQL.
@@ -85,14 +85,14 @@ Aturan ini berlaku untuk semua tugas implementasi. Ikuti `AGENTS.md`, `ARCHITECT
 - Kerjakan hanya tugas yang secara eksplisit diminta pemilik. Jangan memulai tugas berikutnya otomatis.
 - Jangan commit/push/merge/rebase/reset/force-push atau berpindah branch tanpa instruksi.
 - Jaga perubahan tetap terfokus; jelaskan migration, dependensi baru, dan risiko.
-- Perbarui `TASKS.md` hanya sesuai progres nyata tugas aktif.
+- Perbarui `tasks.md` hanya sesuai progres nyata tugas aktif.
 - Setelah tugas selesai, berikan laporan lalu BERHENTI menunggu persetujuan pemilik.
 ## 10. Dokumentasi
 - Perbarui README/setup jika perubahan berdampak pada instalasi, konfigurasi, perintah, atau alur kerja.
-- Jaga `README.md`, `project_brief.md`, `prd.md`, `requirement.md`, `ARCHITECTURE.md`, `RULES.md`, dan `TASKS.md` tetap selaras dengan alur yang disetujui. Jangan mengubah keputusan produk secara sepihak.
-- Catat keputusan baru beserta tanggal dan sumbernya di `TASKS.md`. Tandai selisih antara keputusan lama dan implementasi sebagai catatan terbuka, bukan perubahan diam-diam.
+- Jaga `README.md`, `project_brief.md`, `prd.md`, `requirement.md`, `architecture.md`, `rules.md`, dan `tasks.md` tetap selaras dengan alur yang disetujui. Jangan mengubah keputusan produk secara sepihak.
+- Catat keputusan baru beserta tanggal dan sumbernya di `tasks.md`. Tandai selisih antara keputusan lama dan implementasi sebagai catatan terbuka, bukan perubahan diam-diam.
 - Perlakukan **A18** sebagai baseline aktif untuk pemetaan menu, jenis laporan, tabel terpisah, card status, dan navigasi. Semua pernyataan lama yang menyatakan Barang Hilang berisi laporan temuan atau Barang Ditemukan hanya riwayat pengembalian adalah catatan historis yang sudah digantikan; tandai, jangan dibiarkan seolah masih berlaku.
-- Perlakukan `CHANGELOG_ANGGOTA_2.md` sebagai log historis; jangan menimpa riwayatnya tanpa alasan yang jelas.
+- Perlakukan `changelog_anggota_2.md` sebagai log historis; jangan menimpa riwayatnya tanpa alasan yang jelas.
 - Catat asumsi yang belum dipastikan dan hambatan dengan jelas.
 ## 11. Berhenti dan minta persetujuan
 Hentikan bagian pekerjaan yang terdampak dan minta persetujuan pemilik sebelum mengubah perilaku produk, persyaratan, peran/hak akses, privasi, retensi, perubahan status, teknologi/dependensi utama, infrastruktur/deployment, layanan eksternal, operasi destruktif pada data/file, atau aturan agent. Perbaikan bug dan detail implementasi rutin dalam tugas aktif boleh dilakukan mandiri.

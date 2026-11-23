@@ -146,9 +146,9 @@ titipemu/
 │   ├── project_brief.md
 │   ├── prd.md
 │   ├── requirement.md
-│   ├── ARCHITECTURE.md
-│   ├── RULES.md
-│   ├── TASKS.md
+│   ├── architecture.md
+│   ├── rules.md
+│   ├── tasks.md
 │   ├── diagrams/
 │   └── wireframes/
 ├── frontend/
