@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Admin;
 use App\Models\ReturnConfirmation;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -13,7 +14,7 @@ class RejectReturnConfirmationRequest extends FormRequest
 
         return $confirmation instanceof ReturnConfirmation
             && $confirmation->status === 'pending'
-            && $this->user()?->isAdmin() === true;
+            && $this->user('admin') instanceof Admin;
     }
 
     public function rules(): array

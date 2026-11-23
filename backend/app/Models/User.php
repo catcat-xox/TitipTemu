@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,9 +10,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'nim_nip', 'user_type', 'faculty', 'study_program'])]
+#[Fillable(['name', 'email', 'phone', 'password', 'role', 'nim_nip', 'user_type', 'faculty', 'study_program', 'profile_photo_path'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
     public const ROLE_USER = 'user';
 
@@ -32,6 +30,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function lostReports(): HasMany
     {
         return $this->hasMany(LostReport::class);
+    }
+
+    public function missingReports(): HasMany
+    {
+        return $this->hasMany(MissingReport::class);
     }
 
     public function isAdmin(): bool

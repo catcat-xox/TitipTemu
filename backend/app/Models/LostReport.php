@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
     'description',
     'lost_at',
     'location',
+    'contact_phone',
     'photo_path',
     'status',
     'terms_accepted_at',
@@ -87,12 +88,12 @@ class LostReport extends Model
         return ($now ?? now())->greaterThanOrEqualTo($this->archiveDueAt());
     }
 
-    public function scopePublicLost($query)
+    public function scopePublicUnreturned($query)
     {
         return $query->whereIn('status', ['approved', 'return_pending']);
     }
 
-    public function scopePublicFound($query)
+    public function scopePublicReturned($query)
     {
         return $query->where('status', 'returned')
             ->whereNotNull('returned_at')

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\LostReport;
+use App\Support\WhatsAppLink;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateLostReportRequest extends FormRequest
@@ -24,6 +25,14 @@ class UpdateLostReportRequest extends FormRequest
             'description' => ['required', 'string', 'min:10', 'max:1000'],
             'lost_at' => ['required', 'date', 'before_or_equal:today'],
             'location' => ['required', 'string', 'min:3', 'max:150'],
+            'contact_phone' => [
+                'required', 'string', 'max:30', 'regex:/^[0-9+\-\s()]+$/',
+                function (string $attribute, mixed $value, callable $fail): void {
+                    if (WhatsAppLink::normalizePhone(is_string($value) ? $value : null) === null) {
+                        $fail('Nomor HP penemu tidak valid.');
+                    }
+                },
+            ],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
@@ -32,7 +41,8 @@ class UpdateLostReportRequest extends FormRequest
     {
         return [
             'item_name' => 'nama barang',
-            'lost_at' => 'tanggal kehilangan',
+            'lost_at' => 'tanggal ditemukan',
+            'contact_phone' => 'no. HP penemu',
             'photo' => 'foto barang',
         ];
     }

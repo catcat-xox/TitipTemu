@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Admin;
 use App\Models\LostReport;
 use App\Models\ReportStatusHistory;
 use App\Models\ReturnConfirmation;
@@ -90,8 +91,8 @@ class ReportArchiveTest extends TestCase
 
         $this->artisan('reports:archive-returned')->assertSuccessful();
 
-        $this->get(route('reports.index', 'found'))->assertDontSee('Barang Arsip');
-        $this->get(route('reports.show', ['found', $report]))->assertNotFound();
+        $this->get(route('reports.index', ['ditemukan', 'status' => 'sudah']))->assertDontSee('Barang Arsip');
+        $this->get(route('reports.show', ['ditemukan', $report]))->assertNotFound();
         $this->get(route('reports.photo', $report))->assertNotFound();
 
         $this->assertDatabaseHas('lost_reports', ['id' => $report->id, 'status' => 'archived']);
@@ -99,7 +100,7 @@ class ReportArchiveTest extends TestCase
         $this->assertNotNull($report->fresh()->returned_at);
         $this->assertDatabaseHas('return_confirmations', ['id' => $confirmation->id]);
 
-        $this->actingAs(User::factory()->admin()->create())
+        $this->actingAs(Admin::factory()->create(), 'admin')
             ->get(route('admin.reports.show', $report))
             ->assertOk()
             ->assertSee('Diarsipkan otomatis');

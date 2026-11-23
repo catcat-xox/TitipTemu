@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
+use App\Support\ProfilePhoto;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +30,14 @@ class AuthController extends Controller
                 ->withErrors(['email' => 'Email atau password tidak sesuai.']);
         }
 
+        if (Auth::user()?->isAdmin()) {
+            Auth::logout();
+
+            return back()
+                ->withInput($request->only('email', 'remember'))
+                ->withErrors(['email' => 'Akun Admin tidak dapat masuk melalui halaman User.']);
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended(route('home'))
@@ -46,14 +54,17 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->string('name')->trim()->toString(),
             'email' => $request->string('email')->lower()->toString(),
+            'phone' => $request->string('phone')->trim()->toString(),
             'nim_nip' => $request->string('nim_nip')->trim()->toString(),
             'user_type' => $request->string('user_type')->toString(),
             'faculty' => $request->string('faculty')->trim()->toString(),
             'study_program' => $request->string('study_program')->trim()->toString() ?: null,
+            'profile_photo_path' => $request->hasFile('profile_photo')
+                ? ProfilePhoto::store($request->file('profile_photo'))
+                : null,
             'password' => Hash::make($request->string('password')->toString()),
         ]);
 
-        event(new Registered($user));
         Auth::login($user);
         $request->session()->regenerate();
 
@@ -61,25 +72,9 @@ class AuthController extends Controller
             ->with('success', 'Akun berhasil dibuat. Selamat datang di TitipTemu.');
     }
 
-    public function verificationNotice(): View
-    {
-        return view('auth.verify-email');
-    }
-
-    public function resendVerification(Request $request): RedirectResponse
-    {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->route('home');
-        }
-
-        $request->user()->sendEmailVerificationNotification();
-
-        return back()->with('status', 'Tautan verifikasi telah dikirim ulang.');
-    }
-
     public function logout(Request $request): RedirectResponse
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

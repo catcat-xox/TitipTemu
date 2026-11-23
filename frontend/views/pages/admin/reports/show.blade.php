@@ -1,14 +1,39 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Tinjau '.$report->item_name.' — TitipTemu')
 
 @section('content')
     <section class="page-hero">
         <div class="container">
-            <a class="back-link" href="{{ route('admin.dashboard') }}">← Kembali ke antrean</a>
-            <span class="eyebrow mt-3 d-inline-flex">Area Admin</span>
-            <h1 class="mt-3">Tinjau laporan</h1>
-            <p class="page-intro">Periksa detail laporan, foto, dan riwayat moderasi sebelum mengambil keputusan.</p>
+            <div class="admin-page-head">
+                <div>
+                    <h1 class="admin-page-title">Tinjau laporan</h1>
+                    <p class="page-intro">Periksa detail laporan, foto, dan riwayat verifikasi sebelum mengambil keputusan.</p>
+                </div>
+                <button type="button" class="btn btn-outline-secondary admin-back-button"
+                    onclick="history.back()" aria-label="Kembali ke halaman sebelumnya" title="Kembali">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M15 18 9 12l6-6" />
+                    </svg>
+                </button>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                @if ($report->status === 'pending')
+                    <a class="btn btn-outline-primary" href="{{ route('admin.reports.edit', $report) }}">Edit laporan</a>
+                @endif
+                @if (in_array($report->status, ['returned', 'archived'], true))
+                    <form method="POST" action="{{ route('admin.reports.destroy', $report) }}"
+                        data-tt-confirm="Hapus permanen laporan ini beserta buktinya? Tindakan ini tidak dapat dibatalkan."
+                        data-tt-confirm-title="Hapus permanen laporan?"
+                        data-tt-confirm-label="Ya, hapus permanen"
+                        data-tt-confirm-variant="danger">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-outline-danger" type="submit">Hapus permanen</button>
+                    </form>
+                @endif
+            </div>
         </div>
     </section>
 
@@ -24,13 +49,14 @@
                 <div class="col-lg-7">
                     <div class="surface-card p-4">
                         <span class="status-badge status-{{ $report->status }}">{{ $statusLabels[$report->status] ?? $report->status }}</span>
-                        <h1 class="mt-3 h2">{{ $report->item_name }}</h1>
+                        <h2 class="mt-3 h2">{{ $report->item_name }}</h2>
                         <p>{{ $report->description }}</p>
                         <dl class="detail-list">
                             <div><dt>Kategori</dt><dd>{{ $report->category }}</dd></div>
-                            <div><dt>Lokasi hilang</dt><dd>{{ $report->location }}</dd></div>
-                            <div><dt>Tanggal hilang</dt><dd>{{ $report->lost_at->translatedFormat('d F Y') }}</dd></div>
+                            <div><dt>Lokasi ditemukan</dt><dd>{{ $report->location }}</dd></div>
+                            <div><dt>Tanggal ditemukan</dt><dd>{{ $report->lost_at->translatedFormat('d F Y') }}</dd></div>
                             <div><dt>Pelapor</dt><dd>{{ $report->user?->name ?? '-' }}</dd></div>
+                            <div><dt>No. HP penemu</dt><dd>{{ $report->contact_phone ?? '-' }}</dd></div>
                             <div><dt>Dikirim</dt><dd>{{ $report->created_at->translatedFormat('d M Y H:i') }}</dd></div>
                             @if ($report->archived_at)
                                 <div><dt>Diarsipkan</dt><dd>{{ $report->archived_at->translatedFormat('d M Y H:i') }}</dd></div>
@@ -47,14 +73,14 @@
             <div class="row g-4 mt-2">
                 <div class="col-lg-7">
                     @if ($report->status === 'pending')
-                        <form class="form-panel" method="POST" action="{{ route('admin.reports.moderate', $report) }}">
+                        <form class="form-panel" method="POST" action="{{ route('admin.reports.verify', $report) }}">
                             @csrf
                             <fieldset>
-                                <legend class="h4">Keputusan moderasi</legend>
+                                <legend class="h4">Keputusan verifikasi</legend>
                                 <p class="text-muted small">Pilih satu keputusan. Penolakan wajib disertai alasan yang dapat diperbaiki pelapor.</p>
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="decision" id="decision-approve" value="approve" @checked(old('decision') === 'approve')>
-                                    <label class="form-check-label" for="decision-approve">Setujui dan tampilkan di Barang Hilang</label>
+                                    <label class="form-check-label" for="decision-approve">Setujui dan tampilkan di Barang Ditemukan</label>
                                 </div>
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="radio" name="decision" id="decision-reject" value="reject" @checked(old('decision') === 'reject')>
@@ -68,28 +94,28 @@
                                 <div class="mb-4">
                                     <label class="form-label" for="note">Catatan internal Admin</label>
                                     <textarea class="form-control" id="note" name="note" rows="2" maxlength="500">{{ old('note') }}</textarea>
-                                    <div class="form-text">Hanya terlihat oleh Admin pada riwayat moderasi.</div>
+                                    <div class="form-text">Hanya terlihat oleh Admin pada riwayat verifikasi.</div>
                                 </div>
                                 <button class="btn btn-primary" type="submit">Simpan keputusan</button>
                             </fieldset>
                         </form>
                     @else
                         <div class="surface-card p-4">
-                            <h2 class="h4">Moderasi selesai</h2>
+                            <h2 class="h4">Verifikasi selesai</h2>
                             <p class="mb-0">Laporan ini sudah memiliki keputusan Admin. Perubahan status lanjutan mengikuti alur pengembalian.</p>
                         </div>
                     @endif
                 </div>
                 <div class="col-lg-5">
                     <div class="surface-card p-4 h-100">
-                        <h2 class="h4">Riwayat moderasi</h2>
+                        <h2 class="h4">Riwayat verifikasi</h2>
                         @forelse ($report->statusHistories as $history)
                             <div class="moderation-entry">
                                 <div class="d-flex justify-content-between gap-2">
                                     <strong>{{ $actionLabels[$history->action] ?? $history->action }}</strong>
                                     <span class="text-muted small">{{ $history->created_at->translatedFormat('d M Y H:i') }}</span>
                                 </div>
-                                <p class="mb-1 small">Oleh {{ $history->actor?->name ?? 'Sistem' }} · {{ $history->from_status }} → {{ $history->to_status }}</p>
+                                <p class="mb-1 small">Oleh {{ $history->actor?->name ?? $history->admin?->name ?? 'Sistem' }} · {{ $history->from_status }} → {{ $history->to_status }}</p>
                                 @if ($history->reason)
                                     <p class="mb-1 small"><strong>Alasan:</strong> {{ $history->reason }}</p>
                                 @endif
@@ -98,7 +124,7 @@
                                 @endif
                             </div>
                         @empty
-                            <p class="text-muted mb-0">Belum ada keputusan moderasi untuk laporan ini.</p>
+                            <p class="text-muted mb-0">Belum ada keputusan verifikasi untuk laporan ini.</p>
                         @endforelse
                     </div>
                 </div>
@@ -115,18 +141,22 @@
                                     <span class="text-muted small">{{ $confirmation->created_at->translatedFormat('d M Y H:i') }}</span>
                                 </div>
                                 <p class="mb-2 small">Oleh {{ $confirmation->user?->name ?? '-' }} · Waktu kembali: {{ $confirmation->reported_returned_at->translatedFormat('d M Y H:i') }}</p>
+                                <p class="mb-2 small"><strong>Nama pemilik:</strong> {{ $confirmation->owner_name ?? '-' }}</p>
                                 @if ($confirmation->note)
-                                    <p class="mb-2 small"><strong>Catatan pemilik:</strong> {{ $confirmation->note }}</p>
+                                    <p class="mb-2 small"><strong>Catatan penemu:</strong> {{ $confirmation->note }}</p>
                                 @endif
                                 @if (is_array($confirmation->proof_paths) && $confirmation->proof_paths !== [])
                                     <div class="proof-grid mb-3">
                                         @foreach ($confirmation->proof_paths as $index => $path)
-                                            <img src="{{ route('admin.returns.proof', [$confirmation, 'index' => $index]) }}" alt="Bukti pengembalian {{ $loop->iteration }}">
+                                            <img src="{{ route('admin.returns.proof', [$confirmation, 'index' => $index]) }}" alt="Foto bersama penemu dan pemilik {{ $loop->iteration }}">
                                         @endforeach
                                     </div>
                                 @endif
                                 @if ($confirmation->rejection_reason)
                                     <p class="mb-2 small"><strong>Alasan penolakan:</strong> {{ $confirmation->rejection_reason }}</p>
+                                @endif
+                                @if ($confirmation->reviewerAdmin)
+                                    <p class="mb-2 small"><strong>Ditinjau oleh:</strong> {{ $confirmation->reviewerAdmin->name }}</p>
                                 @endif
                                 @if ($confirmation->admin_note)
                                     <p class="mb-2 small"><strong>Catatan Admin:</strong> {{ $confirmation->admin_note }}</p>

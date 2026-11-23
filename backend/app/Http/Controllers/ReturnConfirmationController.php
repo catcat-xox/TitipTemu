@@ -14,8 +14,7 @@ class ReturnConfirmationController extends Controller
     {
         abort_unless(
             $report->user_id === auth()->id()
-                && $report->status === 'approved'
-                && auth()->user()?->hasVerifiedEmail(),
+                && $report->status === 'approved',
             403
         );
 
@@ -33,11 +32,12 @@ class ReturnConfirmationController extends Controller
         ReturnConfirmationService $service,
         LostReport $report,
     ): RedirectResponse {
-        $data = $request->safe()->only(['proof', 'note']);
+        $data = $request->safe()->only(['owner_name', 'proof', 'note']);
 
         $service->submit(
             $report,
             $request->user(),
+            $data['owner_name'],
             $data['proof'],
             $data['note'] ?? null,
         );

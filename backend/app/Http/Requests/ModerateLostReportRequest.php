@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Admin;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ModerateLostReportRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() === true;
+        return $this->user('admin') instanceof Admin;
     }
 
     public function rules(): array
@@ -23,7 +24,7 @@ class ModerateLostReportRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'decision' => 'keputusan moderasi',
+            'decision' => 'keputusan verifikasi',
             'reason' => 'alasan penolakan',
             'note' => 'catatan internal',
         ];

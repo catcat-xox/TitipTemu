@@ -9,7 +9,7 @@ Dokumen ini mencatat setiap file yang diubah atau ditambahkan untuk pekerjaan An
 - Cakupan pekerjaan: halaman publik, daftar Barang Hilang/Ditemukan, detail,
   pencarian/filter/pagination, form laporan, validasi, upload foto, daftar laporan
   milik User, status laporan, dan pengujian terkait.
-- Tidak mengubah alur autentikasi, moderasi Admin, atau konfirmasi pengembalian
+- Tidak mengubah alur autentikasi, verifikasi Admin, atau konfirmasi pengembalian
   karena merupakan cakupan anggota/tahap lain.
 
 ## 2026-11-21 — Implementasi P3/P4
@@ -98,7 +98,7 @@ untuk konfirmasi. Tahap 6 belum dimulai.
 - P5.2: aturan unggahan foto diselaraskan dengan P0.4: JPG/JPEG/PNG/WebP, maksimal 2 MB
   per file.
 - P5.3: menambahkan `ModerateLostReportRequest`, `AdminReportController::moderate`, dan
-  `App\Services\ReportModerationService`. Admin hanya dapat memoderasi laporan `Pending`;
+  `App\Services\ReportModerationService`. Admin hanya dapat meverifikasi laporan `Pending`;
   penolakan wajib memiliki alasan minimal 5 karakter. Laporan yang ditolak dapat
   diperbaiki dan dikirim ulang oleh pemilik; alasan Admin tampil pada `Laporan Saya`.
 - P5.4: menambahkan migration `report_status_histories`, model `ReportStatusHistory`,

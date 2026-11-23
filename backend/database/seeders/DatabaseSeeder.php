@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +18,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'demo.user@titiptemu.test'],
             [
                 'name' => 'Demo User',
+                'phone' => '081234567890',
                 'email_verified_at' => now(),
                 'role' => User::ROLE_USER,
                 'nim_nip' => 'DEMO-0001',
@@ -26,5 +28,18 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password'),
             ],
         );
+
+        Admin::query()->updateOrCreate(
+            ['email' => 'admin@titiptemu.test'],
+            [
+                'name' => 'Admin Demo',
+                'password' => Hash::make('password'),
+            ],
+        );
+
+        $this->call(LostReportDemoSeeder::class);
+        $this->call(WandiStatusDemoSeeder::class);
+        $this->call(MissingReportDemoSeeder::class);
+        $this->call(WandiMissingStatusDemoSeeder::class);
     }
 }

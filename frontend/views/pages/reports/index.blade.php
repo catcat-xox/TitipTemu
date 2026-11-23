@@ -1,31 +1,36 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
 @php
-    $isLost = $type === 'lost';
-    $title = $isLost ? 'Barang Hilang' : 'Barang Ditemukan';
+    $isLost = $type === 'hilang';
+    $title = $labels['title'];
 @endphp
 
 @section('title', $title . ' — TitipTemu')
 
 @section('content')
-    <section class="page-hero">
+    <section class="section reports-listing">
         <div class="container">
-            <span class="eyebrow">{{ $isLost ? 'Daftar aktif' : 'Riwayat pengembalian' }}</span>
-            <h1 class="mt-3">{{ $title }}</h1>
-            <p class="page-intro">
-                {{ $isLost
-                    ? 'Cari laporan kehilangan yang telah disetujui Admin.'
-                    : 'Lihat laporan yang pengembaliannya telah disetujui Admin dalam 30 hari terakhir.' }}
-            </p>
-        </div>
-    </section>
+            <h1 class="visually-hidden">{{ $title }}</h1>
 
-    <section class="section pt-0">
-        <div class="container">
-            <form class="filter-panel mb-4" method="GET" action="{{ route('reports.index', $type) }}">
+            <nav class="row g-3 mb-4" aria-label="Pilih status {{ $title }}">
+                @foreach (['belum', 'sudah'] as $option)
+                    <div class="col-md-6">
+                        <a class="state-card{{ $state === $option ? ' is-active' : '' }}"
+                            href="{{ route('reports.index', [$type, 'status' => $option]) }}"
+                            @if ($state === $option) aria-current="page" @endif>
+                            <span class="state-card-label">{{ $labels[$option] }}</span>
+                            <span class="state-card-count">{{ $counts[$option] }} laporan</span>
+                            <span class="state-card-arrow" aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                @endforeach
+            </nav>
+
+            <form class="filter-panel reports-filter-panel mb-4" method="GET" action="{{ route('reports.index', $type) }}">
+                <input type="hidden" name="status" value="{{ $state }}">
                 <div class="row g-3 align-items-end">
                     <div class="col-lg-5">
-                        <label class="form-label" for="q">Cari barang</label>
+                        <label class="form-label" for="q">Cari {{ $title }}</label>
                         <input class="form-control" id="q" name="q" value="{{ request('q') }}"
                             placeholder="Nama, kategori, atau lokasi">
                     </div>
@@ -55,7 +60,7 @@
                 <div class="empty-state">
                     <span class="icon-box" aria-hidden="true">⌕</span>
                     <h2>Belum ada laporan yang sesuai</h2>
-                    <p>Coba gunakan kata kunci atau filter lain.</p>
+                    <p>Coba gunakan kata kunci atau filter lain, atau pilih kartu status lainnya.</p>
                 </div>
             @else
                 <div class="row g-4">
@@ -63,20 +68,23 @@
                         <div class="col-md-6 col-xl-4">
                             <article class="report-card">
                                 <div class="report-image">
-                                    <img src="{{ route('reports.photo', $report) }}"
+                                    <img src="{{ route($isLost ? 'missing-reports.photo' : 'reports.photo', $report) }}"
                                         alt="Foto {{ $report->item_name }}" loading="lazy">
                                 </div>
                                 <div class="report-card-body">
                                     <div class="d-flex justify-content-between gap-2 align-items-start">
-                                        <span class="status-badge">{{ $isLost ? 'Masih dicari' : 'Sudah kembali' }}</span>
+                                        <span class="status-badge">{{ $labels[$state] }}</span>
                                         <span class="report-date">{{ $report->lost_at->translatedFormat('d M Y') }}</span>
                                     </div>
                                     <h2>{{ $report->item_name }}</h2>
                                     <p class="report-meta">{{ $report->category }} · {{ $report->location }}</p>
                                     <p class="report-excerpt">{{ Str::limit($report->description, 120) }}</p>
-                                    <a class="stretched-link" href="{{ route('reports.show', [$type, $report]) }}">
-                                        Lihat detail <span aria-hidden="true">→</span>
-                                    </a>
+                                    <div class="mt-auto pt-2">
+                                        <a class="btn btn-sm btn-outline-primary"
+                                            href="{{ route('reports.show', [$type, $report]) }}">
+                                            Lihat detail <span aria-hidden="true">→</span>
+                                        </a>
+                                    </div>
                                 </div>
                             </article>
                         </div>
