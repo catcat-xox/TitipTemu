@@ -1,6 +1,11 @@
 
 # TitipTemu
 
+![Lisensi: MIT](https://img.shields.io/badge/Lisensi-MIT-green.svg)
+![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8%2B-4479A1?logo=mysql&logoColor=white)
+
 Portal barang hilang & temuan kampus: pelaporan kehilangan oleh pemilik, pelaporan temuan oleh penemu, pencarian oleh Guest, dan verifikasi oleh Admin.
 
 ## Tentang Proyek
@@ -41,6 +46,18 @@ Klik card status tetap berada di dalam jenis laporan aktif. Daftar “Sudah” m
 - Konfirmasi status “Sudah” pada laporan temuan memakai bukti privat dan verifikasi Admin; laporan kehilangan langsung pindah ke **Barang Sudah Ditemukan** saat dikonfirmasi pemilik.
 - Pengarsipan otomatis kedua daftar “Sudah” setelah 30 hari. Admin dapat menghapus permanen laporan kehilangan di semua status; laporan temuan tetap hanya `returned`/`archived`, dengan konfirmasi penghapusan.
 - Notifikasi mengambang di bawah navbar untuk setiap hasil aksi, hilang otomatis setelah 3 detik.
+
+## Tangkapan Layar
+
+Berikut beberapa tangkapan layar aplikasi TitipTemu.
+
+<!--
+![Beranda](docs/screenshots/beranda.png)
+![Daftar Barang Hilang](docs/screenshots/barang-hilang.png)
+![Formulir Laporan](docs/screenshots/form-laporan.png)
+![Dashboard Admin](docs/screenshots/dashboard-admin.png)
+Tanda komentar ini akan dibuka setelah berkas gambar ditambahkan ke docs/screenshots/.
+-->
 
 ## Teknologi
 
@@ -283,15 +300,34 @@ Pengujian memakai SQLite in-memory dan tidak mengubah database pengembangan MySQ
 - `docs/admin_guide.md` (panduan verifikasi dan pengelolaan Admin)
 - `docs/acceptance.md` (pemetaan kriteria MVP dan bukti pengujian)
 
-Lisensi pihak ketiga dirangkum pada `THIRD_PARTY_NOTICES.md`.
+## Berkontribusi
+
+Kami menyambut kontribusi berupa perbaikan bug, fitur, maupun dokumentasi. Branch `main` tidak menerima commit langsung; semua perubahan diajukan melalui Pull Request. Baca [Panduan Kontribusi](CONTRIBUTING.md) untuk alur dan standar kontribusi.
+
+## Tim Pengembang
+
+Kelompok 6, mata kuliah Open Source, Program Studi Sistem Informasi.
+
+| Nama | Akun GitHub | Peran |
+| --- | --- | --- |
+| Wandi Saputra | [@catcat-xox](https://github.com/catcat-xox) | Koordinator proyek, inisiasi proyek dan struktur Laravel |
+| Putra Aji Pratama | [@MauMakan348](https://github.com/MauMakan348) | Backend dan fondasi |
+| Muhammad Arsyad Roihan Maulaya | [@not-ever19](https://github.com/not-ever19) | Frontend dan pelaporan |
+| Kristanto Cahyo Nugroho | [@kristantocahyo](https://github.com/kristantocahyo) | Moderasi dan pengembalian, dokumentasi |
 
 ## Lisensi
 
 Proyek ini menggunakan MIT License.
-Lihat file `LICENSE` untuk ketentuan lisensi dan `THIRD_PARTY_NOTICES.md` untuk lisensi dependensi serta aset pihak ketiga.
+Lihat file `LICENSE` untuk ketentuan lisensi. Lisensi font Instrument Sans tersedia di `frontend/licenses/`.
 
 ## Status Pengembangan
 
-Fondasi dan alur utama tersedia pada kode saat ini: pelaporan dua jenis oleh User, pencarian publik oleh Guest, kontak WhatsApp tanpa eksposur nomor, verifikasi Admin terpisah, konfirmasi privat, serta retensi 30 hari dan penghapusan permanen manual.
+- TitipTemu menyediakan dua jenis laporan: kehilangan di **Barang Hilang** dan temuan di **Barang Ditemukan**.
+- Pengunjung dapat mencari laporan pada kedua daftar publik.
+- Kontak pemilik atau penemu dilakukan melalui WhatsApp tanpa menampilkan nomor HP di halaman publik.
+- Admin memverifikasi publikasi laporan dan konfirmasi pengembalian untuk laporan temuan.
+- Pemilik dapat menandai laporan kehilangan sebagai ditemukan; konfirmasi pengembalian laporan temuan tetap melalui verifikasi Admin.
+- Laporan berstatus “Sudah” diarsipkan otomatis setelah 30 hari.
+- URI publik: `/barang/hilang` dan `/barang/ditemukan`.
 
-**A18** telah diimplementasikan, dimulai dari fondasi dan spesifikasi dua kanal. **A19** sudah menambah fondasi laporan kehilangan — tabel `missing_reports`, model/factory, konstanta status, scope publik, serta service moderasi dan arsip 30 hari — tanpa mengubah data lama. **A20** menambah formulir **Laporkan Kehilangan Barang**, tujuh rute `missing-reports.*`, penyimpanan foto privat, dan halaman **Akun** dengan dua tombol serta dua daftar laporan. **A21** memetakan ulang daftar publik: `/barang/lost` memakai laporan kehilangan dan `/barang/found` memakai laporan temuan; tiap halaman memuat dua card status (`status=belum|sudah`) sebelum pencarian, label A18, detail dengan kontak WhatsApp privat, dan batas tampil 30 hari pada daftar “Sudah”. Beranda kini menampilkan empat laporan terbaru dari kedua kanal (A25). **A22** awalnya mengganti navbar publik dengan dropdown **Buat Laporan** dan tombol ikon **Akun**/**Keluar**; **A25** menghapus **Keluar** dari navbar, menaruh **Akun** sebelum dropdown **Buat Laporan** di pinggir kanan, dan memindahkan form profil ke rute `user.profile.edit` dengan tombol **Edit profil**/**Keluar** di halaman **Akun**. **A23** menyederhanakan sidebar Admin menjadi lima menu, menambah filter `jenis`/`status` pada dashboard, kartu status yang tetap dalam jenis aktif, pencarian lintas jenis, serta tinjauan dan verifikasi laporan kehilangan. **A24** menambah `MissingReportDemoSeeder`; **A25** merapikan tujuh bagian antarmuka yang diminta pemilik; **A26** merata-tengahkan kolom status di **Akun**, menghapus dua tombol buat laporan dari **Laporan saya**, dan memperbaiki tombol **Detail** agar memakai rute sesuai jenis. **A27** merata-tengahkan kolom **Tanggal hilang**/**Tanggal ditemukan** dan membuat foto profil langsung menampilkan unggahan terbaru lewat version query pada URL gambar serta header anti-cache pada endpoint privat. **A28** memindahkan konfirmasi **Barang ditemukan** pada laporan kehilangan langsung ke User pemilik: `approved → found`, `found_at = sekarang`, riwayat `found_by_owner`, tampil di **Barang Sudah Ditemukan** dan 30 hari sejak `found_at`; tidak ada bukti/form/`found_pending` baru. Pembatalan pemilik diperluas ke `approved`; Admin tetap memverifikasi publikasi awal dan kini dapat mengedit/menghapus laporan kehilangan pada semua status beserta foto dan riwayat. Dua data demo `found_pending` lama tetap ada, tetapi opsinya disembunyikan dari filter Admin jenis kehilangan; alur laporan temuan tidak berubah. Regresi terakhir: 176 tes/1481 assertion lulus, Pint dan build lulus, serta 63 rute terdaftar. Catatan lama bahwa field/bukti konfirmasi laporan kehilangan masih terbuka telah digantikan A28: pemilik menandai **Barang ditemukan** langsung tanpa bukti atau verifikasi Admin. URI publik kanonik kini `/barang/hilang` dan `/barang/ditemukan`; `/barang/lost` dan `/barang/found` tetap melayani redirect 301 agar tautan lama tidak rusak. Batas foto dan daftar kategori sudah diselaraskan ke implementasi (satu foto, lima kategori). **P8.1–P8.8** telah diselesaikan: hardening autentikasi/akses, penyempurnaan aksesibilitas dan copy, pengujian regresi keamanan, serta dokumentasi rilis; lihat `docs/tasks.md` riwayat 1.40 dan `docs/acceptance.md`.
+Riwayat keputusan lengkap ada di `docs/tasks.md`, dan bukti penerimaan ada di `docs/acceptance.md`.

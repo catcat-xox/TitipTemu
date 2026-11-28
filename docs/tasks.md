@@ -23,7 +23,7 @@
 - [x] P0.9 Periksa keadaan repositori; pertahankan riwayat Git dan dokumentasi yang ada.
 - [x] P0.10 Akun Admin: beberapa Admin dapat mengelola website secara terpisah.
 - [x] P0.11 Alur OpenCode: satu tugas per instruksi; agent menyelesaikan, menguji, memperbaiki tugas aktif, melaporkan, lalu berhenti dan menunggu persetujuan eksplisit pemilik sebelum tugas selanjutnya.
-- [ ] P0.12 Tetapkan alur branch/PR tim yang disepakati.
+- [x] P0.12 Tetapkan alur branch/PR tim yang disepakati. Alur branch, PR, dan code review didokumentasikan di CONTRIBUTING.md dan telah dipakai pada PR #15.
 - [x] P0.13 Peran dan identitas (2026-11-22): User adalah penemu/pelapor, Guest adalah pencari tanpa akun, Admin adalah akun terpisah di tabel `admins` dengan jalur login tersembunyi; beberapa akun Admin dapat berdiri sendiri.
 - [x] P0.14 Alur pelaporan dan kontak (2026-11-22): User melaporkan barang temuan dengan no. HP penemu; setelah disetujui Admin laporan tampil di Barang Hilang; Guest menghubungi penemu lewat redirect `wa.me` tanpa eksposur nomor.
 - [x] P0.15 Alur pengembalian (2026-11-22): konfirmasi User memuat nama pemilik dan foto bersama penemu–pemilik; keduanya privat hanya untuk User terkait dan Admin; persetujuan Admin memindahkan laporan ke Barang Ditemukan.
